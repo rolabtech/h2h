@@ -1477,7 +1477,7 @@ presence during an in-person key exchange ceremony.<a href="#section-abstract-3"
                 <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-authentication-bypass" class="internal xref">Authentication Bypass</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
-                <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-qr-code-capture" class="internal xref">QR Code Capture</a></p>
+                <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-contact-payload-capture" class="internal xref">Contact Payload Capture</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.5">
                 <p id="section-toc.1-1.9.2.5.1"><a href="#section-9.5" class="auto internal xref">9.5</a>.  <a href="#name-key-binding-certificate-exp" class="internal xref">Key Binding Certificate Expiry</a></p>
@@ -2161,11 +2161,23 @@ triggers an authentication event.<a href="#section-5.2-2.5.1" class="pilcrow">¶
 <a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-encoding-for-exchange" class="section-name selfRef">Encoding for Exchange</a>
         </h3>
 <p id="section-5.3-1">The serialized COSE_Sign1 structure (a CBOR byte string) is
-transmitted to the peer via a proximity mechanism.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<p id="section-5.3-2">Implementations <span class="bcp14">MUST</span> support encoding the serialized Contact Payload
-as a binary-mode QR code for visual scanning.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
-<p id="section-5.3-3">Implementations <span class="bcp14">MAY</span> additionally support Bluetooth Low Energy (BLE)
-proximity exchange, NFC tag reading, or other proximity mechanisms.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+transmitted to the peer via a proximity exchange mechanism.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2">The proximity mechanism <span class="bcp14">MUST</span> satisfy the following requirements:<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.3-3">
+<li id="section-5.3-3.1">
+            <p id="section-5.3-3.1.1">Both parties are physically co-present during the exchange.<a href="#section-5.3-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.3-3.2">
+            <p id="section-5.3-3.2.1">The mechanism can transfer at least 512 bytes of binary data.<a href="#section-5.3-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.3-3.3">
+            <p id="section-5.3-3.3.1">The mechanism provides a human-verifiable indication that the
+exchange is occurring with the intended party (e.g., visual
+confirmation, physical proximity constraint).<a href="#section-5.3-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-5.3-4">The choice of proximity mechanism is an implementation decision.
+See Appendix A for examples.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="size-considerations">
@@ -2174,9 +2186,9 @@ proximity exchange, NFC tag reading, or other proximity mechanisms.<a href="#sec
 <a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-size-considerations" class="section-name selfRef">Size Considerations</a>
         </h3>
 <p id="section-5.4-1">A typical Contact Payload serializes to 300-500 bytes depending on
-the display name length and addressing information size.  QR code
-binary mode (Version 25, error correction level M) supports up to
-1,269 bytes, which is sufficient.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+the display name length and addressing information size.
+Implementations <span class="bcp14">SHOULD</span> ensure their chosen proximity mechanism
+supports payloads of at least 512 bytes.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2391,18 +2403,19 @@ sorted = sort_lexicographic(IK_A, IK_B)
 digest = SHA-256("H2H-SafetyNumber-v1" || sorted[0] || sorted[1])
 </pre><a href="#section-8.1-3" class="pilcrow">¶</a>
 </div>
-<p id="section-8.1-4">The first 30 bytes of the digest are divided into six 5-byte groups.
+<p id="section-8.1-4">SHA-256 is as defined in <span>[<a href="#FIPS180-4" class="cite xref">FIPS180-4</a>]</span>.<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+<p id="section-8.1-5">The first 30 bytes of the digest are divided into six 5-byte groups.
 Each group is interpreted as a big-endian unsigned integer and reduced
 modulo 100000.  The result is formatted as six groups of zero-padded
-5-digit decimal numbers separated by spaces:<a href="#section-8.1-4" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-8.1-5">
+5-digit decimal numbers separated by spaces:<a href="#section-8.1-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-8.1-6">
 <pre>
 for i in 0..5:
   group[i] = BE_uint(digest[i*5 .. (i+1)*5]) mod 100000
 output = sprintf("%05d %05d %05d %05d %05d %05d", group[0..5])
-</pre><a href="#section-8.1-5" class="pilcrow">¶</a>
+</pre><a href="#section-8.1-6" class="pilcrow">¶</a>
 </div>
-<p id="section-8.1-6">Example: "34521 08837 65092 18374 90125 63748"<a href="#section-8.1-6" class="pilcrow">¶</a></p>
+<p id="section-8.1-7">Example: "34521 08837 65092 18374 90125 63748"<a href="#section-8.1-7" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="properties">
@@ -2431,8 +2444,9 @@ Key changes.<a href="#section-8.2-1.3.1" class="pilcrow">¶</a></p>
         <h3 id="name-verification-procedure">
 <a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-verification-procedure" class="section-name selfRef">Verification Procedure</a>
         </h3>
-<p id="section-8.3-1">After contact exchange, both users <span class="bcp14">SHOULD</span> compare Safety Numbers by
-reading them aloud or by scanning a QR code encoding.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-1">After contact exchange, both users <span class="bcp14">SHOULD</span> compare Safety Numbers
+via an out-of-band channel (e.g., reading aloud, or comparing a
+visual encoding displayed on both devices).<a href="#section-8.3-1" class="pilcrow">¶</a></p>
 <p id="section-8.3-2">Implementations <span class="bcp14">MUST</span> provide a user interface for displaying Safety
 Numbers.  Implementations <span class="bcp14">SHOULD</span> alert the user when a stored
 contact's Safety Number changes.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
@@ -2463,10 +2477,11 @@ access to their device.  Mitigated by the hardware key store's
 non-exportable property.<a href="#section-9.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-9.1-2.3">
-            <p id="section-9.1-2.3.1">Proximity attacker: Can observe or photograph a QR code during
-contact exchange.  Mitigated by the 5-minute timestamp window,
-nonce uniqueness, and the absence of private key material in the
-Contact Payload.<a href="#section-9.1-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-9.1-2.3.1">Proximity attacker: Can observe or capture the Contact Payload
+during exchange (e.g., by photographing a visual encoding or
+intercepting a wireless transmission).  Mitigated by the 5-minute
+timestamp window, nonce uniqueness, and the absence of private key
+material in the Contact Payload.<a href="#section-9.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 <p id="section-9.1-3">This protocol does NOT protect against:<a href="#section-9.1-3" class="pilcrow">¶</a></p>
@@ -2507,14 +2522,15 @@ signatures with lower confidence and <span class="bcp14">MUST</span> display the
 to the user.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="qr-code-capture">
+<div id="contact-payload-capture">
 <section id="section-9.4">
-        <h3 id="name-qr-code-capture">
-<a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-qr-code-capture" class="section-name selfRef">QR Code Capture</a>
+        <h3 id="name-contact-payload-capture">
+<a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-contact-payload-capture" class="section-name selfRef">Contact Payload Capture</a>
         </h3>
-<p id="section-9.4-1">A photographed QR code contains a valid Contact Payload.  The
-attacker gains the victim's public Identity Key and addressing
-information but cannot:<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<p id="section-9.4-1">A captured Contact Payload (e.g., photographed visual encoding or
+intercepted wireless transmission) gives the attacker the victim's
+public Identity Key and addressing information but the attacker
+cannot:<a href="#section-9.4-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-9.4-2.1">
             <p id="section-9.4-2.1.1">Sign as the victim (lacks the hardware-bound private key).<a href="#section-9.4-2.1.1" class="pilcrow">¶</a></p>

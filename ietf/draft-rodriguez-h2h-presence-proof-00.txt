@@ -115,7 +115,7 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
 
      6.1.  Procedure . . . . . . . . . . . . . . . . . . . . . . . .  12
-     6.2.  Clock Skew  . . . . . . . . . . . . . . . . . . . . . . .  12
+     6.2.  Clock Skew  . . . . . . . . . . . . . . . . . . . . . . .  13
      6.3.  Replay Protection . . . . . . . . . . . . . . . . . . . .  13
    7.  Presence Proof Challenge  . . . . . . . . . . . . . . . . . .  13
      7.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  13
@@ -131,20 +131,20 @@ Internet-Draft             H2H Presence Proof                 March 2026
      9.1.  Attacker Model  . . . . . . . . . . . . . . . . . . . . .  15
      9.2.  Hardware Key Store Trust  . . . . . . . . . . . . . . . .  16
      9.3.  Authentication Bypass . . . . . . . . . . . . . . . . . .  16
-     9.4.  QR Code Capture . . . . . . . . . . . . . . . . . . . . .  16
-     9.5.  Key Binding Certificate Expiry  . . . . . . . . . . . . .  16
+     9.4.  Contact Payload Capture . . . . . . . . . . . . . . . . .  16
+     9.5.  Key Binding Certificate Expiry  . . . . . . . . . . . . .  17
      9.6.  Non-Repudiation . . . . . . . . . . . . . . . . . . . . .  17
      9.7.  Safety Number Limitations . . . . . . . . . . . . . . . .  17
      9.8.  Post-Quantum Considerations . . . . . . . . . . . . . . .  17
    10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  17
      10.1.  H2H CBOR Map Keys  . . . . . . . . . . . . . . . . . . .  17
-       10.1.1.  KBC_payload Keys . . . . . . . . . . . . . . . . . .  17
+       10.1.1.  KBC_payload Keys . . . . . . . . . . . . . . . . . .  18
        10.1.2.  CP_payload Keys  . . . . . . . . . . . . . . . . . .  18
-       10.1.3.  Presence Proof Message Types . . . . . . . . . . . .  18
+       10.1.3.  Presence Proof Message Types . . . . . . . . . . . .  19
        10.1.4.  Assurance Levels . . . . . . . . . . . . . . . . . .  19
    11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
      11.1.  Normative References . . . . . . . . . . . . . . . . . .  19
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  19
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  20
    Appendix A.  Implementation Considerations  . . . . . . . . . . .  20
      A.1.  Platform Key Store Mapping  . . . . . . . . . . . . . . .  20
      A.2.  QR Code Parameters  . . . . . . . . . . . . . . . . . . .  21
@@ -607,9 +607,9 @@ Internet-Draft             H2H Presence Proof                 March 2026
 5.3.  Encoding for Exchange
 
    The serialized COSE_Sign1 structure (a CBOR byte string) is
-   transmitted to the peer via a proximity mechanism.
+   transmitted to the peer via a proximity exchange mechanism.
 
-
+   The proximity mechanism MUST satisfy the following requirements:
 
 
 
@@ -618,18 +618,23 @@ Rodriguez               Expires 26 September 2026              [Page 11]
 Internet-Draft             H2H Presence Proof                 March 2026
 
 
-   Implementations MUST support encoding the serialized Contact Payload
-   as a binary-mode QR code for visual scanning.
+   1.  Both parties are physically co-present during the exchange.
 
-   Implementations MAY additionally support Bluetooth Low Energy (BLE)
-   proximity exchange, NFC tag reading, or other proximity mechanisms.
+   2.  The mechanism can transfer at least 512 bytes of binary data.
+
+   3.  The mechanism provides a human-verifiable indication that the
+       exchange is occurring with the intended party (e.g., visual
+       confirmation, physical proximity constraint).
+
+   The choice of proximity mechanism is an implementation decision.  See
+   Appendix A for examples.
 
 5.4.  Size Considerations
 
    A typical Contact Payload serializes to 300-500 bytes depending on
-   the display name length and addressing information size.  QR code
-   binary mode (Version 25, error correction level M) supports up to
-   1,269 bytes, which is sufficient.
+   the display name length and addressing information size.
+   Implementations SHOULD ensure their chosen proximity mechanism
+   supports payloads of at least 512 bytes.
 
 6.  Contact Exchange Verification
 
@@ -660,12 +665,7 @@ Internet-Draft             H2H Presence Proof                 March 2026
        nk_algorithm, display_name, addressing, assurance level, and the
        timestamp of the exchange.
 
-6.2.  Clock Skew
 
-   The 5-minute timestamp window accommodates reasonable clock skew
-   between devices.  Implementations SHOULD use network time
-   synchronization (NTP) when available but MUST NOT reject payloads
-   solely due to minor clock differences within the window.
 
 
 
@@ -673,6 +673,13 @@ Rodriguez               Expires 26 September 2026              [Page 12]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
+
+6.2.  Clock Skew
+
+   The 5-minute timestamp window accommodates reasonable clock skew
+   between devices.  Implementations SHOULD use network time
+   synchronization (NTP) when available but MUST NOT reject payloads
+   solely due to minor clock differences within the window.
 
 6.3.  Replay Protection
 
@@ -712,6 +719,17 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    The response is a COSE_Sign1 structure:
 
+
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 13]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
    Response = COSE_Sign1(
      protected: { 1 (alg): -7 (ES256) },
      unprotected: {},
@@ -721,14 +739,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
        3 : assurance         / 1=PRESENCE, 2=DEVICE /
      }
    )
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 13]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
    The responder signs the response with their Identity Key.  This
    signing operation triggers an authentication event on the responder's
@@ -768,16 +778,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    Given two Identity Key public keys, IK_A and IK_B, encoded as
    uncompressed P-256 points (65 bytes each, starting with 0x04):
 
-   sorted = sort_lexicographic(IK_A, IK_B)
-   digest = SHA-256("H2H-SafetyNumber-v1" || sorted[0] || sorted[1])
-
-   The first 30 bytes of the digest are divided into six 5-byte groups.
-   Each group is interpreted as a big-endian unsigned integer and
-   reduced modulo 100000.  The result is formatted as six groups of
-   zero-padded 5-digit decimal numbers separated by spaces:
-
-
-
 
 
 
@@ -785,6 +785,16 @@ Rodriguez               Expires 26 September 2026              [Page 14]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
+
+   sorted = sort_lexicographic(IK_A, IK_B)
+   digest = SHA-256("H2H-SafetyNumber-v1" || sorted[0] || sorted[1])
+
+   SHA-256 is as defined in [FIPS180-4].
+
+   The first 30 bytes of the digest are divided into six 5-byte groups.
+   Each group is interpreted as a big-endian unsigned integer and
+   reduced modulo 100000.  The result is formatted as six groups of
+   zero-padded 5-digit decimal numbers separated by spaces:
 
    for i in 0..5:
      group[i] = BE_uint(digest[i*5 .. (i+1)*5]) mod 100000
@@ -805,8 +815,9 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
 8.3.  Verification Procedure
 
-   After contact exchange, both users SHOULD compare Safety Numbers by
-   reading them aloud or by scanning a QR code encoding.
+   After contact exchange, both users SHOULD compare Safety Numbers via
+   an out-of-band channel (e.g., reading aloud, or comparing a visual
+   encoding displayed on both devices).
 
    Implementations MUST provide a user interface for displaying Safety
    Numbers.  Implementations SHOULD alert the user when a stored
@@ -822,18 +833,7 @@ Internet-Draft             H2H Presence Proof                 March 2026
       messages on the network.  Mitigated by transport-layer encryption
       (assumed) and COSE_Sign1 signatures.
 
-   *  Remote attacker: Can attempt to impersonate a user without
-      physical access to their device.  Mitigated by the hardware key
-      store's non-exportable property.
 
-   *  Proximity attacker: Can observe or photograph a QR code during
-      contact exchange.  Mitigated by the 5-minute timestamp window,
-      nonce uniqueness, and the absence of private key material in the
-      Contact Payload.
-
-   This protocol does NOT protect against:
-
-   *  An attacker with physical access to an unlocked device.
 
 
 
@@ -841,6 +841,20 @@ Rodriguez               Expires 26 September 2026              [Page 15]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
+
+   *  Remote attacker: Can attempt to impersonate a user without
+      physical access to their device.  Mitigated by the hardware key
+      store's non-exportable property.
+
+   *  Proximity attacker: Can observe or capture the Contact Payload
+      during exchange (e.g., by photographing a visual encoding or
+      intercepting a wireless transmission).  Mitigated by the 5-minute
+      timestamp window, nonce uniqueness, and the absence of private key
+      material in the Contact Payload.
+
+   This protocol does NOT protect against:
+
+   *  An attacker with physical access to an unlocked device.
 
    *  Compromise of the hardware key store (hardware exploit, firmware
       vulnerability).
@@ -862,17 +876,27 @@ Internet-Draft             H2H Presence Proof                 March 2026
    signatures with lower confidence and MUST display the assurance level
    to the user.
 
-9.4.  QR Code Capture
+9.4.  Contact Payload Capture
 
-   A photographed QR code contains a valid Contact Payload.  The
-   attacker gains the victim's public Identity Key and addressing
-   information but cannot:
+   A captured Contact Payload (e.g., photographed visual encoding or
+   intercepted wireless transmission) gives the attacker the victim's
+   public Identity Key and addressing information but the attacker
+   cannot:
 
    *  Sign as the victim (lacks the hardware-bound private key).
 
    *  Replay the payload after 5 minutes (timestamp check).
 
    *  Replay within 5 minutes if the nonce was already seen.
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 16]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
    The attacker CAN attempt to connect to the victim's transport address
    but cannot complete H2H authentication (they lack a KBC for an
@@ -883,20 +907,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    A 30-day KBC expiry limits the window during which a compromised Node
    Key can be used.  Frequent NK rotation (Section 3) reduces this
    window further.
-
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 16]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
 9.6.  Non-Repudiation
 
@@ -929,6 +939,21 @@ Internet-Draft             H2H Presence Proof                 March 2026
    structures.  A future revision may request establishment of an IANA
    registry for these keys.
 
+
+
+
+
+
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 17]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
 10.1.1.  KBC_payload Keys
 
                     +=====+==============+===========+
@@ -946,14 +971,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
                     +-----+--------------+-----------+
                     |   6 | expiry       | uint      |
                     +-----+--------------+-----------+
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 17]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
-
                     |   7 | assurance    | uint      |
                     +-----+--------------+-----------+
 
@@ -985,6 +1002,14 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
                                  Table 6
 
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 18]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
 10.1.3.  Presence Proof Message Types
 
                         +=======+=================+
@@ -996,19 +1021,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
                         +-------+-----------------+
 
                                   Table 7
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 18]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
 10.1.4.  Assurance Levels
 
@@ -1043,6 +1055,17 @@ Internet-Draft             H2H Presence Proof                 March 2026
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
+
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 19]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
    [RFC8949]  Bormann, C. and P. Hoffman, "Concise Binary Object
               Representation (CBOR)", STD 94, RFC 8949,
               DOI 10.17487/RFC8949, December 2020,
@@ -1058,13 +1081,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
               August 2022, <https://www.rfc-editor.org/rfc/rfc9053>.
 
 11.2.  Informative References
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 19]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
    [FIDO2]    FIDO Alliance, "FIDO2: Web Authentication (WebAuthn)",
               2024, <https://fidoalliance.org/fido2/>.
@@ -1098,22 +1114,6 @@ A.1.  Platform Key Store Mapping
 
    The abstract "hardware key store" requirement maps to the following
    platform-specific implementations:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

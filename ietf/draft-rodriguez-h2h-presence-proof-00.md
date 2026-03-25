@@ -426,20 +426,25 @@ The signer MUST:
 ## Encoding for Exchange
 
 The serialized COSE_Sign1 structure (a CBOR byte string) is
-transmitted to the peer via a proximity mechanism.
+transmitted to the peer via a proximity exchange mechanism.
 
-Implementations MUST support encoding the serialized Contact Payload
-as a binary-mode QR code for visual scanning.
+The proximity mechanism MUST satisfy the following requirements:
 
-Implementations MAY additionally support Bluetooth Low Energy (BLE)
-proximity exchange, NFC tag reading, or other proximity mechanisms.
+1.  Both parties are physically co-present during the exchange.
+2.  The mechanism can transfer at least 512 bytes of binary data.
+3.  The mechanism provides a human-verifiable indication that the
+    exchange is occurring with the intended party (e.g., visual
+    confirmation, physical proximity constraint).
+
+The choice of proximity mechanism is an implementation decision.
+See Appendix A for examples.
 
 ## Size Considerations
 
 A typical Contact Payload serializes to 300-500 bytes depending on
-the display name length and addressing information size.  QR code
-binary mode (Version 25, error correction level M) supports up to
-1,269 bytes, which is sufficient.
+the display name length and addressing information size.
+Implementations SHOULD ensure their chosen proximity mechanism
+supports payloads of at least 512 bytes.
 
 
 # Contact Exchange Verification {#contact-verification}
@@ -561,6 +566,8 @@ sorted = sort_lexicographic(IK_A, IK_B)
 digest = SHA-256("H2H-SafetyNumber-v1" || sorted[0] || sorted[1])
 ~~~
 
+SHA-256 is as defined in {{FIPS180-4}}.
+
 The first 30 bytes of the digest are divided into six 5-byte groups.
 Each group is interpreted as a big-endian unsigned integer and reduced
 modulo 100000.  The result is formatted as six groups of zero-padded
@@ -585,8 +592,9 @@ Example: "34521 08837 65092 18374 90125 63748"
 
 ## Verification Procedure
 
-After contact exchange, both users SHOULD compare Safety Numbers by
-reading them aloud or by scanning a QR code encoding.
+After contact exchange, both users SHOULD compare Safety Numbers
+via an out-of-band channel (e.g., reading aloud, or comparing a
+visual encoding displayed on both devices).
 
 Implementations MUST provide a user interface for displaying Safety
 Numbers.  Implementations SHOULD alert the user when a stored
@@ -607,10 +615,11 @@ This protocol considers the following attacker capabilities:
    access to their device.  Mitigated by the hardware key store's
    non-exportable property.
 
--  Proximity attacker: Can observe or photograph a QR code during
-   contact exchange.  Mitigated by the 5-minute timestamp window,
-   nonce uniqueness, and the absence of private key material in the
-   Contact Payload.
+-  Proximity attacker: Can observe or capture the Contact Payload
+   during exchange (e.g., by photographing a visual encoding or
+   intercepting a wireless transmission).  Mitigated by the 5-minute
+   timestamp window, nonce uniqueness, and the absence of private key
+   material in the Contact Payload.
 
 This protocol does NOT protect against:
 
@@ -634,11 +643,12 @@ DEVICE-level signatures.  Relying parties SHOULD treat DEVICE-level
 signatures with lower confidence and MUST display the assurance level
 to the user.
 
-## QR Code Capture
+## Contact Payload Capture
 
-A photographed QR code contains a valid Contact Payload.  The
-attacker gains the victim's public Identity Key and addressing
-information but cannot:
+A captured Contact Payload (e.g., photographed visual encoding or
+intercepted wireless transmission) gives the attacker the victim's
+public Identity Key and addressing information but the attacker
+cannot:
 
 -  Sign as the victim (lacks the hardware-bound private key).
 -  Replay the payload after 5 minutes (timestamp check).
