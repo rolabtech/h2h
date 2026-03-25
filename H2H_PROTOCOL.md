@@ -1020,7 +1020,7 @@ SC_payload (CBOR map):
    4 (peer_ik_hash):    bstr (SHA-256 of peer's IK_public)
    5 (channel_binding): bstr (SHA-256 of connection context)
    6 (timestamp):       uint (Unix milliseconds)
-   7 (expiry):          uint (Unix milliseconds, max 1 hour)
+   7 (expiry):          uint (Unix milliseconds, application-defined)
    8 (assurance):       uint (1 = PRESENCE, 2 = DEVICE)
 ```
 
@@ -1063,7 +1063,9 @@ is cached for subsequent message verifications.
 
 -  A Session Credential SHOULD be created at connection
    establishment, immediately after KBC exchange.
--  The credential MUST expire no more than 1 hour after creation.
+-  The credential MUST have a finite expiry.  Duration is
+   application-defined (RECOMMENDED default: 1 hour).  Shorter for
+   high-risk operations, longer for extended sessions.
 -  When expired, the sender creates a new credential (requires
    fresh authentication).
 -  When the connection closes, the SSK MUST be discarded.

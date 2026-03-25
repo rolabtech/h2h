@@ -2511,7 +2511,13 @@ in the hardware key store.<a href="#section-7.3-2.1.1" class="pilcrow">¶</a></p
 (e.g., concatenation of both peers' Node Key public components).<a href="#section-7.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.3-2.4">
-            <p id="section-7.3-2.4.1">Set expiry to no more than 1 hour after timestamp.<a href="#section-7.3-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-7.3-2.4.1">Set expiry to a value after timestamp.  The maximum expiry
+duration is an application decision.  Implementations <span class="bcp14">MUST</span>
+set a finite expiry (unlimited Session Credentials are
+prohibited).  A <span class="bcp14">RECOMMENDED</span> default is 1 hour.  Applications
+with different risk profiles <span class="bcp14">MAY</span> choose shorter durations
+(e.g., 5 minutes for financial transactions) or longer
+durations (e.g., 8 hours for a workday session).<a href="#section-7.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.3-2.5">
             <p id="section-7.3-2.5.1">Serialize SC_payload as deterministic CBOR.<a href="#section-7.3-2.5.1" class="pilcrow">¶</a></p>
@@ -2646,7 +2652,8 @@ message verifications.<a href="#section-7.5-4" class="pilcrow">¶</a></p>
 establishment, immediately after KBC exchange.<a href="#section-7.6-1.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-7.6-1.2">
-            <p id="section-7.6-1.2.1">The credential <span class="bcp14">MUST</span> expire no more than 1 hour after creation.<a href="#section-7.6-1.2.1" class="pilcrow">¶</a></p>
+            <p id="section-7.6-1.2.1">The credential <span class="bcp14">MUST</span> have a finite expiry.  The maximum duration
+is application-defined.  <span class="bcp14">RECOMMENDED</span> default: 1 hour.<a href="#section-7.6-1.2.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-7.6-1.3">
             <p id="section-7.6-1.3.1">When a credential expires, the sender <span class="bcp14">MUST</span> create a new one,
@@ -2688,8 +2695,10 @@ prevent a Session Credential from being used on a different
 connection or with a different peer.<a href="#section-7.7-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-7.7-2.4">
-            <p id="section-7.7-2.4.1"><strong>Time limitation</strong>: The 1-hour expiry bounds the damage window
-if the SSK is compromised.<a href="#section-7.7-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-7.7-2.4.1"><strong>Time limitation</strong>: The finite expiry bounds the damage window
+if the SSK is compromised.  Shorter expiry = stronger security;
+longer expiry = better usability.  Applications choose the
+trade-off appropriate to their risk profile.<a href="#section-7.7-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-7.7-2.5">
             <p id="section-7.7-2.5.1"><strong>Single authentication event</strong>: Only one biometric or credential
@@ -3115,8 +3124,9 @@ Credential.<a href="#section-10.11-1" class="pilcrow">¶</a></p>
 <p id="section-10.11-2">Mitigations:<a href="#section-10.11-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-10.11-3.1">
-            <p id="section-10.11-3.1.1">The Session Credential expiry <span class="bcp14">MUST NOT</span> exceed 1 hour, limiting
-the forgery window.<a href="#section-10.11-3.1.1" class="pilcrow">¶</a></p>
+            <p id="section-10.11-3.1.1">The Session Credential <span class="bcp14">MUST</span> have a finite expiry, limiting the
+forgery window.  Applications <span class="bcp14">SHOULD</span> choose the shortest expiry
+that is usable for their interaction pattern.<a href="#section-10.11-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-10.11-3.2">
             <p id="section-10.11-3.2.1">The SSK <span class="bcp14">MUST</span> be discarded when the session ends.<a href="#section-10.11-3.2.1" class="pilcrow">¶</a></p>

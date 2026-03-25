@@ -122,12 +122,12 @@ Internet-Draft             H2H Presence Proof                 March 2026
      7.2.  Session Credential Format . . . . . . . . . . . . . . . .  14
      7.3.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .  15
      7.4.  Signed Message Format . . . . . . . . . . . . . . . . . .  16
-     7.5.  Verification  . . . . . . . . . . . . . . . . . . . . . .  16
+     7.5.  Verification  . . . . . . . . . . . . . . . . . . . . . .  17
      7.6.  Credential Lifecycle  . . . . . . . . . . . . . . . . . .  17
-     7.7.  Security Properties . . . . . . . . . . . . . . . . . . .  17
+     7.7.  Security Properties . . . . . . . . . . . . . . . . . . .  18
    8.  Presence Proof Challenge  . . . . . . . . . . . . . . . . . .  18
      8.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  18
-     8.2.  Challenge Format  . . . . . . . . . . . . . . . . . . . .  18
+     8.2.  Challenge Format  . . . . . . . . . . . . . . . . . . . .  19
      8.3.  Response Format . . . . . . . . . . . . . . . . . . . . .  19
      8.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  20
      8.5.  Timing  . . . . . . . . . . . . . . . . . . . . . . . . .  20
@@ -830,10 +830,10 @@ Internet-Draft             H2H Presence Proof                 March 2026
    3.  Compute channel_binding as SHA-256 of the connection context
        (e.g., concatenation of both peers' Node Key public components).
 
-   4.  Set expiry to no more than 1 hour after timestamp.
-
-   5.  Serialize SC_payload as deterministic CBOR.
-
+   4.  Set expiry to a value after timestamp.  The maximum expiry
+       duration is an application decision.  Implementations MUST set a
+       finite expiry (unlimited Session Credentials are prohibited).  A
+       RECOMMENDED default is 1 hour.  Applications with different risk
 
 
 
@@ -841,6 +841,12 @@ Rodriguez               Expires 26 September 2026              [Page 15]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
+
+       profiles MAY choose shorter durations (e.g., 5 minutes for
+       financial transactions) or longer durations (e.g., 8 hours for a
+       workday session).
+
+   5.  Serialize SC_payload as deterministic CBOR.
 
    6.  Sign using COSE_Sign1 with the Identity Key.  This operation
        triggers an authentication event on the device.
@@ -882,13 +888,7 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
                                  Table 5
 
-   The SSK signing operation does NOT require an authentication event
-   (it uses the software-held ephemeral key).  This enables signing
-   every message without user interaction.
 
-7.5.  Verification
-
-   To verify a Signed Message, the verifier MUST:
 
 
 
@@ -897,6 +897,14 @@ Rodriguez               Expires 26 September 2026              [Page 16]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
+
+   The SSK signing operation does NOT require an authentication event
+   (it uses the software-held ephemeral key).  This enables signing
+   every message without user interaction.
+
+7.5.  Verification
+
+   To verify a Signed Message, the verifier MUST:
 
    1.  Obtain the sender's Session Credential for this connection.
 
@@ -927,13 +935,24 @@ Internet-Draft             H2H Presence Proof                 March 2026
    *  A Session Credential SHOULD be created at connection
       establishment, immediately after KBC exchange.
 
-   *  The credential MUST expire no more than 1 hour after creation.
+   *  The credential MUST have a finite expiry.  The maximum duration is
+      application-defined.  RECOMMENDED default: 1 hour.
 
    *  When a credential expires, the sender MUST create a new one, which
       requires a fresh authentication event.
 
    *  If the connection closes, the SSK private material MUST be
       discarded immediately.
+
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 17]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
    *  A peer MAY reject an expired Session Credential and request that
       the sender re-authenticate by issuing a Presence Proof Challenge
@@ -947,13 +966,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
       COSE_Sign1 signature verifiable against the Identity Key trust
       chain.
 
-
-
-Rodriguez               Expires 26 September 2026              [Page 17]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
-
    *  *Non-repudiation*: A signed message, combined with its Session
       Credential, constitutes independently verifiable proof that the
       Identity Key holder authorized the session during which the
@@ -963,8 +975,10 @@ Internet-Draft             H2H Presence Proof                 March 2026
       prevent a Session Credential from being used on a different
       connection or with a different peer.
 
-   *  *Time limitation*: The 1-hour expiry bounds the damage window if
-      the SSK is compromised.
+   *  *Time limitation*: The finite expiry bounds the damage window if
+      the SSK is compromised.  Shorter expiry = stronger security;
+      longer expiry = better usability.  Applications choose the trade-
+      off appropriate to their risk profile.
 
    *  *Single authentication event*: Only one biometric or credential
       verification is needed per hour-long session, regardless of the
@@ -986,20 +1000,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    either peer MAY issue a Presence Proof Challenge to request on-demand
    evidence that a human is currently present at the remote device.
 
-8.2.  Challenge Format
-
-   The challenge is a CBOR map:
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -1009,6 +1009,10 @@ Rodriguez               Expires 26 September 2026              [Page 18]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
+
+8.2.  Challenge Format
+
+   The challenge is a CBOR map:
 
     +=====+====================+===========+==========================+
     | Key | Name               | CBOR Type | Description              |
@@ -1052,10 +1056,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    The responder signs the response with their Identity Key.  This
    signing operation triggers an authentication event on the responder's
    device.
-
-
-
-
 
 
 
@@ -1320,8 +1320,9 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    Mitigations:
 
-   *  The Session Credential expiry MUST NOT exceed 1 hour, limiting the
-      forgery window.
+   *  The Session Credential MUST have a finite expiry, limiting the
+      forgery window.  Applications SHOULD choose the shortest expiry
+      that is usable for their interaction pattern.
 
    *  The SSK MUST be discarded when the session ends.
 
@@ -1336,7 +1337,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    *  For operations requiring the strongest assurance, implementations
       SHOULD sign directly with the Identity Key rather than delegating
       to the SSK.
-
 
 
 

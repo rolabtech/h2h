@@ -591,7 +591,13 @@ The signer MUST:
 2.  Compute peer_ik_hash as SHA-256 of the peer's stored IK_public.
 3.  Compute channel_binding as SHA-256 of the connection context
     (e.g., concatenation of both peers' Node Key public components).
-4.  Set expiry to no more than 1 hour after timestamp.
+4.  Set expiry to a value after timestamp.  The maximum expiry
+    duration is an application decision.  Implementations MUST
+    set a finite expiry (unlimited Session Credentials are
+    prohibited).  A RECOMMENDED default is 1 hour.  Applications
+    with different risk profiles MAY choose shorter durations
+    (e.g., 5 minutes for financial transactions) or longer
+    durations (e.g., 8 hours for a workday session).
 5.  Serialize SC_payload as deterministic CBOR.
 6.  Sign using COSE_Sign1 with the Identity Key.  This operation
     triggers an authentication event on the device.
@@ -661,7 +667,8 @@ message verifications.
 
 -  A Session Credential SHOULD be created at connection
    establishment, immediately after KBC exchange.
--  The credential MUST expire no more than 1 hour after creation.
+-  The credential MUST have a finite expiry.  The maximum duration
+   is application-defined.  RECOMMENDED default: 1 hour.
 -  When a credential expires, the sender MUST create a new one,
    which requires a fresh authentication event.
 -  If the connection closes, the SSK private material MUST be
@@ -684,8 +691,10 @@ The Session Credential mechanism provides:
 -  **Scope limitation**: The peer_ik_hash and channel_binding fields
    prevent a Session Credential from being used on a different
    connection or with a different peer.
--  **Time limitation**: The 1-hour expiry bounds the damage window
-   if the SSK is compromised.
+-  **Time limitation**: The finite expiry bounds the damage window
+   if the SSK is compromised.  Shorter expiry = stronger security;
+   longer expiry = better usability.  Applications choose the
+   trade-off appropriate to their risk profile.
 -  **Single authentication event**: Only one biometric or credential
    verification is needed per hour-long session, regardless of the
    number of messages signed.
@@ -954,8 +963,9 @@ Credential.
 
 Mitigations:
 
--  The Session Credential expiry MUST NOT exceed 1 hour, limiting
-   the forgery window.
+-  The Session Credential MUST have a finite expiry, limiting the
+   forgery window.  Applications SHOULD choose the shortest expiry
+   that is usable for their interaction pattern.
 -  The SSK MUST be discarded when the session ends.
 -  The peer_ik_hash and channel_binding fields prevent the stolen
    SSK from being used on a different connection or with a different
