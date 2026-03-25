@@ -985,30 +985,95 @@ servers are untrusted transport.  They:
 
 ## 10.  Channel Types
 
-### 10.1.  Signing Model
+### 10.1.  Session Credentials
 
-The frequency of Presence Proof signing is an implementation
-decision.  This specification defines the primitives (Identity Key
-signing, Presence Proof challenges) but does not mandate when
-implementations must require signing.
+A Session Credential is a short-lived signing delegation from the
+Identity Key to an ephemeral Session Signing Key (SSK).  It enables
+per-message authentication without requiring an authentication event
+for each signing operation.  This pattern is analogous to TLS
+Delegated Credentials [RFC9345].
 
-Implementations SHOULD document their signing model.  Common
-models include:
+The delegation creates a verifiable chain from any signed message
+back to the Identity Key established during the in-person contact
+exchange:
 
--  **Per-session**: One authentication at connection start; messages
-   are protected by the transport encryption.  Periodic Presence
-   Proof challenges (Section 11) re-verify human presence.
+```
+Stored IK_public (from in-person meeting)
+  |
+  v  verifies
+Session Credential (COSE_Sign1 signed by IK)
+  |  contains SSK_public
+  v  verifies
+Signed Message (COSE_Sign1 signed by SSK)
+```
 
--  **Per-operation**: Each significant operation (message send, file
-   transfer initiation) triggers an authentication prompt.
+#### Session Credential Format
 
--  **Hybrid**: Critical operations (file transfers, identity changes,
-   financial transactions) require per-operation signing; routine
-   messages use session-level authentication.
+```
+SessionCredential = COSE_Sign1(IK_private, SC_payload)
 
-Regardless of the signing model, all signed structures MUST include
-the assurance level (PRESENCE or DEVICE) so that the receiving
-party knows what level of authentication was performed.
+SC_payload (CBOR map):
+   0 (structure_type):  uint, 0x03 (SESSION_CREDENTIAL)
+   1 (version):         uint, 1
+   2 (ssk_public):      COSE_Key (ephemeral P-256)
+   3 (ik_public):       COSE_Key (issuing Identity Key)
+   4 (peer_ik_hash):    bstr (SHA-256 of peer's IK_public)
+   5 (channel_binding): bstr (SHA-256 of connection context)
+   6 (timestamp):       uint (Unix milliseconds)
+   7 (expiry):          uint (Unix milliseconds, max 1 hour)
+   8 (assurance):       uint (1 = PRESENCE, 2 = DEVICE)
+```
+
+Creation requires an authentication event (biometric or device
+credential).  The SSK is generated in software, held in memory
+only, and MUST NOT be persisted to disk.
+
+#### Signed Message Format
+
+```
+SignedMessage = COSE_Sign1(SSK_private, SM_payload)
+
+SM_payload (CBOR map):
+   0 (structure_type):  uint, 0x04 (SIGNED_MESSAGE)
+   1 (message_id):      uint (unique per sender, monotonic)
+   2 (timestamp):       uint (Unix milliseconds)
+   3 (content_type):    uint (application-defined)
+   4 (content):         bstr or tstr
+```
+
+SSK signing does NOT require an authentication event.  This enables
+signing every message without user interaction.
+
+#### Verification Chain
+
+To verify a Signed Message, the verifier:
+
+1.  Verifies the Session Credential: structure_type is 0x03;
+    signature is valid against the sender's stored IK_public;
+    peer_ik_hash matches the verifier's own IK; channel_binding
+    matches the current connection; credential has not expired.
+2.  Extracts ssk_public from the Session Credential.
+3.  Verifies the Signed Message: structure_type is 0x04; signature
+    is valid against ssk_public.
+
+The Session Credential is verified once per session; ssk_public
+is cached for subsequent message verifications.
+
+#### Credential Lifecycle
+
+-  A Session Credential SHOULD be created at connection
+   establishment, immediately after KBC exchange.
+-  The credential MUST expire no more than 1 hour after creation.
+-  When expired, the sender creates a new credential (requires
+   fresh authentication).
+-  When the connection closes, the SSK MUST be discarded.
+-  For operations requiring the strongest assurance (e.g., file
+   transfer authorization, financial transactions), implementations
+   SHOULD sign directly with the Identity Key rather than the SSK.
+
+All signed structures MUST include the assurance level (PRESENCE or
+DEVICE) so that the receiving party knows what level of
+authentication was performed.
 
 ### 10.2.  Channel Multiplexing
 
@@ -1066,10 +1131,11 @@ Message (CBOR map):
    4 (content):       tstr (UTF-8)
 ```
 
-If the implementation's signing model requires per-message signing,
-the message is wrapped in a COSE_Sign1 with the assurance level
-in the protected header.  If using session-level signing, messages
-are sent as plain CBOR protected by the transport encryption.
+Messages SHOULD be signed using the Signed Message format defined
+in Section 10.1 (COSE_Sign1 signed by the Session Signing Key).
+This provides per-message authentication with a verifiable chain
+back to the Identity Key from the in-person contact exchange,
+without requiring an authentication event for each message.
 
 ### 10.5.  File Channel (0x02)
 

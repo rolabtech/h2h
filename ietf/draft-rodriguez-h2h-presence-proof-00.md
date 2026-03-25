@@ -162,6 +162,8 @@ This document specifies:
 -  The Key Binding Certificate format ({{kbc}})
 -  The Contact Payload format ({{contact-payload}})
 -  Contact exchange verification rules ({{contact-verification}})
+-  Session Credentials for delegated per-message signing
+   ({{session-credentials}})
 -  The Presence Proof challenge-response mechanism ({{presence-proof}})
 -  Safety Number computation ({{safety-numbers}})
 
@@ -524,6 +526,179 @@ set of seen nonces for at least 5 minutes and SHOULD discard them
 after 10 minutes.
 
 
+# Session Credentials {#session-credentials}
+
+## Overview
+
+A Session Credential is a short-lived signing delegation from the
+Identity Key to an ephemeral Session Signing Key (SSK).  It enables
+per-message authentication without requiring an authentication event
+for each signing operation.
+
+The delegation pattern is analogous to TLS Delegated Credentials
+{{?RFC9345}}: a long-term trust anchor (the Identity Key) signs a
+short-lived operational credential (the Session Credential), which
+in turn authenticates individual operations (messages, file
+transfers).
+
+This creates a verifiable chain from any signed message back to
+the Identity Key established during the in-person contact exchange:
+
+~~~
+Stored IK_public (from in-person meeting)
+  |
+  v  verifies
+Session Credential (COSE_Sign1 signed by IK)
+  |  contains SSK_public
+  v  verifies
+Signed Message (COSE_Sign1 signed by SSK)
+~~~
+
+## Session Credential Format
+
+The Session Credential is a COSE_Sign1 structure signed by the
+Identity Key:
+
+~~~
+SessionCredential = COSE_Sign1(
+  protected: { 1 (alg): -7 (ES256) },
+  unprotected: {},
+  payload: SC_payload
+)
+~~~
+
+SC_payload is a CBOR map:
+
+| Key | Name            | CBOR Type | Description                           |
+|----:|:----------------|:----------|:--------------------------------------|
+|   0 | structure_type  | uint      | MUST be 0x03 (SESSION_CREDENTIAL)     |
+|   1 | version         | uint      | MUST be 1                             |
+|   2 | ssk_public      | COSE_Key  | Ephemeral P-256 public key            |
+|   3 | ik_public       | COSE_Key  | Issuing Identity Key (for reference)  |
+|   4 | peer_ik_hash    | bstr      | SHA-256 of peer's IK_public (scope)   |
+|   5 | channel_binding | bstr      | SHA-256 of connection context         |
+|   6 | timestamp       | uint      | Unix time in milliseconds             |
+|   7 | expiry          | uint      | Unix time in milliseconds             |
+|   8 | assurance       | uint      | 1=PRESENCE, 2=DEVICE                  |
+
+## Creation
+
+The signer MUST:
+
+1.  Generate an ephemeral P-256 key pair (the Session Signing Key).
+    The SSK is generated in software; it is not required to reside
+    in the hardware key store.
+2.  Compute peer_ik_hash as SHA-256 of the peer's stored IK_public.
+3.  Compute channel_binding as SHA-256 of the connection context
+    (e.g., concatenation of both peers' Node Key public components).
+4.  Set expiry to no more than 1 hour after timestamp.
+5.  Serialize SC_payload as deterministic CBOR.
+6.  Sign using COSE_Sign1 with the Identity Key.  This operation
+    triggers an authentication event on the device.
+7.  Record the assurance level of the authentication event in
+    field 8.
+
+The SSK private key MUST be held in memory only and MUST NOT be
+persisted to disk.  It MUST be discarded when the session expires
+or the connection closes.
+
+## Signed Message Format {#signed-message}
+
+Messages authenticated by a Session Credential are wrapped in a
+COSE_Sign1 structure signed by the SSK:
+
+~~~
+SignedMessage = COSE_Sign1(
+  protected: { 1 (alg): -7 (ES256) },
+  unprotected: {},
+  payload: SM_payload
+)
+~~~
+
+SM_payload is a CBOR map:
+
+| Key | Name           | CBOR Type | Description                        |
+|----:|:---------------|:----------|:-----------------------------------|
+|   0 | structure_type | uint      | MUST be 0x04 (SIGNED_MESSAGE)      |
+|   1 | message_id     | uint      | Unique per sender, monotonic       |
+|   2 | timestamp      | uint      | Unix time in milliseconds          |
+|   3 | content_type   | uint      | Application-defined (e.g., 1=text) |
+|   4 | content        | bstr/tstr | Message content                    |
+
+The SSK signing operation does NOT require an authentication event
+(it uses the software-held ephemeral key).  This enables signing
+every message without user interaction.
+
+## Verification
+
+To verify a Signed Message, the verifier MUST:
+
+1.  Obtain the sender's Session Credential for this connection.
+2.  Verify the Session Credential:
+    a.  Decode the COSE_Sign1 structure.
+    b.  Verify structure_type (field 0) is 0x03 (SESSION_CREDENTIAL).
+    c.  Verify the signature using the sender's stored IK_public
+        (from the contact exchange).
+    d.  Verify that peer_ik_hash (field 4) matches SHA-256 of the
+        verifier's own IK_public (confirms the credential is scoped
+        to this relationship).
+    e.  Verify that channel_binding (field 5) matches the current
+        connection context.
+    f.  Verify that the current time is between timestamp and expiry.
+3.  Extract ssk_public (field 2) from the Session Credential.
+4.  Verify the Signed Message:
+    a.  Decode the COSE_Sign1 structure.
+    b.  Verify structure_type (field 0) is 0x04 (SIGNED_MESSAGE).
+    c.  Verify the signature using ssk_public.
+
+If any check fails, the verifier MUST reject the message.
+
+The Session Credential is typically verified once per session
+(when first received) and the ssk_public is cached for subsequent
+message verifications.
+
+## Credential Lifecycle
+
+-  A Session Credential SHOULD be created at connection
+   establishment, immediately after KBC exchange.
+-  The credential MUST expire no more than 1 hour after creation.
+-  When a credential expires, the sender MUST create a new one,
+   which requires a fresh authentication event.
+-  If the connection closes, the SSK private material MUST be
+   discarded immediately.
+-  A peer MAY reject an expired Session Credential and request
+   that the sender re-authenticate by issuing a Presence Proof
+   Challenge ({{presence-proof}}).
+
+## Security Properties
+
+The Session Credential mechanism provides:
+
+-  **Per-message authentication**: Every message has a standalone
+   COSE_Sign1 signature verifiable against the Identity Key trust
+   chain.
+-  **Non-repudiation**: A signed message, combined with its Session
+   Credential, constitutes independently verifiable proof that the
+   Identity Key holder authorized the session during which the
+   message was produced.
+-  **Scope limitation**: The peer_ik_hash and channel_binding fields
+   prevent a Session Credential from being used on a different
+   connection or with a different peer.
+-  **Time limitation**: The 1-hour expiry bounds the damage window
+   if the SSK is compromised.
+-  **Single authentication event**: Only one biometric or credential
+   verification is needed per hour-long session, regardless of the
+   number of messages signed.
+
+The SSK is a software key and is therefore weaker than the
+hardware-bound Identity Key.  An attacker who extracts the SSK
+from memory can forge messages for the remaining validity period
+of the Session Credential.  The short expiry (1 hour maximum)
+limits this exposure.  Implementations that require stronger
+per-message guarantees SHOULD sign messages directly with the
+Identity Key, accepting the per-operation authentication cost.
+
+
 # Presence Proof Challenge {#presence-proof}
 
 ## Overview
@@ -769,6 +944,29 @@ and treat any future signatures from that key as unverified.
 A formal revocation mechanism (e.g., signed revocation statements,
 revocation lists) is deferred to a companion document.
 
+## Session Signing Key Compromise
+
+The Session Signing Key (SSK) is a software key held in application
+memory.  An attacker who can read process memory (e.g., via a memory
+disclosure vulnerability or debugging access) can extract the SSK
+and forge Signed Messages for the remaining validity of the Session
+Credential.
+
+Mitigations:
+
+-  The Session Credential expiry MUST NOT exceed 1 hour, limiting
+   the forgery window.
+-  The SSK MUST be discarded when the session ends.
+-  The peer_ik_hash and channel_binding fields prevent the stolen
+   SSK from being used on a different connection or with a different
+   peer.
+-  Implementations SHOULD store the SSK in a memory region that is
+   not swappable to disk (e.g., mlock on Linux, SecureEnclave
+   memory on iOS if available for symmetric keys).
+-  For operations requiring the strongest assurance, implementations
+   SHOULD sign directly with the Identity Key rather than delegating
+   to the SSK.
+
 ## Relay Attack on Presence Proof
 
 Without channel binding, an attacker positioned between two peers
@@ -861,14 +1059,40 @@ registry for these keys.
 |   2 | assurance       | uint      |
 |   3 | channel_binding | bstr      |
 
+### SC_payload Keys (Session Credential)
+
+| Key | Name            | CBOR Type |
+|----:|:----------------|:----------|
+|   0 | structure_type  | uint      |
+|   1 | version         | uint      |
+|   2 | ssk_public      | COSE_Key  |
+|   3 | ik_public       | COSE_Key  |
+|   4 | peer_ik_hash    | bstr      |
+|   5 | channel_binding | bstr      |
+|   6 | timestamp       | uint      |
+|   7 | expiry          | uint      |
+|   8 | assurance       | uint      |
+
+### SM_payload Keys (Signed Message)
+
+| Key | Name           | CBOR Type |
+|----:|:---------------|:----------|
+|   0 | structure_type | uint      |
+|   1 | message_id     | uint      |
+|   2 | timestamp      | uint      |
+|   3 | content_type   | uint      |
+|   4 | content        | bstr/tstr |
+
 ### Structure Type Values
 
-| Value | Name            |
-|------:|:----------------|
-|  0x01 | KBC             |
-|  0x02 | CONTACT_PAYLOAD |
-|  0x10 | PROOF_CHALLENGE |
-|  0x11 | PROOF_RESPONSE  |
+| Value | Name               |
+|------:|:-------------------|
+|  0x01 | KBC                |
+|  0x02 | CONTACT_PAYLOAD    |
+|  0x03 | SESSION_CREDENTIAL |
+|  0x04 | SIGNED_MESSAGE     |
+|  0x10 | PROOF_CHALLENGE    |
+|  0x11 | PROOF_RESPONSE     |
 
 ### Assurance Levels
 
