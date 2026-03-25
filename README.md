@@ -76,4 +76,4 @@ The protocol specification is licensed under [CC BY 4.0](https://creativecommons
 
 ## Authors
 
-Rolab — [dev@rolabtech.com](mailto:dev@rolabtech.com)
+Rolab — [gamil@rolabtech.com](mailto:gamil@rolabtech.com)
