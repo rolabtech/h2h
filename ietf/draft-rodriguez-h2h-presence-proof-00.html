@@ -1,0 +1,2980 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Presence Proof: Peer-to-Peer Identity Authentication Using Hardware-Bound Keys</title>
+<meta content="Gamil Rodriguez" name="author">
+<meta content="
+       This document defines a protocol for peer-to-peer human identity
+authentication using hardware-bound cryptographic keys with
+biometric or credential-gated access control.  The protocol
+introduces the Presence Proof: a COSE_Sign1 signed artifact that
+provides cryptographic evidence a specific, previously verified
+individual authorized a specific operation. 
+       The protocol specifies: a two-key architecture binding a hardware-
+bound identity key to a software networking key via a Key Binding
+Certificate; a Contact Payload format for in-person identity
+exchange; a challenge-response mechanism for on-demand presence
+verification; and a Safety Number scheme for out-of-band key
+confirmation. 
+       The protocol does not depend on any central authority, certificate
+issuer, or identity provider.  Trust is rooted in physical human
+presence during an in-person key exchange ceremony. 
+    " name="description">
+<meta content="xml2rfc 3.31.0" name="generator">
+<meta content="presence proof" name="keyword">
+<meta content="peer-to-peer authentication" name="keyword">
+<meta content="hardware security module" name="keyword">
+<meta content="biometric" name="keyword">
+<meta content="COSE" name="keyword">
+<meta content="draft-rodriguez-h2h-presence-proof-00" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.31.0
+    Python 3.9.6
+    ConfigArgParse 1.7.5
+    google-i18n-address 3.1.1
+    intervaltree 3.2.1
+    Jinja2 3.1.6
+    lxml 6.0.2
+    platformdirs 4.4.0
+    pycountry 24.6.1
+    PyYAML 6.0.3
+    requests 2.32.5
+    wcwidth 0.6.0
+-->
+<link href="draft-rodriguez-h2h-presence-proof-00.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">/*
+
+  NOTE: Changes at the bottom of this file overrides some earlier settings.
+
+  Once the style has stabilized and has been adopted as an official RFC style,
+  this can be consolidated so that style settings occur only in one place, but
+  for now the contents of this file consists first of the initial CSS work as
+  provided to the RFC Formatter (xml2rfc) work, followed by itemized and
+  commented changes found necessary during the development of the v3
+  formatters.
+
+*/
+
+/* fonts */
+@import url('https://static.ietf.org/fonts/noto-sans/import.css'); /* Sans-serif */
+@import url('https://static.ietf.org/fonts/noto-serif/import.css'); /* Serif (print) */
+@import url('https://static.ietf.org/fonts/roboto-mono/import.css'); /* Monospace */
+
+:root {
+  --font-sans: 'Noto Sans', Arial, Helvetica, sans-serif;
+  --font-serif: 'Noto Serif', 'Times', 'Times New Roman', serif;
+  --font-mono: 'Roboto Mono', Courier, 'Courier New', monospace;
+}
+
+@viewport {
+  zoom: 1.0;
+}
+@-ms-viewport {
+  width: extend-to-zoom;
+  zoom: 1.0;
+}
+/* general and mobile first */
+html {
+}
+body {
+  max-width: 90%;
+  margin: 1.5em auto;
+  color: #222;
+  background-color: #fff;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  overflow-wrap: break-word;
+}
+.ears {
+  display: none;
+}
+
+/* headings */
+#title, h1, h2, h3, h4, h5, h6 {
+  margin: 1em 0 0.5em;
+  font-weight: bold;
+  line-height: 1.3;
+}
+#title {
+  clear: both;
+  border-bottom: 1px solid #ddd;
+  margin: 0 0 0.5em 0;
+  padding: 1em 0 0.5em;
+}
+.author {
+  padding-bottom: 4px;
+}
+h1 {
+  font-size: 26px;
+  margin: 1em 0;
+}
+h2 {
+  font-size: 22px;
+  margin-top: -20px;  /* provide offset for in-page anchors */
+  padding-top: 33px;
+}
+h3 {
+  font-size: 18px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h4 {
+  font-size: 16px;
+  margin-top: -36px;  /* provide offset for in-page anchors */
+  padding-top: 42px;
+}
+h5, h6 {
+  font-size: 14px;
+}
+#n-copyright-notice {
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+}
+/* general structure */
+p {
+  padding: 0;
+  margin: 0 0 1em 0;
+  text-align: left;
+}
+div, span {
+  position: relative;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+@media print {
+  svg {
+    max-height: 850px;
+    max-width: 660px;
+  }
+}
+svg[font-family~="serif" i], svg [font-family~="serif" i] {
+  font-family: var(--font-serif);
+}
+svg[font-family~="sans-serif" i], svg [font-family~="sans-serif" i] {
+  font-family: var(--font-sans);
+}
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 3px;
+  padding: 1em 1em 0;
+  margin-bottom: 1.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  display: table;
+  border: none;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 1em 2em;
+}
+ol ol, ul ul, ol ul, ul ol {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+ul.ulBare, li.ulBare {
+  margin-left: 0em !important;
+}
+ul.compact, .ulCompact,
+ol.compact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+}
+/* 
+dl.nohang > dt {
+  float: none;
+}
+*/
+dl > dd {
+  margin-bottom: .8em;
+  min-height: 1.3em;
+}
+dl.compact > dd, .dlCompact > dd {
+  margin-bottom: 0em;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0em;
+}
+
+/* links */
+a {
+  text-decoration: none;
+}
+a[href] {
+  color: #22e; /* Arlen: WCAG 2019 */
+}
+a[href]:hover {
+  background-color: #f2f2f2;
+}
+figcaption a[href],
+a[href].selfRef {
+  color: #222;
+}
+/* XXX probably not this:
+a.selfRef:hover {
+  background-color: transparent;
+  cursor: default;
+} */
+
+/* Figures */
+tt, code, pre {
+  background-color: #f9f9f9;
+  font-family: var(--font-mono);
+}
+pre {
+  border: 1px solid #eee;
+  margin: 0;
+  padding: 1em;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption {
+  font-style: italic;
+  margin: 0 0 1em 0;
+}
+@media screen {
+  pre {
+    overflow-x: auto;
+    max-width: 100%;
+    max-width: calc(100% - 22px);
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 1.2em 2em;
+}
+blockquote {
+  background-color: #f9f9f9;
+  color: #111; /* Arlen: WCAG 2019 */
+  border: 1px solid #ddd;
+  border-radius: 3px;
+  margin: 1em 0;
+}
+blockquote > *:last-child {
+  margin-bottom: 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+.xref {
+  overflow-wrap: normal;
+}
+
+/* tables */
+table {
+  width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  border: 1px solid #eee;
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 0.5em 0.75em;
+}
+th {
+  text-align: left;
+  background-color: #e9e9e9;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f5f5f5;
+}
+table caption {
+  font-style: italic;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+table p {
+  /* XXX to avoid bottom margin on table row signifiers. If paragraphs should
+     be allowed within tables more generally, it would be far better to select on a class. */
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  color: #666; /* Arlen: AHDJ 2019 */
+  text-decoration: none;
+  visibility: hidden;
+  user-select: none;
+  -ms-user-select: none;
+  -o-user-select:none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+@media screen {
+  aside:hover > a.pilcrow,
+  p:hover > a.pilcrow,
+  blockquote:hover > a.pilcrow,
+  div:hover > a.pilcrow,
+  li:hover > a.pilcrow,
+  pre:hover > a.pilcrow {
+    visibility: visible;
+  }
+  a.pilcrow:hover {
+    background-color: transparent;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.bcp14 {
+  font-variant: small-caps;
+}
+
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: 0.9em;
+}
+#identifiers dt {
+  width: 3em;
+  clear: left;
+}
+#identifiers dd {
+  float: left;
+  margin-bottom: 0;
+}
+/* Fix PDF info block run off issue */
+@media print {
+  #identifiers dd {
+    max-width: 100%;
+  }
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #666; /* Arlen: WCAG 2019 */
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc  {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+nav.toc ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+nav.toc li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dd {
+  margin-left: 8em;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.refSubseries {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+.index ul {
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+}
+.index ul ul {
+  margin: 0;
+}
+.index li {
+  margin: 0;
+  text-indent: -2em;
+  padding-left: 2em;
+  padding-bottom: 5px;
+}
+.indexIndex {
+  margin: 0.5em 0 1em;
+}
+.index a {
+  font-weight: 700;
+}
+/* make the index two-column on all but the smallest screens */
+@media (min-width: 600px) {
+  .index ul {
+    -moz-column-count: 2;
+    -moz-column-gap: 20px;
+  }
+  .index ul ul {
+    -moz-column-count: 1;
+    -moz-column-gap: 0;
+  }
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  font-family: var(--font-sans);
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+
+/* temporary notes */
+.rfcEditorRemove::before {
+  position: absolute;
+  top: 0.2em;
+  right: 0.2em;
+  padding: 0.2em;
+  content: "The RFC Editor will remove this note";
+  color: #9e2a00; /* Arlen: WCAG 2019 */
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+}
+.rfcEditorRemove {
+  position: relative;
+  padding-top: 1.8em;
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  border-radius: 3px;
+}
+.cref {
+  background-color: #ffd; /* Arlen: WCAG 2019 */
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 1023px) {
+  body {
+    padding-top: 2em;
+  }
+  #title {
+    padding: 1em 0;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  h2 {
+    font-size: 20px;
+    margin-top: -18px;  /* provide offset for in-page anchors */
+    padding-top: 38px;
+  }
+  #identifiers dd {
+    max-width: 60%;
+  }
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    background-color: inherit;
+    border-bottom: 1px solid #ccc;
+  }
+  #toc h2 {
+    margin: -1px 0 0 0;
+    padding: 4px 0 4px 6px;
+    padding-right: 1em;
+    min-width: 190px;
+    font-size: 1.1em;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 6px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 1024px) {
+  body {
+    max-width: 724px;
+    margin: 42px auto;
+    padding-left: 1.5em;
+    padding-right: 29em;
+  }
+  #toc {
+    position: fixed;
+    top: 42px;
+    right: 42px;
+    width: 25%;
+    margin: 0;
+    padding: 0 1em;
+    z-index: 1;
+  }
+  #toc h2 {
+    border-top: none;
+    border-bottom: 1px solid #ddd;
+    font-size: 1em;
+    font-weight: normal;
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 0;
+    overflow: auto;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  .breakable pre {
+    break-inside: auto;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+/* This is commented out here, as the string-set: doesn't
+   pass W3C validation currently */
+/*
+.ears thead .left {
+  string-set: ears-top-left content();
+}
+
+.ears thead .center {
+  string-set: ears-top-center content();
+}
+
+.ears thead .right {
+  string-set: ears-top-right content();
+}
+
+.ears tfoot .left {
+  string-set: ears-bottom-left content();
+}
+
+.ears tfoot .center {
+  string-set: ears-bottom-center content();
+}
+
+.ears tfoot .right {
+  string-set: ears-bottom-right content();
+}
+*/
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+  /* The following is commented out here, but set appropriately by in code, as
+     the content depends on the document */
+  /*
+  @top-left {
+    content: 'Internet-Draft';
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-left {
+    content: string(ears-top-left);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-center {
+    content: string(ears-top-center);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @top-right {
+    content: string(ears-top-right);
+    vertical-align: bottom;
+    border-bottom: solid 1px #ccc;
+  }
+  @bottom-left {
+    content: string(ears-bottom-left);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-center {
+    content: string(ears-bottom-center);
+    vertical-align: top;
+    border-top: solid 1px #ccc;
+  }
+  @bottom-right {
+      content: '[Page ' counter(page) ']';
+      vertical-align: top;
+      border-top: solid 1px #ccc;
+  }
+  */
+
+}
+
+/* Changes introduced to fix issues found during implementation */
+/* Make sure links are clickable even if overlapped by following H* */
+a {
+  z-index: 2;
+}
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Leave room in document info to show Internet-Draft on one line */
+#identifiers dt {
+  width: 8em;
+}
+
+/* Don't waste quite as much whitespace between label and value in doc info */
+#identifiers dd {
+  margin-left: 1em;
+}
+
+/* Give floating toc a background color (needed when it's a div inside section */
+#toc {
+  background-color: white;
+}
+
+/* Make the collapsed ToC header render white on gray also when it's a link */
+@media screen and (max-width: 1023px) {
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+}
+
+/* Give the bottom of the ToC some whitespace */
+@media screen and (min-width: 1024px) {
+  #toc {
+    padding: 0 0 1em 1em;
+  }
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* prevent monospace from becoming overly large */
+tt, code, pre {
+  font-size: 95%;
+}
+
+/* Fix the height/width aspect for ascii art*/
+.sourcecode pre,
+.art-text pre {
+  line-height: 1.12;
+}
+
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin-right: 0.5em;
+}
+
+/* Fix the dl styling to match the RFC 7992 attributes */
+dl > dt,
+dl.dlParallel > dt {
+  float: left;
+  margin-right: 1em;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+
+/* Provide styling for table cell text alignment */
+table td.text-left,
+table th.text-left {
+  text-align: left;
+}
+table td.text-center,
+table th.text-center {
+  text-align: center;
+}
+table td.text-right,
+table th.text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 30em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Provide table alignment support.  We can't use the alignX classes above
+   since they do unwanted things with caption and other styling. */
+table.right {
+ margin-left: auto;
+ margin-right: 0;
+}
+table.center {
+ margin-left: auto;
+ margin-right: auto;
+}
+table.left {
+ margin-left: 0;
+ margin-right: auto;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+caption a[href] {
+  color: #222;
+}
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+/* Tweak the bcp14 keyword presentation */
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+/* Tweak the invisible space above H* in order not to overlay links in text above */
+ h2 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 31px;
+ }
+ h3 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+ h4 {
+  margin-top: -18px;  /* provide offset for in-page anchors */
+  padding-top: 24px;
+ }
+/* Float artwork pilcrow to the right */
+@media screen {
+  .artwork a.pilcrow {
+    display: block;
+    line-height: 0.7;
+    margin-top: 0.15em;
+  }
+}
+/* Make pilcrows on dd visible */
+@media screen {
+  dd:hover > a.pilcrow {
+    visibility: visible;
+  }
+}
+/* Make the placement of figcaption match that of a table's caption
+   by removing the figure's added bottom margin */
+.alignLeft.art-text,
+.alignCenter.art-text,
+.alignRight.art-text {
+   margin-bottom: 0;
+}
+.alignLeft,
+.alignCenter,
+.alignRight {
+  margin: 1em 0 0 0;
+}
+/* In print, the pilcrow won't show on hover, so prevent it from taking up space,
+   possibly even requiring a new line */
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+/* Styling for the external metadata */
+div#external-metadata {
+  background-color: #eee;
+  padding: 0.5em;
+  margin-bottom: 0.5em;
+  display: none;
+}
+div#internal-metadata {
+  padding: 0.5em;                       /* to match the external-metadata padding */
+}
+/* Styling for title RFC Number */
+h1#rfcnum {
+  clear: both;
+  margin: 0 0 -1em;
+  padding: 1em 0 0 0;
+}
+/* Make .olPercent look the same as <ol><li> */
+dl.olPercent > dd {
+  margin-bottom: 0.25em;
+  min-height: initial;
+}
+/* Give aside some styling to set it apart */
+aside {
+  border-left: 1px solid #ddd;
+  margin: 1em 0 1em 2em;
+  padding: 0.2em 2em;
+}
+aside > dl,
+aside > ol,
+aside > ul,
+aside > table,
+aside > p {
+  margin-bottom: 0.5em;
+}
+/* Additional page break settings */
+@media print {
+  figcaption, table caption {
+    page-break-before: avoid;
+  }
+}
+/* Font size adjustments for print */
+@media print {
+  body  { font-size: 10pt;      line-height: normal; max-width: 96%; }
+  h1    { font-size: 1.72em;    padding-top: 1.5em; } /* 1*1.2*1.2*1.2 */
+  h2    { font-size: 1.44em;    padding-top: 1.5em; } /* 1*1.2*1.2 */
+  h3    { font-size: 1.2em;     padding-top: 1.5em; } /* 1*1.2 */
+  h4    { font-size: 1em;       padding-top: 1.5em; }
+  h5, h6 { font-size: 1em;      margin: initial; padding: 0.5em 0 0.3em; }
+}
+/* Sourcecode margin in print, when there's no pilcrow */
+@media print {
+  .artwork,
+  .artwork > pre,
+  .sourcecode {
+    margin-bottom: 1em;
+  }
+}
+/* Avoid narrow tables forcing too narrow table captions, which may render badly */
+table {
+  min-width: 20em;
+}
+/* ol type a */
+ol.type-a { list-style-type: lower-alpha; }
+ol.type-A { list-style-type: upper-alpha; }
+ol.type-i { list-style-type: lower-roman; }
+ol.type-I { list-style-type: upper-roman; }
+/* Apply the print table and row borders in general, on request from the RPC,
+and increase the contrast between border and odd row background slightly */
+table {
+  border: 1px solid #ddd;
+}
+td {
+  border-top: 1px solid #ddd;
+}
+tr {
+  break-inside: avoid;
+}
+tr:nth-child(2n+1) > td {
+  background-color: #f8f8f8;
+}
+/* Use style rules to govern display of the TOC. */
+@media screen and (max-width: 1023px) {
+  #toc nav { display: none; }
+  #toc.active nav { display: block; }
+}
+/* Add support for keepWithNext */
+.keepWithNext {
+  break-after: avoid-page;
+  break-after: avoid-page;
+}
+/* Add support for keepWithPrevious */
+.keepWithPrevious {
+  break-before: avoid-page;
+}
+/* Change the approach to avoiding breaks inside artwork etc. */
+figure, pre, table, .artwork, .sourcecode  {
+  break-before: auto;
+  break-after: auto;
+}
+/* Avoid breaks between <dt> and <dd> */
+dl {
+  break-before: auto;
+  break-inside: auto;
+}
+dt {
+  break-before: auto;
+  break-after: avoid-page;
+}
+dd {
+  break-before: avoid-page;
+  break-after: auto;
+  orphans: 3;
+  widows: 3
+}
+span.break, dd.break {
+  margin-bottom: 0;
+  min-height: 0;
+  break-before: auto;
+  break-inside: auto;
+  break-after: auto;
+}
+/* Undo break-before ToC */
+@media print {
+  #toc {
+    break-before: auto;
+  }
+}
+/* Text in compact lists should not get extra bottom margin space,
+   since that would makes the list not compact */
+ul.compact p, .ulCompact p,
+ol.compact p, .olCompact p {
+ margin: 0;
+}
+/* But the list as a whole needs the extra space at the end */
+section ul.compact,
+section .ulCompact,
+section ol.compact,
+section .olCompact {
+  margin-bottom: 1em;                    /* same as p not within ul.compact etc. */
+}
+/* The tt and code background above interferes with for instance table cell
+   backgrounds.  Changed to something a bit more selective. */
+tt, code {
+  background-color: transparent;
+}
+p tt, p code, li tt, li code, dt tt, dt code {
+  background-color: #f8f8f8;
+}
+/* Tweak the pre margin -- 0px doesn't come out well */
+pre {
+   margin-top: 0.5px;
+}
+/* Tweak the compact list text */
+ul.compact, .ulCompact,
+ol.compact, .olCompact,
+dl.compact, .dlCompact {
+  line-height: normal;
+}
+/* Don't add top margin for nested lists */
+li > ul, li > ol, li > dl,
+dd > ul, dd > ol, dd > dl,
+dl > dd > dl {
+  margin-top: initial;
+}
+/* Elements that should not be rendered on the same line as a <dt> */
+/* This should match the element list in writer.text.TextWriter.render_dl() */
+dd > div.artwork:first-child,
+dd > aside:first-child,
+dd > blockquote:first-child,
+dd > figure:first-child,
+dd > ol:first-child,
+dd > div.sourcecode:first-child,
+dd > table:first-child,
+dd > ul:first-child {
+  clear: left;
+}
+/* fix for weird browser behaviour when <dd/> is empty */
+dt+dd:empty::before{
+  content: "\00a0";
+}
+/* Make paragraph spacing inside <li> smaller than in body text, to fit better within the list */
+li > p {
+  margin-bottom: 0.5em
+}
+/* Don't let p margin spill out from inside list items */
+li > p:last-of-type:only-child {
+  margin-bottom: 0;
+}
+</style>
+<link href="rfc-local.css" rel="stylesheet" type="text/css">
+<script type="application/javascript">async function addMetadata(){try{const e=document.styleSheets[0].cssRules;for(let t=0;t<e.length;t++)if(/#identifiers/.exec(e[t].selectorText)){const a=e[t].cssText.replace("#identifiers","#external-updates");document.styleSheets[0].insertRule(a,document.styleSheets[0].cssRules.length)}}catch(e){console.log(e)}const e=document.getElementById("external-metadata");if(e)try{var t,a="",o=function(e){const t=document.getElementsByTagName("meta");for(let a=0;a<t.length;a++)if(t[a].getAttribute("name")===e)return t[a].getAttribute("content");return""}("rfc.number");if(o){t="https://www.rfc-editor.org/rfc/rfc"+o+".json";try{const e=await fetch(t);a=await e.json()}catch(e){t=document.URL.indexOf("html")>=0?document.URL.replace(/html$/,"json"):document.URL+".json";const o=await fetch(t);a=await o.json()}}if(!a)return;e.style.display="block";const s="",d="https://datatracker.ietf.org/doc",n="https://datatracker.ietf.org/ipr/search",c="https://www.rfc-editor.org/info",l=a.doc_id.toLowerCase(),i=a.doc_id.slice(0,3).toLowerCase(),f=a.doc_id.slice(3).replace(/^0+/,""),u={status:"Status",obsoletes:"Obsoletes",obsoleted_by:"Obsoleted By",updates:"Updates",updated_by:"Updated By",see_also:"See Also",errata_url:"Errata"};let h="<dl style='overflow:hidden' id='external-updates'>";["status","obsoletes","obsoleted_by","updates","updated_by","see_also","errata_url"].forEach(e=>{if("status"==e){a[e]=a[e].toLowerCase();var t=a[e].split(" "),o=t.length,w="",p=1;for(let e=0;e<o;e++)p<o?w=w+r(t[e])+" ":w+=r(t[e]),p++;a[e]=w}else if("obsoletes"==e||"obsoleted_by"==e||"updates"==e||"updated_by"==e){var g,m="",b=1;g=a[e].length;for(let t=0;t<g;t++)a[e][t]&&(a[e][t]=String(a[e][t]).toLowerCase(),m=b<g?m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>, ":m+"<a href='"+s+"/rfc/".concat(a[e][t])+"'>"+a[e][t].slice(3)+"</a>",b++);a[e]=m}else if("see_also"==e){var y,L="",C=1;y=a[e].length;for(let t=0;t<y;t++)if(a[e][t]){a[e][t]=String(a[e][t]);var _=a[e][t].slice(0,3),v=a[e][t].slice(3).replace(/^0+/,"");L=C<y?"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>, ":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>, ":"RFC"!=_?L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+_+" "+v+"</a>":L+"<a href='"+s+"/info/"+_.toLowerCase().concat(v.toLowerCase())+"'>"+v+"</a>",C++}a[e]=L}else if("errata_url"==e){var R="";R=a[e]?R+"<a href='"+a[e]+"'>Errata exist</a> | <a href='"+d+"/"+l+"'>Datatracker</a>| <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>":"<a href='"+d+"/"+l+"'>Datatracker</a> | <a href='"+n+"/?"+i+"="+f+"&submit="+i+"'>IPR</a> | <a href='"+c+"/"+l+"'>Info page</a>",a[e]=R}""!=a[e]?"Errata"==u[e]?h+=`<dt>More info:</dt><dd>${a[e]}</dd>`:h+=`<dt>${u[e]}:</dt><dd>${a[e]}</dd>`:"Errata"==u[e]&&(h+=`<dt>More info:</dt><dd>${a[e]}</dd>`)}),h+="</dl>",e.innerHTML=h}catch(e){console.log(e)}else console.log("Could not locate metadata <div> element");function r(e){return e.charAt(0).toUpperCase()+e.slice(1)}}window.removeEventListener("load",addMetadata),window.addEventListener("load",addMetadata);</script>
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">H2H Presence Proof</td>
+<td class="right">March 2026</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Rodriguez</td>
+<td class="center">Expires 26 September 2026</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">Network Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-rodriguez-h2h-presence-proof-00</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2026-03-25" class="published">25 March 2026</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Experimental</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2026-09-26">26 September 2026</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">G. Rodriguez</div>
+<div class="org">Rolab</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Presence Proof: Peer-to-Peer Identity Authentication Using Hardware-Bound Keys</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document defines a protocol for peer-to-peer human identity
+authentication using hardware-bound cryptographic keys with
+biometric or credential-gated access control.  The protocol
+introduces the Presence Proof: a COSE_Sign1 signed artifact that
+provides cryptographic evidence a specific, previously verified
+individual authorized a specific operation.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">The protocol specifies: a two-key architecture binding a hardware-
+bound identity key to a software networking key via a Key Binding
+Certificate; a Contact Payload format for in-person identity
+exchange; a challenge-response mechanism for on-demand presence
+verification; and a Safety Number scheme for out-of-band key
+confirmation.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-3">The protocol does not depend on any central authority, certificate
+issuer, or identity provider.  Trust is rooted in physical human
+presence during an in-person key exchange ceremony.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-about-this-document">
+<a href="#name-about-this-document" class="section-name selfRef">About This Document</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">
+        The latest revision of this draft can be found at <span><a href="https://github.com/rolabtech/h2h">https://github.com/rolabtech/h2h</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-rodriguez-h2h-presence-proof/">https://datatracker.ietf.org/doc/draft-rodriguez-h2h-presence-proof/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+        <span><a href="https://github.com/rolabtech/h2h">https://github.com/rolabtech/h2h</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 26 September 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2026 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-problem-statement" class="internal xref">Problem Statement</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-overview" class="internal xref">Overview</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
+                <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-scope" class="internal xref">Scope</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.1">
+                <p id="section-toc.1-1.2.2.1.1"><a href="#section-2.1" class="auto internal xref">2.1</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2.2.2">
+                <p id="section-toc.1-1.2.2.2.1"><a href="#section-2.2" class="auto internal xref">2.2</a>.  <a href="#name-cbor-and-cose-conventions" class="internal xref">CBOR and COSE Conventions</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-architecture" class="internal xref">Architecture</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-two-key-design" class="internal xref">Two-Key Design</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-assurance-levels" class="internal xref">Assurance Levels</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-identity-key-requirements" class="internal xref">Identity Key Requirements</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-node-key-rotation" class="internal xref">Node Key Rotation</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-key-binding-certificate" class="internal xref">Key Binding Certificate</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-format" class="internal xref">Format</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-creation" class="internal xref">Creation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-verification" class="internal xref">Verification</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-renewal" class="internal xref">Renewal</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-contact-payload" class="internal xref">Contact Payload</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-format-2" class="internal xref">Format</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-creation-2" class="internal xref">Creation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-encoding-for-exchange" class="internal xref">Encoding for Exchange</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-size-considerations" class="internal xref">Size Considerations</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-contact-exchange-verificati" class="internal xref">Contact Exchange Verification</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-procedure" class="internal xref">Procedure</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-clock-skew" class="internal xref">Clock Skew</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-replay-protection" class="internal xref">Replay Protection</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-presence-proof-challenge" class="internal xref">Presence Proof Challenge</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-overview-2" class="internal xref">Overview</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
+                <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-challenge-format" class="internal xref">Challenge Format</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3">
+                <p id="section-toc.1-1.7.2.3.1"><a href="#section-7.3" class="auto internal xref">7.3</a>.  <a href="#name-response-format" class="internal xref">Response Format</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
+                <p id="section-toc.1-1.7.2.4.1"><a href="#section-7.4" class="auto internal xref">7.4</a>.  <a href="#name-verification-2" class="internal xref">Verification</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.5">
+                <p id="section-toc.1-1.7.2.5.1"><a href="#section-7.5" class="auto internal xref">7.5</a>.  <a href="#name-timing" class="internal xref">Timing</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-safety-numbers" class="internal xref">Safety Numbers</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.1">
+                <p id="section-toc.1-1.8.2.1.1"><a href="#section-8.1" class="auto internal xref">8.1</a>.  <a href="#name-computation" class="internal xref">Computation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
+                <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-properties" class="internal xref">Properties</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-verification-procedure" class="internal xref">Verification Procedure</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-attacker-model" class="internal xref">Attacker Model</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-hardware-key-store-trust" class="internal xref">Hardware Key Store Trust</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.3">
+                <p id="section-toc.1-1.9.2.3.1"><a href="#section-9.3" class="auto internal xref">9.3</a>.  <a href="#name-authentication-bypass" class="internal xref">Authentication Bypass</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.4">
+                <p id="section-toc.1-1.9.2.4.1"><a href="#section-9.4" class="auto internal xref">9.4</a>.  <a href="#name-qr-code-capture" class="internal xref">QR Code Capture</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.5">
+                <p id="section-toc.1-1.9.2.5.1"><a href="#section-9.5" class="auto internal xref">9.5</a>.  <a href="#name-key-binding-certificate-exp" class="internal xref">Key Binding Certificate Expiry</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.6">
+                <p id="section-toc.1-1.9.2.6.1"><a href="#section-9.6" class="auto internal xref">9.6</a>.  <a href="#name-non-repudiation" class="internal xref">Non-Repudiation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.7">
+                <p id="section-toc.1-1.9.2.7.1"><a href="#section-9.7" class="auto internal xref">9.7</a>.  <a href="#name-safety-number-limitations" class="internal xref">Safety Number Limitations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.8">
+                <p id="section-toc.1-1.9.2.8.1"><a href="#section-9.8" class="auto internal xref">9.8</a>.  <a href="#name-post-quantum-considerations" class="internal xref">Post-Quantum Considerations</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-h2h-cbor-map-keys" class="internal xref">H2H CBOR Map Keys</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.1">
+                    <p id="section-toc.1-1.10.2.1.2.1.1"><a href="#section-10.1.1" class="auto internal xref">10.1.1</a>.  <a href="#name-kbc_payload-keys" class="internal xref">KBC_payload Keys</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.2">
+                    <p id="section-toc.1-1.10.2.1.2.2.1"><a href="#section-10.1.2" class="auto internal xref">10.1.2</a>.  <a href="#name-cp_payload-keys" class="internal xref">CP_payload Keys</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.3">
+                    <p id="section-toc.1-1.10.2.1.2.3.1"><a href="#section-10.1.3" class="auto internal xref">10.1.3</a>.  <a href="#name-presence-proof-message-type" class="internal xref">Presence Proof Message Types</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.4">
+                    <p id="section-toc.1-1.10.2.1.2.4.1"><a href="#section-10.1.4" class="auto internal xref">10.1.4</a>.  <a href="#name-assurance-levels-2" class="internal xref">Assurance Levels</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.1">
+                <p id="section-toc.1-1.11.2.1.1"><a href="#section-11.1" class="auto internal xref">11.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11.2.2">
+                <p id="section-toc.1-1.11.2.2.1"><a href="#section-11.2" class="auto internal xref">11.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#appendix-A" class="auto internal xref">Appendix A</a>.  <a href="#name-implementation-consideratio" class="internal xref">Implementation Considerations</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#appendix-A.1" class="auto internal xref">A.1</a>.  <a href="#name-platform-key-store-mapping" class="internal xref">Platform Key Store Mapping</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#appendix-A.2" class="auto internal xref">A.2</a>.  <a href="#name-qr-code-parameters" class="internal xref">QR Code Parameters</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.3">
+                <p id="section-toc.1-1.12.2.3.1"><a href="#appendix-A.3" class="auto internal xref">A.3</a>.  <a href="#name-ble-exchange-parameters" class="internal xref">BLE Exchange Parameters</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-acknowledgements" class="internal xref">Acknowledgements</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-C" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<div id="problem-statement">
+<section id="section-1.1">
+        <h3 id="name-problem-statement">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-problem-statement" class="section-name selfRef">Problem Statement</a>
+        </h3>
+<p id="section-1.1-1">Existing identity authentication protocols authenticate users to
+servers (WebAuthn <span>[<a href="#WebAuthn" class="cite xref">WebAuthn</a>]</span>, FIDO2 <span>[<a href="#FIDO2" class="cite xref">FIDO2</a>]</span>), servers to
+clients (TLS <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>), or protect message content from
+eavesdroppers (Signal Protocol <span>[<a href="#Signal" class="cite xref">Signal</a>]</span>, MLS <span>[<a href="#RFC9420" class="cite xref">RFC9420</a>]</span>).  None
+provide a mechanism for one individual to cryptographically prove
+their identity to another individual in a peer-to-peer manner
+without dependence on a trusted third party.<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">The increasing capability of generative AI to synthesize realistic
+voice, video, and text impersonation creates an urgent need for
+such a mechanism.  This document specifies a protocol that fills
+this gap using cryptographic keys bound to hardware security modules
+and gated by biometric or credential authentication, capabilities
+already present in billions of consumer devices.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="overview">
+<section id="section-1.2">
+        <h3 id="name-overview">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-overview" class="section-name selfRef">Overview</a>
+        </h3>
+<p id="section-1.2-1">The protocol operates as follows:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-1.2-2">
+<li id="section-1.2-2.1">
+            <p id="section-1.2-2.1.1">Each user generates an Identity Key inside a hardware key store
+with non-exportable private material and authentication-gated
+access control.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.2-2.2">
+            <p id="section-1.2-2.2.1">Each user generates a Node Key in software for peer-to-peer
+networking and signs a Key Binding Certificate (KBC) linking
+the Identity Key to the Node Key.<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.2-2.3">
+            <p id="section-1.2-2.3.1">Two users meet in person and exchange Contact Payloads: signed
+structures containing their Identity Keys, Node Keys, and
+network addressing information.<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.2-2.4">
+            <p id="section-1.2-2.4.1">Later, when connecting remotely, peers exchange KBCs and verify
+the chain: stored Identity Key (from in-person meeting) equals
+the Identity Key in the KBC, which signed the Node Key, which
+matches the Node Key of the transport peer.<a href="#section-1.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-1.2-2.5">
+            <p id="section-1.2-2.5.1">At any time, either peer may issue a Presence Proof Challenge
+requesting a fresh signed response that requires authentication
+on the challenged device.<a href="#section-1.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="scope">
+<section id="section-1.3">
+        <h3 id="name-scope">
+<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-scope" class="section-name selfRef">Scope</a>
+        </h3>
+<p id="section-1.3-1">This document specifies:<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.3-2.1">
+            <p id="section-1.3-2.1.1">The Key Binding Certificate format (<a href="#kbc" class="auto internal xref">Section 4</a>)<a href="#section-1.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-2.2">
+            <p id="section-1.3-2.2.1">The Contact Payload format (<a href="#contact-payload" class="auto internal xref">Section 5</a>)<a href="#section-1.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-2.3">
+            <p id="section-1.3-2.3.1">Contact exchange verification rules (<a href="#contact-verification" class="auto internal xref">Section 6</a>)<a href="#section-1.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-2.4">
+            <p id="section-1.3-2.4.1">The Presence Proof challenge-response mechanism (<a href="#presence-proof" class="auto internal xref">Section 7</a>)<a href="#section-1.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-2.5">
+            <p id="section-1.3-2.5.1">Safety Number computation (<a href="#safety-numbers" class="auto internal xref">Section 8</a>)<a href="#section-1.3-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-1.3-3">This document does not specify:<a href="#section-1.3-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.3-4.1">
+            <p id="section-1.3-4.1.1">Trust policy (how applications interpret verification results)<a href="#section-1.3-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-4.2">
+            <p id="section-1.3-4.2.1">Transport layer selection or configuration<a href="#section-1.3-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-4.3">
+            <p id="section-1.3-4.3.1">End-to-end message encryption<a href="#section-1.3-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-4.4">
+            <p id="section-1.3-4.4.1">Group communication<a href="#section-1.3-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-4.5">
+            <p id="section-1.3-4.5.1">Key recovery mechanisms<a href="#section-1.3-4.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.3-4.6">
+            <p id="section-1.3-4.6.1">Application-layer data formats (messaging, file transfer, etc.)<a href="#section-1.3-4.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-1.3-5">These topics are addressed in companion documents; see <span>[<a href="#H2H-FULL" class="cite xref">H2H-FULL</a>]</span>
+for the complete protocol specification.<a href="#section-1.3-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-2">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-2-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<div id="terminology">
+<section id="section-2.1">
+        <h3 id="name-terminology">
+<a href="#section-2.1" class="section-number selfRef">2.1. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
+        </h3>
+<span class="break"></span><dl class="dlParallel" id="section-2.1-1">
+          <dt id="section-2.1-1.1">Identity Key (IK):</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.2">
+            <p id="section-2.1-1.2.1">A P-256 ECDSA key pair <span>[<a href="#FIPS186-5" class="cite xref">FIPS186-5</a>]</span> generated within a hardware
+key store.  The private key is non-exportable.  Access to signing
+operations requires authentication (biometric or device credential).<a href="#section-2.1-1.2.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.3">Node Key (NK):</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.4">
+            <p id="section-2.1-1.4.1">An asymmetric key pair used for peer-to-peer transport.  Generated
+in software.  The algorithm is determined by the transport layer
+and is not constrained by this document.<a href="#section-2.1-1.4.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.5">Hardware Key Store:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.6">
+            <p id="section-2.1-1.6.1">A hardware component that generates, stores, and uses cryptographic
+keys without exposing private key material to software.  The key
+store <span class="bcp14">MUST</span> support P-256 key generation with non-exportable private
+keys and per-operation authentication gating.  Examples include
+secure enclaves, secure elements, and trusted execution
+environments.<a href="#section-2.1-1.6.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.7">Authentication Event:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.8">
+            <p id="section-2.1-1.8.1">A user verification performed by the hardware key store or operating
+system immediately prior to a cryptographic operation.  An
+authentication event has one of two assurance levels:
+PRESENCE (biometric verification) or DEVICE (credential
+verification).<a href="#section-2.1-1.8.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.9">Key Binding Certificate (KBC):</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.10">
+            <p id="section-2.1-1.10.1">A COSE_Sign1 <span>[<a href="#RFC9052" class="cite xref">RFC9052</a>]</span> structure binding an Identity Key to a
+Node Key.<a href="#section-2.1-1.10.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.11">Contact Payload (CP):</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.12">
+            <p id="section-2.1-1.12.1">A COSE_Sign1 structure containing a user's Identity Key, Node Key,
+and addressing information, exchanged during an in-person meeting.<a href="#section-2.1-1.12.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.13">Presence Proof:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.14">
+            <p id="section-2.1-1.14.1">A COSE_Sign1 structure produced in response to a challenge,
+demonstrating that an authentication event occurred on the signing
+device at the time of signing.<a href="#section-2.1-1.14.1" class="pilcrow">¶</a></p>
+</dd>
+          <dd class="break"></dd>
+<dt id="section-2.1-1.15">Safety Number:</dt>
+          <dd style="margin-left: 1.5em" id="section-2.1-1.16">
+            <p id="section-2.1-1.16.1">A human-readable numeric string derived from two Identity Keys,
+used for out-of-band verification.<a href="#section-2.1-1.16.1" class="pilcrow">¶</a></p>
+</dd>
+        <dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="cbor-and-cose-conventions">
+<section id="section-2.2">
+        <h3 id="name-cbor-and-cose-conventions">
+<a href="#section-2.2" class="section-number selfRef">2.2. </a><a href="#name-cbor-and-cose-conventions" class="section-name selfRef">CBOR and COSE Conventions</a>
+        </h3>
+<p id="section-2.2-1">All structures in this document are encoded as CBOR <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> maps
+with integer keys.  All signed structures use COSE_Sign1 <span>[<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>
+with algorithm ES256 (ECDSA w/ SHA-256 using P-256, COSE algorithm
+identifier -7).<a href="#section-2.2-1" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">Identity Key public keys are encoded as COSE_Key <span>[<a href="#RFC9053" class="cite xref">RFC9053</a>]</span>
+structures with kty=2 (EC2), crv=1 (P-256).<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="architecture">
+<section id="section-3">
+      <h2 id="name-architecture">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-architecture" class="section-name selfRef">Architecture</a>
+      </h2>
+<div id="two-key-design">
+<section id="section-3.1">
+        <h3 id="name-two-key-design">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-two-key-design" class="section-name selfRef">Two-Key Design</a>
+        </h3>
+<p id="section-3.1-1">The protocol employs two asymmetric key pairs per user:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3.1-2">
+<pre>
++--------------------------------------------------+
+|  Identity Key (IK)                               |
+|  Algorithm: P-256 ECDSA                          |
+|  Storage: Hardware key store (non-exportable)    |
+|  Access: Authentication-gated (PRESENCE/DEVICE)  |
+|  Lifetime: Permanent (until device loss/reset)   |
+|  Purpose: Prove "I am this specific individual"  |
++--------------------------------------------------+
+         |
+         | signs (Key Binding Certificate)
+         v
++--------------------------------------------------+
+|  Node Key (NK)                                   |
+|  Algorithm: Transport-determined                 |
+|  Storage: Software                               |
+|  Access: No per-operation authentication         |
+|  Lifetime: Rotatable                             |
+|  Purpose: Peer-to-peer network identity          |
++--------------------------------------------------+
+</pre><a href="#section-3.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-3.1-3">The Identity Key serves as the long-term trust anchor.  Its private
+key never leaves the hardware key store, and every use requires an
+authentication event.  These constraints make it a proxy for human
+presence: a valid IK signature implies that a human completed an
+authentication event on the device that holds the IK.<a href="#section-3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.1-4">The Node Key handles high-frequency transport operations (handshakes,
+keepalives) that cannot practically require per-operation
+authentication.  The Key Binding Certificate (<a href="#kbc" class="auto internal xref">Section 4</a>) links the NK
+to the IK, extending the trust anchor to the transport layer.<a href="#section-3.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="assurance-levels">
+<section id="section-3.2">
+        <h3 id="name-assurance-levels">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-assurance-levels" class="section-name selfRef">Assurance Levels</a>
+        </h3>
+<p id="section-3.2-1">Every signed structure in this protocol includes an assurance level
+indicating the type of authentication event that authorized the
+signing operation:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-1">
+          <caption><a href="#table-1" class="selfRef">Table 1</a></caption>
+<thead>
+            <tr>
+              <th class="text-right" rowspan="1" colspan="1">Value</th>
+              <th class="text-left" rowspan="1" colspan="1">Label</th>
+              <th class="text-left" rowspan="1" colspan="1">Meaning</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">PRESENCE</td>
+              <td class="text-left" rowspan="1" colspan="1">Biometric authentication was performed</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">2</td>
+              <td class="text-left" rowspan="1" colspan="1">DEVICE</td>
+              <td class="text-left" rowspan="1" colspan="1">Device credential authentication performed</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-3.2-3">Relying parties (receiving peers) <span class="bcp14">MUST</span> be informed of the assurance
+level and <span class="bcp14">SHOULD</span> make it visible to the user.<a href="#section-3.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="identity-key-requirements">
+<section id="section-3.3">
+        <h3 id="name-identity-key-requirements">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-identity-key-requirements" class="section-name selfRef">Identity Key Requirements</a>
+        </h3>
+<p id="section-3.3-1">The hardware key store <span class="bcp14">MUST</span> enforce the following properties for
+Identity Keys:<a href="#section-3.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.3-2">
+<li id="section-3.3-2.1">
+            <p id="section-3.3-2.1.1">Non-exportable: No interface <span class="bcp14">SHALL</span> allow extraction of the
+private key material, including backup, sync, or migration
+interfaces.<a href="#section-3.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.2">
+            <p id="section-3.3-2.2.1">Authentication-gated: Each signing operation <span class="bcp14">MUST</span> be preceded by
+a successful authentication event.  The key store <span class="bcp14">MUST NOT</span> cache
+authentication results across signing operations.<a href="#section-3.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.3-2.3">
+            <p id="section-3.3-2.3.1">Enrollment-sensitive (<span class="bcp14">RECOMMENDED</span>): If the device's biometric
+enrollment data changes, the key store <span class="bcp14">SHOULD</span> invalidate the
+Identity Key.<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="node-key-rotation">
+<section id="section-3.4">
+        <h3 id="name-node-key-rotation">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-node-key-rotation" class="section-name selfRef">Node Key Rotation</a>
+        </h3>
+<p id="section-3.4-1">The Node Key <span class="bcp14">MAY</span> be rotated to limit network-level correlation.
+Rotation comprises:<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-3.4-2">
+<li id="section-3.4-2.1">
+            <p id="section-3.4-2.1.1">Generate a new Node Key pair.<a href="#section-3.4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-2.2">
+            <p id="section-3.4-2.2.1">Sign a new KBC binding the IK to the new NK (<a href="#kbc" class="auto internal xref">Section 4</a>).<a href="#section-3.4-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-2.3">
+            <p id="section-3.4-2.3.1">Distribute the new KBC to connected peers.<a href="#section-3.4-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-3.4-2.4">
+            <p id="section-3.4-2.4.1">Discard old NK private material.<a href="#section-3.4-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-3.4-3">Peers that receive a new KBC for a known IK <span class="bcp14">MUST</span> verify the KBC
+signature.  If valid, the peer updates its stored NK for that contact.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="kbc">
+<section id="section-4">
+      <h2 id="name-key-binding-certificate">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-key-binding-certificate" class="section-name selfRef">Key Binding Certificate</a>
+      </h2>
+<div id="format">
+<section id="section-4.1">
+        <h3 id="name-format">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-format" class="section-name selfRef">Format</a>
+        </h3>
+<p id="section-4.1-1">The Key Binding Certificate is a COSE_Sign1 structure:<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-4.1-2">
+<pre>
+KBC = COSE_Sign1(
+  protected: { 1 (alg): -7 (ES256) },
+  unprotected: {},
+  payload: KBC_payload
+)
+</pre><a href="#section-4.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-4.1-3">KBC_payload is a CBOR map:<a href="#section-4.1-3" class="pilcrow">¶</a></p>
+<table class="center" id="table-2">
+          <caption><a href="#table-2" class="selfRef">Table 2</a></caption>
+<thead>
+            <tr>
+              <th class="text-right" rowspan="1" colspan="1">Key</th>
+              <th class="text-left" rowspan="1" colspan="1">Name</th>
+              <th class="text-left" rowspan="1" colspan="1">CBOR Type</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">version</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST</span> be 1</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">2</td>
+              <td class="text-left" rowspan="1" colspan="1">ik_public</td>
+              <td class="text-left" rowspan="1" colspan="1">COSE_Key</td>
+              <td class="text-left" rowspan="1" colspan="1">P-256 public key (kty=2, crv=1)</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">3</td>
+              <td class="text-left" rowspan="1" colspan="1">nk_public</td>
+              <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              <td class="text-left" rowspan="1" colspan="1">Transport-specific encoding</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">4</td>
+              <td class="text-left" rowspan="1" colspan="1">nk_algorithm</td>
+              <td class="text-left" rowspan="1" colspan="1">tstr</td>
+              <td class="text-left" rowspan="1" colspan="1">e.g., "Ed25519", "P-256"</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">5</td>
+              <td class="text-left" rowspan="1" colspan="1">timestamp</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">Unix time in milliseconds</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">6</td>
+              <td class="text-left" rowspan="1" colspan="1">expiry</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">Unix time in milliseconds</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">7</td>
+              <td class="text-left" rowspan="1" colspan="1">assurance</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">1=PRESENCE, 2=DEVICE</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+<div id="creation">
+<section id="section-4.2">
+        <h3 id="name-creation">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-creation" class="section-name selfRef">Creation</a>
+        </h3>
+<p id="section-4.2-1">The signer <span class="bcp14">MUST</span>:<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.2-2">
+<li id="section-4.2-2.1">
+            <p id="section-4.2-2.1.1">Populate all fields of KBC_payload.<a href="#section-4.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.2-2.2">
+            <p id="section-4.2-2.2.1">Set expiry to no more than 30 days after timestamp.<a href="#section-4.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.2-2.3">
+            <p id="section-4.2-2.3.1">Serialize KBC_payload as CBOR.<a href="#section-4.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.2-2.4">
+            <p id="section-4.2-2.4.1">Sign using COSE_Sign1 with the Identity Key.  This operation
+triggers an authentication event on the device.<a href="#section-4.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.2-2.5">
+            <p id="section-4.2-2.5.1">Record the assurance level of the authentication event in
+field 7.<a href="#section-4.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="verification">
+<section id="section-4.3">
+        <h3 id="name-verification">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-verification" class="section-name selfRef">Verification</a>
+        </h3>
+<p id="section-4.3-1">The verifier <span class="bcp14">MUST</span>:<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-4.3-2">
+<li id="section-4.3-2.1">
+            <p id="section-4.3-2.1.1">Decode the COSE_Sign1 structure.<a href="#section-4.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.3-2.2">
+            <p id="section-4.3-2.2.1">Extract ik_public (field 2) from the payload.<a href="#section-4.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.3-2.3">
+            <p id="section-4.3-2.3.1">Verify the COSE_Sign1 signature using ik_public.<a href="#section-4.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.3-2.4">
+            <p id="section-4.3-2.4.1">Verify that the current time is &gt;= timestamp (field 5) and
+&lt; expiry (field 6).<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.3-2.5">
+            <p id="section-4.3-2.5.1">Verify that ik_public matches the expected Identity Key for this
+contact (from a prior contact exchange, <a href="#contact-payload" class="auto internal xref">Section 5</a>).<a href="#section-4.3-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.3-2.6">
+            <p id="section-4.3-2.6.1">Verify that nk_public (field 3) matches the Node Key of the
+transport peer as observed during the transport handshake.<a href="#section-4.3-2.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-4.3-3">If ANY check fails, the verifier <span class="bcp14">MUST</span> reject the KBC and terminate
+the connection.<a href="#section-4.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="renewal">
+<section id="section-4.4">
+        <h3 id="name-renewal">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-renewal" class="section-name selfRef">Renewal</a>
+        </h3>
+<p id="section-4.4-1">Implementations <span class="bcp14">MUST</span> re-sign the KBC before its expiry.  Renewal
+requires a fresh authentication event, providing periodic proof of
+continued human control.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="contact-payload">
+<section id="section-5">
+      <h2 id="name-contact-payload">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-contact-payload" class="section-name selfRef">Contact Payload</a>
+      </h2>
+<div id="format-1">
+<section id="section-5.1">
+        <h3 id="name-format-2">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-format-2" class="section-name selfRef">Format</a>
+        </h3>
+<p id="section-5.1-1">The Contact Payload is a COSE_Sign1 structure:<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-5.1-2">
+<pre>
+CP = COSE_Sign1(
+  protected: { 1 (alg): -7 (ES256) },
+  unprotected: {},
+  payload: CP_payload
+)
+</pre><a href="#section-5.1-2" class="pilcrow">¶</a>
+</div>
+<p id="section-5.1-3">CP_payload is a CBOR map:<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<table class="center" id="table-3">
+          <caption><a href="#table-3" class="selfRef">Table 3</a></caption>
+<thead>
+            <tr>
+              <th class="text-right" rowspan="1" colspan="1">Key</th>
+              <th class="text-left" rowspan="1" colspan="1">Name</th>
+              <th class="text-left" rowspan="1" colspan="1">CBOR Type</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">version</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST</span> be 1</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">2</td>
+              <td class="text-left" rowspan="1" colspan="1">ik_public</td>
+              <td class="text-left" rowspan="1" colspan="1">COSE_Key</td>
+              <td class="text-left" rowspan="1" colspan="1">P-256 public key</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">3</td>
+              <td class="text-left" rowspan="1" colspan="1">nk_public</td>
+              <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              <td class="text-left" rowspan="1" colspan="1">Transport-specific encoding</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">4</td>
+              <td class="text-left" rowspan="1" colspan="1">nk_algorithm</td>
+              <td class="text-left" rowspan="1" colspan="1">tstr</td>
+              <td class="text-left" rowspan="1" colspan="1">e.g., "Ed25519"</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">5</td>
+              <td class="text-left" rowspan="1" colspan="1">display_name</td>
+              <td class="text-left" rowspan="1" colspan="1">tstr</td>
+              <td class="text-left" rowspan="1" colspan="1">UTF-8, max 64 bytes</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">6</td>
+              <td class="text-left" rowspan="1" colspan="1">timestamp</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">Unix time in milliseconds</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">7</td>
+              <td class="text-left" rowspan="1" colspan="1">nonce</td>
+              <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              <td class="text-left" rowspan="1" colspan="1">16 bytes, cryptographically random</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">8</td>
+              <td class="text-left" rowspan="1" colspan="1">addressing</td>
+              <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              <td class="text-left" rowspan="1" colspan="1">Transport-specific, opaque</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">9</td>
+              <td class="text-left" rowspan="1" colspan="1">assurance</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">1=PRESENCE, 2=DEVICE</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+<div id="creation-1">
+<section id="section-5.2">
+        <h3 id="name-creation-2">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-creation-2" class="section-name selfRef">Creation</a>
+        </h3>
+<p id="section-5.2-1">The signer <span class="bcp14">MUST</span>:<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5.2-2">
+<li id="section-5.2-2.1">
+            <p id="section-5.2-2.1.1">Generate a 16-byte cryptographically random nonce (field 7).<a href="#section-5.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.2-2.2">
+            <p id="section-5.2-2.2.1">Set timestamp (field 6) to the current time.<a href="#section-5.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.2-2.3">
+            <p id="section-5.2-2.3.1">Populate all other fields.<a href="#section-5.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.2-2.4">
+            <p id="section-5.2-2.4.1">Serialize CP_payload as CBOR.<a href="#section-5.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.2-2.5">
+            <p id="section-5.2-2.5.1">Sign using COSE_Sign1 with the Identity Key.  This operation
+triggers an authentication event.<a href="#section-5.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.2-2.6">
+            <p id="section-5.2-2.6.1">Record the assurance level in field 9.<a href="#section-5.2-2.6.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="encoding-for-exchange">
+<section id="section-5.3">
+        <h3 id="name-encoding-for-exchange">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-encoding-for-exchange" class="section-name selfRef">Encoding for Exchange</a>
+        </h3>
+<p id="section-5.3-1">The serialized COSE_Sign1 structure (a CBOR byte string) is
+transmitted to the peer via a proximity mechanism.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2">Implementations <span class="bcp14">MUST</span> support encoding the serialized Contact Payload
+as a binary-mode QR code for visual scanning.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<p id="section-5.3-3">Implementations <span class="bcp14">MAY</span> additionally support Bluetooth Low Energy (BLE)
+proximity exchange, NFC tag reading, or other proximity mechanisms.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="size-considerations">
+<section id="section-5.4">
+        <h3 id="name-size-considerations">
+<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-size-considerations" class="section-name selfRef">Size Considerations</a>
+        </h3>
+<p id="section-5.4-1">A typical Contact Payload serializes to 300-500 bytes depending on
+the display name length and addressing information size.  QR code
+binary mode (Version 25, error correction level M) supports up to
+1,269 bytes, which is sufficient.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="contact-verification">
+<section id="section-6">
+      <h2 id="name-contact-exchange-verificati">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-contact-exchange-verificati" class="section-name selfRef">Contact Exchange Verification</a>
+      </h2>
+<div id="procedure">
+<section id="section-6.1">
+        <h3 id="name-procedure">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-procedure" class="section-name selfRef">Procedure</a>
+        </h3>
+<p id="section-6.1-1">Upon receiving a serialized Contact Payload, the verifier <span class="bcp14">MUST</span>:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.1-2">
+<li id="section-6.1-2.1">
+            <p id="section-6.1-2.1.1">Decode the CBOR byte string as a COSE_Sign1 structure.  If
+decoding fails, reject.<a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.1-2.2">
+            <p id="section-6.1-2.2.1">Extract the CP_payload.<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.1-2.3">
+            <p id="section-6.1-2.3.1">Verify that version (field 1) is supported.  If unsupported,
+reject.<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.1-2.4">
+            <p id="section-6.1-2.4.1">Verify that timestamp (field 6) is within a 5-minute window of
+the verifier's current time: abs(now - timestamp) &lt;= 300000
+milliseconds.  If outside the window, reject.<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.1-2.5">
+            <p id="section-6.1-2.5.1">Verify that nonce (field 7) has not been seen in a previous
+Contact Payload within the current 5-minute window.  If
+duplicate, reject.<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.1-2.6">
+            <p id="section-6.1-2.6.1">Verify the COSE_Sign1 signature using ik_public (field 2).  If
+signature verification fails, reject.<a href="#section-6.1-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.1-2.7">
+            <p id="section-6.1-2.7.1">If all checks pass, store the contact: ik_public, nk_public,
+nk_algorithm, display_name, addressing, assurance level, and
+the timestamp of the exchange.<a href="#section-6.1-2.7.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="clock-skew">
+<section id="section-6.2">
+        <h3 id="name-clock-skew">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-clock-skew" class="section-name selfRef">Clock Skew</a>
+        </h3>
+<p id="section-6.2-1">The 5-minute timestamp window accommodates reasonable clock skew
+between devices.  Implementations <span class="bcp14">SHOULD</span> use network time
+synchronization (NTP) when available but <span class="bcp14">MUST NOT</span> reject payloads
+solely due to minor clock differences within the window.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="replay-protection">
+<section id="section-6.3">
+        <h3 id="name-replay-protection">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-replay-protection" class="section-name selfRef">Replay Protection</a>
+        </h3>
+<p id="section-6.3-1">The nonce field prevents replay of a captured Contact Payload within
+its validity window.  After the 5-minute window expires, the
+timestamp check prevents replay.  Implementations <span class="bcp14">MUST</span> maintain a
+set of seen nonces for at least 5 minutes and <span class="bcp14">SHOULD</span> discard them
+after 10 minutes.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="presence-proof">
+<section id="section-7">
+      <h2 id="name-presence-proof-challenge">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-presence-proof-challenge" class="section-name selfRef">Presence Proof Challenge</a>
+      </h2>
+<div id="overview-1">
+<section id="section-7.1">
+        <h3 id="name-overview-2">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-overview-2" class="section-name selfRef">Overview</a>
+        </h3>
+<p id="section-7.1-1">After a connection is established and authenticated via KBC exchange,
+either peer <span class="bcp14">MAY</span> issue a Presence Proof Challenge to request on-demand
+evidence that a human is currently present at the remote device.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="challenge-format">
+<section id="section-7.2">
+        <h3 id="name-challenge-format">
+<a href="#section-7.2" class="section-number selfRef">7.2. </a><a href="#name-challenge-format" class="section-name selfRef">Challenge Format</a>
+        </h3>
+<p id="section-7.2-1">The challenge is a CBOR map:<a href="#section-7.2-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-4">
+          <caption><a href="#table-4" class="selfRef">Table 4</a></caption>
+<thead>
+            <tr>
+              <th class="text-right" rowspan="1" colspan="1">Key</th>
+              <th class="text-left" rowspan="1" colspan="1">Name</th>
+              <th class="text-left" rowspan="1" colspan="1">CBOR Type</th>
+              <th class="text-left" rowspan="1" colspan="1">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">1</td>
+              <td class="text-left" rowspan="1" colspan="1">type</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST</span> be 0x10</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">2</td>
+              <td class="text-left" rowspan="1" colspan="1">challenge_nonce</td>
+              <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              <td class="text-left" rowspan="1" colspan="1">32 bytes, cryptographically random</td>
+            </tr>
+          </tbody>
+        </table>
+<p id="section-7.2-3">The challenger <span class="bcp14">MUST</span> generate challenge_nonce using a
+cryptographically secure random number generator.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="response-format">
+<section id="section-7.3">
+        <h3 id="name-response-format">
+<a href="#section-7.3" class="section-number selfRef">7.3. </a><a href="#name-response-format" class="section-name selfRef">Response Format</a>
+        </h3>
+<p id="section-7.3-1">The response is a COSE_Sign1 structure:<a href="#section-7.3-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-7.3-2">
+<pre>
+Response = COSE_Sign1(
+  protected: { 1 (alg): -7 (ES256) },
+  unprotected: {},
+  payload: {
+    1 : 0x11,            / type /
+    2 : challenge_nonce,  / echoed from challenge /
+    3 : assurance         / 1=PRESENCE, 2=DEVICE /
+  }
+)
+</pre><a href="#section-7.3-2" class="pilcrow">¶</a>
+</div>
+<p id="section-7.3-3">The responder signs the response with their Identity Key.  This
+signing operation triggers an authentication event on the
+responder's device.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="verification-1">
+<section id="section-7.4">
+        <h3 id="name-verification-2">
+<a href="#section-7.4" class="section-number selfRef">7.4. </a><a href="#name-verification-2" class="section-name selfRef">Verification</a>
+        </h3>
+<p id="section-7.4-1">The challenger <span class="bcp14">MUST</span>:<a href="#section-7.4-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-7.4-2">
+<li id="section-7.4-2.1">
+            <p id="section-7.4-2.1.1">Decode the COSE_Sign1 structure.<a href="#section-7.4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.4-2.2">
+            <p id="section-7.4-2.2.1">Verify the signature using the stored Identity Key for the peer.<a href="#section-7.4-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.4-2.3">
+            <p id="section-7.4-2.3.1">Verify that challenge_nonce in the response matches the
+challenge_nonce that was sent.<a href="#section-7.4-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+</section>
+</div>
+<div id="timing">
+<section id="section-7.5">
+        <h3 id="name-timing">
+<a href="#section-7.5" class="section-number selfRef">7.5. </a><a href="#name-timing" class="section-name selfRef">Timing</a>
+        </h3>
+<ul class="normal">
+<li class="normal" id="section-7.5-1.1">
+            <p id="section-7.5-1.1.1">Implementations <span class="bcp14">SHOULD NOT</span> issue challenges more frequently than
+once per 300 seconds (5 minutes).<a href="#section-7.5-1.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.5-1.2">
+            <p id="section-7.5-1.2.1">The responder <span class="bcp14">MUST</span> produce a response within 60 seconds.<a href="#section-7.5-1.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.5-1.3">
+            <p id="section-7.5-1.3.1">If no valid response is received within 60 seconds, the challenger
+<span class="bcp14">SHOULD</span> inform the user.<a href="#section-7.5-1.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-7.5-1.4">
+            <p id="section-7.5-1.4.1">Failure to respond <span class="bcp14">MUST NOT</span> automatically terminate the connection.<a href="#section-7.5-1.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="safety-numbers">
+<section id="section-8">
+      <h2 id="name-safety-numbers">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-safety-numbers" class="section-name selfRef">Safety Numbers</a>
+      </h2>
+<div id="computation">
+<section id="section-8.1">
+        <h3 id="name-computation">
+<a href="#section-8.1" class="section-number selfRef">8.1. </a><a href="#name-computation" class="section-name selfRef">Computation</a>
+        </h3>
+<p id="section-8.1-1">Safety Numbers enable two users to verify out-of-band that they hold
+each other's correct Identity Keys.<a href="#section-8.1-1" class="pilcrow">¶</a></p>
+<p id="section-8.1-2">Given two Identity Key public keys, IK_A and IK_B, encoded as
+uncompressed P-256 points (65 bytes each, starting with 0x04):<a href="#section-8.1-2" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-8.1-3">
+<pre>
+sorted = sort_lexicographic(IK_A, IK_B)
+digest = SHA-256("H2H-SafetyNumber-v1" || sorted[0] || sorted[1])
+</pre><a href="#section-8.1-3" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1-4">The first 30 bytes of the digest are divided into six 5-byte groups.
+Each group is interpreted as a big-endian unsigned integer and reduced
+modulo 100000.  The result is formatted as six groups of zero-padded
+5-digit decimal numbers separated by spaces:<a href="#section-8.1-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-8.1-5">
+<pre>
+for i in 0..5:
+  group[i] = BE_uint(digest[i*5 .. (i+1)*5]) mod 100000
+output = sprintf("%05d %05d %05d %05d %05d %05d", group[0..5])
+</pre><a href="#section-8.1-5" class="pilcrow">¶</a>
+</div>
+<p id="section-8.1-6">Example: "34521 08837 65092 18374 90125 63748"<a href="#section-8.1-6" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="properties">
+<section id="section-8.2">
+        <h3 id="name-properties">
+<a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-properties" class="section-name selfRef">Properties</a>
+        </h3>
+<ul class="normal">
+<li class="normal" id="section-8.2-1.1">
+            <p id="section-8.2-1.1.1">The Safety Number is deterministic: the same pair of Identity Keys
+always produces the same Safety Number.<a href="#section-8.2-1.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-1.2">
+            <p id="section-8.2-1.2.1">The Safety Number is symmetric: it is the same regardless of which
+party computes it (due to the lexicographic sort).<a href="#section-8.2-1.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-8.2-1.3">
+            <p id="section-8.2-1.3.1">The Safety Number changes if and only if either party's Identity
+Key changes.<a href="#section-8.2-1.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="verification-procedure">
+<section id="section-8.3">
+        <h3 id="name-verification-procedure">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-verification-procedure" class="section-name selfRef">Verification Procedure</a>
+        </h3>
+<p id="section-8.3-1">After contact exchange, both users <span class="bcp14">SHOULD</span> compare Safety Numbers by
+reading them aloud or by scanning a QR code encoding.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
+<p id="section-8.3-2">Implementations <span class="bcp14">MUST</span> provide a user interface for displaying Safety
+Numbers.  Implementations <span class="bcp14">SHOULD</span> alert the user when a stored
+contact's Safety Number changes.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-9">
+      <h2 id="name-security-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<div id="attacker-model">
+<section id="section-9.1">
+        <h3 id="name-attacker-model">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-attacker-model" class="section-name selfRef">Attacker Model</a>
+        </h3>
+<p id="section-9.1-1">This protocol considers the following attacker capabilities:<a href="#section-9.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.1-2.1">
+            <p id="section-9.1-2.1.1">Network attacker: Can observe, modify, drop, replay, and inject
+messages on the network.  Mitigated by transport-layer encryption
+(assumed) and COSE_Sign1 signatures.<a href="#section-9.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.1-2.2">
+            <p id="section-9.1-2.2.1">Remote attacker: Can attempt to impersonate a user without physical
+access to their device.  Mitigated by the hardware key store's
+non-exportable property.<a href="#section-9.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.1-2.3">
+            <p id="section-9.1-2.3.1">Proximity attacker: Can observe or photograph a QR code during
+contact exchange.  Mitigated by the 5-minute timestamp window,
+nonce uniqueness, and the absence of private key material in the
+Contact Payload.<a href="#section-9.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-9.1-3">This protocol does NOT protect against:<a href="#section-9.1-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.1-4.1">
+            <p id="section-9.1-4.1.1">An attacker with physical access to an unlocked device.<a href="#section-9.1-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.1-4.2">
+            <p id="section-9.1-4.2.1">Compromise of the hardware key store (hardware exploit, firmware
+vulnerability).<a href="#section-9.1-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.1-4.3">
+            <p id="section-9.1-4.3.1">Biometric spoofing that defeats the device's biometric sensor.<a href="#section-9.1-4.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="hardware-key-store-trust">
+<section id="section-9.2">
+        <h3 id="name-hardware-key-store-trust">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-hardware-key-store-trust" class="section-name selfRef">Hardware Key Store Trust</a>
+        </h3>
+<p id="section-9.2-1">The Presence Proof property depends entirely on the integrity of the
+hardware key store.  If the key store is compromised, an attacker can
+produce valid signatures without authentication.  This is the
+fundamental trust assumption of the protocol.<a href="#section-9.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authentication-bypass">
+<section id="section-9.3">
+        <h3 id="name-authentication-bypass">
+<a href="#section-9.3" class="section-number selfRef">9.3. </a><a href="#name-authentication-bypass" class="section-name selfRef">Authentication Bypass</a>
+        </h3>
+<p id="section-9.3-1">The DEVICE assurance level provides weaker guarantees than PRESENCE.
+An attacker who learns the device credential can produce valid
+DEVICE-level signatures.  Relying parties <span class="bcp14">SHOULD</span> treat DEVICE-level
+signatures with lower confidence and <span class="bcp14">MUST</span> display the assurance level
+to the user.<a href="#section-9.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="qr-code-capture">
+<section id="section-9.4">
+        <h3 id="name-qr-code-capture">
+<a href="#section-9.4" class="section-number selfRef">9.4. </a><a href="#name-qr-code-capture" class="section-name selfRef">QR Code Capture</a>
+        </h3>
+<p id="section-9.4-1">A photographed QR code contains a valid Contact Payload.  The
+attacker gains the victim's public Identity Key and addressing
+information but cannot:<a href="#section-9.4-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.4-2.1">
+            <p id="section-9.4-2.1.1">Sign as the victim (lacks the hardware-bound private key).<a href="#section-9.4-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.4-2.2">
+            <p id="section-9.4-2.2.1">Replay the payload after 5 minutes (timestamp check).<a href="#section-9.4-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.4-2.3">
+            <p id="section-9.4-2.3.1">Replay within 5 minutes if the nonce was already seen.<a href="#section-9.4-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-9.4-3">The attacker CAN attempt to connect to the victim's transport
+address but cannot complete H2H authentication (they lack a KBC
+for an Identity Key the victim trusts).<a href="#section-9.4-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="key-binding-certificate-expiry">
+<section id="section-9.5">
+        <h3 id="name-key-binding-certificate-exp">
+<a href="#section-9.5" class="section-number selfRef">9.5. </a><a href="#name-key-binding-certificate-exp" class="section-name selfRef">Key Binding Certificate Expiry</a>
+        </h3>
+<p id="section-9.5-1">A 30-day KBC expiry limits the window during which a compromised
+Node Key can be used.  Frequent NK rotation (<a href="#architecture" class="auto internal xref">Section 3</a>)
+reduces this window further.<a href="#section-9.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="non-repudiation">
+<section id="section-9.6">
+        <h3 id="name-non-repudiation">
+<a href="#section-9.6" class="section-number selfRef">9.6. </a><a href="#name-non-repudiation" class="section-name selfRef">Non-Repudiation</a>
+        </h3>
+<p id="section-9.6-1">COSE_Sign1 signatures produced by an Identity Key are non-repudiable:
+they constitute cryptographic proof that the key holder authorized the
+signed operation.  This is a deliberate property.  Applications should
+inform users that signed artifacts may be presented as evidence.<a href="#section-9.6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="safety-number-limitations">
+<section id="section-9.7">
+        <h3 id="name-safety-number-limitations">
+<a href="#section-9.7" class="section-number selfRef">9.7. </a><a href="#name-safety-number-limitations" class="section-name selfRef">Safety Number Limitations</a>
+        </h3>
+<p id="section-9.7-1">Safety Numbers are derived from a 30-byte truncation of SHA-256,
+yielding 240 bits of collision resistance.  The human-readable format
+(30 decimal digits) provides approximately 99.7 bits of entropy.
+This is sufficient for manual comparison.  Implementations <span class="bcp14">SHOULD</span>
+also support machine-readable comparison for higher assurance.<a href="#section-9.7-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="post-quantum-considerations">
+<section id="section-9.8">
+        <h3 id="name-post-quantum-considerations">
+<a href="#section-9.8" class="section-number selfRef">9.8. </a><a href="#name-post-quantum-considerations" class="section-name selfRef">Post-Quantum Considerations</a>
+        </h3>
+<p id="section-9.8-1">P-256 ECDSA is vulnerable to quantum computers implementing Shor's
+algorithm.  When post-quantum signature algorithms are available in
+hardware key stores, the protocol <span class="bcp14">SHOULD</span> migrate.  The version field
+in all structures enables this transition.<a href="#section-9.8-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-10">
+      <h2 id="name-iana-considerations">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<div id="h2h-cbor-map-keys">
+<section id="section-10.1">
+        <h3 id="name-h2h-cbor-map-keys">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-h2h-cbor-map-keys" class="section-name selfRef">H2H CBOR Map Keys</a>
+        </h3>
+<p id="section-10.1-1">This document defines CBOR integer map keys for use in H2H protocol
+structures.  A future revision may request establishment of an IANA
+registry for these keys.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
+<div id="kbcpayload-keys">
+<section id="section-10.1.1">
+          <h4 id="name-kbc_payload-keys">
+<a href="#section-10.1.1" class="section-number selfRef">10.1.1. </a><a href="#name-kbc_payload-keys" class="section-name selfRef">KBC_payload Keys</a>
+          </h4>
+<table class="center" id="table-5">
+            <caption><a href="#table-5" class="selfRef">Table 5</a></caption>
+<thead>
+              <tr>
+                <th class="text-right" rowspan="1" colspan="1">Key</th>
+                <th class="text-left" rowspan="1" colspan="1">Name</th>
+                <th class="text-left" rowspan="1" colspan="1">CBOR Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">1</td>
+                <td class="text-left" rowspan="1" colspan="1">version</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">2</td>
+                <td class="text-left" rowspan="1" colspan="1">ik_public</td>
+                <td class="text-left" rowspan="1" colspan="1">COSE_Key</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">3</td>
+                <td class="text-left" rowspan="1" colspan="1">nk_public</td>
+                <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">4</td>
+                <td class="text-left" rowspan="1" colspan="1">nk_algorithm</td>
+                <td class="text-left" rowspan="1" colspan="1">tstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">5</td>
+                <td class="text-left" rowspan="1" colspan="1">timestamp</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">6</td>
+                <td class="text-left" rowspan="1" colspan="1">expiry</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">7</td>
+                <td class="text-left" rowspan="1" colspan="1">assurance</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+            </tbody>
+          </table>
+</section>
+</div>
+<div id="cppayload-keys">
+<section id="section-10.1.2">
+          <h4 id="name-cp_payload-keys">
+<a href="#section-10.1.2" class="section-number selfRef">10.1.2. </a><a href="#name-cp_payload-keys" class="section-name selfRef">CP_payload Keys</a>
+          </h4>
+<table class="center" id="table-6">
+            <caption><a href="#table-6" class="selfRef">Table 6</a></caption>
+<thead>
+              <tr>
+                <th class="text-right" rowspan="1" colspan="1">Key</th>
+                <th class="text-left" rowspan="1" colspan="1">Name</th>
+                <th class="text-left" rowspan="1" colspan="1">CBOR Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">1</td>
+                <td class="text-left" rowspan="1" colspan="1">version</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">2</td>
+                <td class="text-left" rowspan="1" colspan="1">ik_public</td>
+                <td class="text-left" rowspan="1" colspan="1">COSE_Key</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">3</td>
+                <td class="text-left" rowspan="1" colspan="1">nk_public</td>
+                <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">4</td>
+                <td class="text-left" rowspan="1" colspan="1">nk_algorithm</td>
+                <td class="text-left" rowspan="1" colspan="1">tstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">5</td>
+                <td class="text-left" rowspan="1" colspan="1">display_name</td>
+                <td class="text-left" rowspan="1" colspan="1">tstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">6</td>
+                <td class="text-left" rowspan="1" colspan="1">timestamp</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">7</td>
+                <td class="text-left" rowspan="1" colspan="1">nonce</td>
+                <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">8</td>
+                <td class="text-left" rowspan="1" colspan="1">addressing</td>
+                <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">9</td>
+                <td class="text-left" rowspan="1" colspan="1">assurance</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+            </tbody>
+          </table>
+</section>
+</div>
+<div id="presence-proof-message-types">
+<section id="section-10.1.3">
+          <h4 id="name-presence-proof-message-type">
+<a href="#section-10.1.3" class="section-number selfRef">10.1.3. </a><a href="#name-presence-proof-message-type" class="section-name selfRef">Presence Proof Message Types</a>
+          </h4>
+<table class="center" id="table-7">
+            <caption><a href="#table-7" class="selfRef">Table 7</a></caption>
+<thead>
+              <tr>
+                <th class="text-right" rowspan="1" colspan="1">Value</th>
+                <th class="text-left" rowspan="1" colspan="1">Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">0x10</td>
+                <td class="text-left" rowspan="1" colspan="1">PROOF_CHALLENGE</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">0x11</td>
+                <td class="text-left" rowspan="1" colspan="1">PROOF_RESPONSE</td>
+              </tr>
+            </tbody>
+          </table>
+</section>
+</div>
+<div id="assurance-levels-1">
+<section id="section-10.1.4">
+          <h4 id="name-assurance-levels-2">
+<a href="#section-10.1.4" class="section-number selfRef">10.1.4. </a><a href="#name-assurance-levels-2" class="section-name selfRef">Assurance Levels</a>
+          </h4>
+<table class="center" id="table-8">
+            <caption><a href="#table-8" class="selfRef">Table 8</a></caption>
+<thead>
+              <tr>
+                <th class="text-right" rowspan="1" colspan="1">Value</th>
+                <th class="text-left" rowspan="1" colspan="1">Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">1</td>
+                <td class="text-left" rowspan="1" colspan="1">PRESENCE</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">2</td>
+                <td class="text-left" rowspan="1" colspan="1">DEVICE</td>
+              </tr>
+            </tbody>
+          </table>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="sec-combined-references">
+<section id="section-11">
+      <h2 id="name-references">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<div id="sec-normative-references">
+<section id="section-11.1">
+        <h3 id="name-normative-references">
+<a href="#section-11.1" class="section-number selfRef">11.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="FIPS180-4">[FIPS180-4]</dt>
+        <dd>
+<span class="refAuthor">National Institute of Standards and Technology</span>, <span class="refTitle">"Secure Hash Standard (SHS)"</span>, <span class="seriesInfo">FIPS PUB 180-4</span>, <time datetime="2015-08" class="refDate">August 2015</time>. </dd>
+<dd class="break"></dd>
+<dt id="FIPS186-5">[FIPS186-5]</dt>
+        <dd>
+<span class="refAuthor">National Institute of Standards and Technology</span>, <span class="refTitle">"Digital Signature Standard (DSS)"</span>, <span class="seriesInfo">FIPS PUB 186-5</span>, <time datetime="2023-02" class="refDate">February 2023</time>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8949">[RFC8949]</dt>
+        <dd>
+<span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949">https://www.rfc-editor.org/rfc/rfc8949</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9052">[RFC9052]</dt>
+        <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Structures and Process"</span>, <span class="seriesInfo">STD 96</span>, <span class="seriesInfo">RFC 9052</span>, <span class="seriesInfo">DOI 10.17487/RFC9052</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9052">https://www.rfc-editor.org/rfc/rfc9052</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9053">[RFC9053]</dt>
+      <dd>
+<span class="refAuthor">Schaad, J.</span>, <span class="refTitle">"CBOR Object Signing and Encryption (COSE): Initial Algorithms"</span>, <span class="seriesInfo">RFC 9053</span>, <span class="seriesInfo">DOI 10.17487/RFC9053</span>, <time datetime="2022-08" class="refDate">August 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9053">https://www.rfc-editor.org/rfc/rfc9053</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-11.2">
+        <h3 id="name-informative-references">
+<a href="#section-11.2" class="section-number selfRef">11.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="FIDO2">[FIDO2]</dt>
+        <dd>
+<span class="refAuthor">FIDO Alliance</span>, <span class="refTitle">"FIDO2: Web Authentication (WebAuthn)"</span>, <time datetime="2024" class="refDate">2024</time>, <span>&lt;<a href="https://fidoalliance.org/fido2/">https://fidoalliance.org/fido2/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="H2H-FULL">[H2H-FULL]</dt>
+        <dd>
+<span class="refAuthor">Rodriguez, G.</span>, <span class="refTitle">"Human-to-Human (H2H) Authentication and Data Transfer Protocol"</span>, <time datetime="2026-03" class="refDate">March 2026</time>, <span>&lt;<a href="https://github.com/rolabtech/h2h">https://github.com/rolabtech/h2h</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8446">[RFC8446]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9420">[RFC9420]</dt>
+        <dd>
+<span class="refAuthor">Barnes, R.</span>, <span class="refAuthor">Beurdouche, B.</span>, <span class="refAuthor">Robert, R.</span>, <span class="refAuthor">Millican, J.</span>, <span class="refAuthor">Omara, E.</span>, and <span class="refAuthor">K. Cohn-Gordon</span>, <span class="refTitle">"The Messaging Layer Security (MLS) Protocol"</span>, <span class="seriesInfo">RFC 9420</span>, <span class="seriesInfo">DOI 10.17487/RFC9420</span>, <time datetime="2023-07" class="refDate">July 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9420">https://www.rfc-editor.org/rfc/rfc9420</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="Signal">[Signal]</dt>
+        <dd>
+<span class="refAuthor">Marlinspike, M.</span> and <span class="refAuthor">T. Perrin</span>, <span class="refTitle">"The X3DH Key Agreement Protocol"</span>, <time datetime="2016" class="refDate">2016</time>, <span>&lt;<a href="https://signal.org/docs/specifications/x3dh/">https://signal.org/docs/specifications/x3dh/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="WebAuthn">[WebAuthn]</dt>
+      <dd>
+<span class="refAuthor">Balfanz, D.</span>, <span class="refAuthor">Czeskis, A.</span>, <span class="refAuthor">Hodges, J.</span>, <span class="refAuthor">Jones, J.C.</span>, <span class="refAuthor">Jones, M.B.</span>, <span class="refAuthor">Kumar, A.</span>, <span class="refAuthor">Liao, A.</span>, <span class="refAuthor">Lindemann, R.</span>, and <span class="refAuthor">E. Lundberg</span>, <span class="refTitle">"Web Authentication: An API for accessing Public Key Credentials Level 2"</span>, <span class="seriesInfo">W3C Recommendation</span>, <time datetime="2021-04" class="refDate">April 2021</time>, <span>&lt;<a href="https://www.w3.org/TR/webauthn-2/">https://www.w3.org/TR/webauthn-2/</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+</section>
+</div>
+<div id="implementation-considerations">
+<section id="appendix-A">
+      <h2 id="name-implementation-consideratio">
+<a href="#appendix-A" class="section-number selfRef">Appendix A. </a><a href="#name-implementation-consideratio" class="section-name selfRef">Implementation Considerations</a>
+      </h2>
+<div id="platform-key-store-mapping">
+<section id="appendix-A.1">
+        <h3 id="name-platform-key-store-mapping">
+<a href="#appendix-A.1" class="section-number selfRef">A.1. </a><a href="#name-platform-key-store-mapping" class="section-name selfRef">Platform Key Store Mapping</a>
+        </h3>
+<p id="appendix-A.1-1">The abstract "hardware key store" requirement maps to the following
+platform-specific implementations:<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
+<table class="center" id="table-9">
+          <caption><a href="#table-9" class="selfRef">Table 9</a></caption>
+<thead>
+            <tr>
+              <th class="text-left" rowspan="1" colspan="1">Platform</th>
+              <th class="text-left" rowspan="1" colspan="1">Key Store</th>
+              <th class="text-left" rowspan="1" colspan="1">P-256</th>
+              <th class="text-left" rowspan="1" colspan="1">Auth Gating</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">iOS</td>
+              <td class="text-left" rowspan="1" colspan="1">Secure Enclave</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">BiometryCurrentSet</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Android</td>
+              <td class="text-left" rowspan="1" colspan="1">StrongBox Keymaster</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">UserAuthenticationRequired</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Android</td>
+              <td class="text-left" rowspan="1" colspan="1">TEE (fallback)</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">UserAuthenticationParameters</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Windows</td>
+              <td class="text-left" rowspan="1" colspan="1">TPM 2.0</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">Windows Hello</td>
+            </tr>
+            <tr>
+              <td class="text-left" rowspan="1" colspan="1">Linux</td>
+              <td class="text-left" rowspan="1" colspan="1">TPM 2.0</td>
+              <td class="text-left" rowspan="1" colspan="1">Yes</td>
+              <td class="text-left" rowspan="1" colspan="1">PKCS#11 with PIN</td>
+            </tr>
+          </tbody>
+        </table>
+</section>
+</div>
+<div id="qr-code-parameters">
+<section id="appendix-A.2">
+        <h3 id="name-qr-code-parameters">
+<a href="#appendix-A.2" class="section-number selfRef">A.2. </a><a href="#name-qr-code-parameters" class="section-name selfRef">QR Code Parameters</a>
+        </h3>
+<p id="appendix-A.2-1">For the Contact Payload:<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.2-2.1">
+            <p id="appendix-A.2-2.1.1">Mode: Binary<a href="#appendix-A.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.2-2.2">
+            <p id="appendix-A.2-2.2.1">Minimum version: 15 (for ~350 byte payload)<a href="#appendix-A.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.2-2.3">
+            <p id="appendix-A.2-2.3.1">Recommended error correction: M (15% recovery)<a href="#appendix-A.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.2-2.4">
+            <p id="appendix-A.2-2.4.1">Maximum payload at Version 25, EC level M: 1,269 bytes<a href="#appendix-A.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="ble-exchange-parameters">
+<section id="appendix-A.3">
+        <h3 id="name-ble-exchange-parameters">
+<a href="#appendix-A.3" class="section-number selfRef">A.3. </a><a href="#name-ble-exchange-parameters" class="section-name selfRef">BLE Exchange Parameters</a>
+        </h3>
+<p id="appendix-A.3-1">For Bluetooth Low Energy contact exchange:<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="appendix-A.3-2.1">
+            <p id="appendix-A.3-2.1.1">Service UUID: To be assigned (use a v4 UUID during development)<a href="#appendix-A.3-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.3-2.2">
+            <p id="appendix-A.3-2.2.1">Characteristic: Single read/write characteristic containing the
+serialized COSE_Sign1 Contact Payload<a href="#appendix-A.3-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="appendix-A.3-2.3">
+            <p id="appendix-A.3-2.3.1">MTU: Negotiate maximum MTU; the payload may span multiple ATT
+packets if necessary<a href="#appendix-A.3-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="acknowledgements">
+<section id="appendix-B">
+      <h2 id="name-acknowledgements">
+<a href="#name-acknowledgements" class="section-name selfRef">Acknowledgements</a>
+      </h2>
+<p id="appendix-B-1">The H2H protocol builds on foundational work in FIDO2/WebAuthn
+<span>[<a href="#WebAuthn" class="cite xref">WebAuthn</a>]</span>, the Signal Protocol <span>[<a href="#Signal" class="cite xref">Signal</a>]</span>, and the CBOR/COSE
+encoding standards <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> <span>[<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>.<a href="#appendix-B-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-C">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Gamil Rodriguez</span></div>
+<div dir="auto" class="left"><span class="org">Rolab</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:gamil@rolabtech.com" class="email">gamil@rolabtech.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
