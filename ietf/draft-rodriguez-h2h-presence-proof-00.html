@@ -1489,7 +1489,22 @@ presence during an in-person key exchange ceremony.<a href="#section-abstract-3"
                 <p id="section-toc.1-1.9.2.7.1"><a href="#section-9.7" class="auto internal xref">9.7</a>.  <a href="#name-safety-number-limitations" class="internal xref">Safety Number Limitations</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.8">
-                <p id="section-toc.1-1.9.2.8.1"><a href="#section-9.8" class="auto internal xref">9.8</a>.  <a href="#name-post-quantum-considerations" class="internal xref">Post-Quantum Considerations</a></p>
+                <p id="section-toc.1-1.9.2.8.1"><a href="#section-9.8" class="auto internal xref">9.8</a>.  <a href="#name-assurance-level-downgrade" class="internal xref">Assurance Level Downgrade</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.9">
+                <p id="section-toc.1-1.9.2.9.1"><a href="#section-9.9" class="auto internal xref">9.9</a>.  <a href="#name-type-confusion" class="internal xref">Type Confusion</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.10">
+                <p id="section-toc.1-1.9.2.10.1"><a href="#section-9.10" class="auto internal xref">9.10</a>. <a href="#name-identity-key-revocation" class="internal xref">Identity Key Revocation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.11">
+                <p id="section-toc.1-1.9.2.11.1"><a href="#section-9.11" class="auto internal xref">9.11</a>. <a href="#name-relay-attack-on-presence-pr" class="internal xref">Relay Attack on Presence Proof</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.12">
+                <p id="section-toc.1-1.9.2.12.1"><a href="#section-9.12" class="auto internal xref">9.12</a>. <a href="#name-post-quantum-considerations" class="internal xref">Post-Quantum Considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.13">
+                <p id="section-toc.1-1.9.2.13.1"><a href="#section-9.13" class="auto internal xref">9.13</a>. <a href="#name-privacy-of-identity-key-in-" class="internal xref">Privacy of Identity Key in Contact Payloads</a></p>
 </li>
             </ul>
 </li>
@@ -1506,10 +1521,16 @@ presence during an in-person key exchange ceremony.<a href="#section-abstract-3"
                     <p id="section-toc.1-1.10.2.1.2.2.1"><a href="#section-10.1.2" class="auto internal xref">10.1.2</a>.  <a href="#name-cp_payload-keys" class="internal xref">CP_payload Keys</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.3">
-                    <p id="section-toc.1-1.10.2.1.2.3.1"><a href="#section-10.1.3" class="auto internal xref">10.1.3</a>.  <a href="#name-presence-proof-message-type" class="internal xref">Presence Proof Message Types</a></p>
+                    <p id="section-toc.1-1.10.2.1.2.3.1"><a href="#section-10.1.3" class="auto internal xref">10.1.3</a>.  <a href="#name-presence-proof-challenge-ke" class="internal xref">Presence Proof Challenge Keys</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.4">
-                    <p id="section-toc.1-1.10.2.1.2.4.1"><a href="#section-10.1.4" class="auto internal xref">10.1.4</a>.  <a href="#name-assurance-levels-2" class="internal xref">Assurance Levels</a></p>
+                    <p id="section-toc.1-1.10.2.1.2.4.1"><a href="#section-10.1.4" class="auto internal xref">10.1.4</a>.  <a href="#name-presence-proof-response-key" class="internal xref">Presence Proof Response Keys</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.5">
+                    <p id="section-toc.1-1.10.2.1.2.5.1"><a href="#section-10.1.5" class="auto internal xref">10.1.5</a>.  <a href="#name-structure-type-values" class="internal xref">Structure Type Values</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1.2.6">
+                    <p id="section-toc.1-1.10.2.1.2.6.1"><a href="#section-10.1.6" class="auto internal xref">10.1.6</a>.  <a href="#name-assurance-levels-2" class="internal xref">Assurance Levels</a></p>
 </li>
                 </ul>
 </li>
@@ -1746,8 +1767,16 @@ used for out-of-band verification.<a href="#section-2.1-1.16.1" class="pilcrow">
 with integer keys.  All signed structures use COSE_Sign1 <span>[<a href="#RFC9052" class="cite xref">RFC9052</a>]</span>
 with algorithm ES256 (ECDSA w/ SHA-256 using P-256, COSE algorithm
 identifier -7).<a href="#section-2.2-1" class="pilcrow">¶</a></p>
-<p id="section-2.2-2">Identity Key public keys are encoded as COSE_Key <span>[<a href="#RFC9053" class="cite xref">RFC9053</a>]</span>
-structures with kty=2 (EC2), crv=1 (P-256).<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-2">Implementations <span class="bcp14">MUST</span> use deterministic CBOR encoding as defined in
+Section 4.2 of <span>[<a href="#RFC8949" class="cite xref">RFC8949</a>]</span> (Core Deterministic Encoding Requirements).
+This ensures that the same payload always produces the same byte
+sequence, which is critical for signature verification.<a href="#section-2.2-2" class="pilcrow">¶</a></p>
+<p id="section-2.2-3">Every CBOR map payload in this protocol includes a structure_type
+field (key 0) that uniquely identifies the payload type.  This
+prevents type confusion attacks where a signed structure of one type
+is substituted for another.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<p id="section-2.2-4">Identity Key public keys are encoded as COSE_Key <span>[<a href="#RFC9053" class="cite xref">RFC9053</a>]</span>
+structures with kty=2 (EC2), crv=1 (P-256).<a href="#section-2.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -1850,9 +1879,11 @@ a successful authentication event.  The key store <span class="bcp14">MUST NOT</
 authentication results across signing operations.<a href="#section-3.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-3.3-2.3">
-            <p id="section-3.3-2.3.1">Enrollment-sensitive (<span class="bcp14">RECOMMENDED</span>): If the device's biometric
-enrollment data changes, the key store <span class="bcp14">SHOULD</span> invalidate the
-Identity Key.<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-3.3-2.3.1">Enrollment-sensitive: If the device's biometric enrollment data
+changes (e.g., a new fingerprint is added), the key store <span class="bcp14">MUST</span>
+invalidate the Identity Key.  This prevents an attacker who gains
+temporary physical access from adding their biometric and
+subsequently producing valid PRESENCE-level signatures.<a href="#section-3.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -1916,6 +1947,13 @@ KBC = COSE_Sign1(
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">structure_type</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST</span> be 0x01 (KBC)</td>
+            </tr>
             <tr>
               <td class="text-right" rowspan="1" colspan="1">1</td>
               <td class="text-left" rowspan="1" colspan="1">version</td>
@@ -2001,22 +2039,27 @@ field 7.<a href="#section-4.2-2.5.1" class="pilcrow">¶</a></p>
             <p id="section-4.3-2.1.1">Decode the COSE_Sign1 structure.<a href="#section-4.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.3-2.2">
-            <p id="section-4.3-2.2.1">Extract ik_public (field 2) from the payload.<a href="#section-4.3-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-4.3-2.2.1">Verify that structure_type (field 0) is 0x01 (KBC).  If not,
+reject.  This prevents type confusion with other signed
+structures.<a href="#section-4.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.3-2.3">
-            <p id="section-4.3-2.3.1">Verify the COSE_Sign1 signature using ik_public.<a href="#section-4.3-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-4.3-2.3.1">Extract ik_public (field 2) from the payload.<a href="#section-4.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.3-2.4">
-            <p id="section-4.3-2.4.1">Verify that the current time is &gt;= timestamp (field 5) and
-&lt; expiry (field 6).<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-4.3-2.4.1">Verify the COSE_Sign1 signature using ik_public.<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.3-2.5">
-            <p id="section-4.3-2.5.1">Verify that ik_public matches the expected Identity Key for this
-contact (from a prior contact exchange, <a href="#contact-payload" class="auto internal xref">Section 5</a>).<a href="#section-4.3-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-4.3-2.5.1">Verify that the current time is &gt;= timestamp (field 5) and
+&lt; expiry (field 6).<a href="#section-4.3-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.3-2.6">
-            <p id="section-4.3-2.6.1">Verify that nk_public (field 3) matches the Node Key of the
-transport peer as observed during the transport handshake.<a href="#section-4.3-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-4.3-2.6.1">Verify that ik_public matches the expected Identity Key for this
+contact (from a prior contact exchange, <a href="#contact-payload" class="auto internal xref">Section 5</a>).<a href="#section-4.3-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-4.3-2.7">
+            <p id="section-4.3-2.7.1">Verify that nk_public (field 3) matches the Node Key of the
+transport peer as observed during the transport handshake.<a href="#section-4.3-2.7.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-4.3-3">If ANY check fails, the verifier <span class="bcp14">MUST</span> reject the KBC and terminate
@@ -2067,6 +2110,13 @@ CP = COSE_Sign1(
             </tr>
           </thead>
           <tbody>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">structure_type</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">
+                <span class="bcp14">MUST</span> be 0x02 (Contact Payload)</td>
+            </tr>
             <tr>
               <td class="text-right" rowspan="1" colspan="1">1</td>
               <td class="text-left" rowspan="1" colspan="1">version</td>
@@ -2175,9 +2225,20 @@ transmitted to the peer via a proximity exchange mechanism.<a href="#section-5.3
 exchange is occurring with the intended party (e.g., visual
 confirmation, physical proximity constraint).<a href="#section-5.3-3.3.1" class="pilcrow">¶</a></p>
 </li>
+          <li id="section-5.3-3.4">
+            <p id="section-5.3-3.4.1">For mechanisms that do not provide visual confirmation of the
+peer (e.g., wireless discovery), the implementation <span class="bcp14">MUST</span> require
+explicit user confirmation of the peer's display_name before
+storing the contact.<a href="#section-5.3-3.4.1" class="pilcrow">¶</a></p>
+</li>
         </ol>
-<p id="section-5.3-4">The choice of proximity mechanism is an implementation decision.
-See Appendix A for examples.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<p id="section-5.3-4">The contact exchange <span class="bcp14">MUST</span> be bidirectional: both parties <span class="bcp14">MUST</span>
+exchange and verify Contact Payloads before either party stores
+the other as a verified contact.  An implementation <span class="bcp14">MUST NOT</span> store
+a contact from a unidirectional exchange (where only one party
+scanned the other's payload).<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<p id="section-5.3-5">The choice of proximity mechanism is an implementation decision.
+See Appendix A for examples.<a href="#section-5.3-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="size-considerations">
@@ -2213,27 +2274,33 @@ decoding fails, reject.<a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
             <p id="section-6.1-2.2.1">Extract the CP_payload.<a href="#section-6.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.1-2.3">
-            <p id="section-6.1-2.3.1">Verify that version (field 1) is supported.  If unsupported,
-reject.<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-2.3.1">Verify that structure_type (field 0) is 0x02 (Contact Payload).
+If not, reject.<a href="#section-6.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.1-2.4">
-            <p id="section-6.1-2.4.1">Verify that timestamp (field 6) is within a 5-minute window of
-the verifier's current time: abs(now - timestamp) &lt;= 300000
-milliseconds.  If outside the window, reject.<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-2.4.1">Verify that version (field 1) is supported.  If unsupported,
+reject.<a href="#section-6.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.1-2.5">
-            <p id="section-6.1-2.5.1">Verify that nonce (field 7) has not been seen in a previous
-Contact Payload within the current 5-minute window.  If
-duplicate, reject.<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-2.5.1">Verify that timestamp (field 6) is within a 5-minute window of
+the verifier's current time: abs(now - timestamp) &lt;= 300000
+milliseconds.  If outside the window, reject.<a href="#section-6.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.1-2.6">
-            <p id="section-6.1-2.6.1">Verify the COSE_Sign1 signature using ik_public (field 2).  If
-signature verification fails, reject.<a href="#section-6.1-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-2.6.1">Verify that nonce (field 7) has not been seen in a previous
+Contact Payload within the current 5-minute window.  If
+duplicate, reject.<a href="#section-6.1-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.1-2.7">
-            <p id="section-6.1-2.7.1">If all checks pass, store the contact: ik_public, nk_public,
-nk_algorithm, display_name, addressing, assurance level, and
-the timestamp of the exchange.<a href="#section-6.1-2.7.1" class="pilcrow">¶</a></p>
+            <p id="section-6.1-2.7.1">Verify the COSE_Sign1 signature using ik_public (field 2).  If
+signature verification fails, reject.<a href="#section-6.1-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.1-2.8">
+            <p id="section-6.1-2.8.1">If all checks pass and the exchange is bidirectional (the local
+device has also transmitted its own Contact Payload to this
+peer), store the contact: ik_public, nk_public, nk_algorithm,
+display_name, addressing, assurance level, and the timestamp
+of the exchange.<a href="#section-6.1-2.8.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -2296,22 +2363,33 @@ evidence that a human is currently present at the remote device.<a href="#sectio
           </thead>
           <tbody>
             <tr>
-              <td class="text-right" rowspan="1" colspan="1">1</td>
-              <td class="text-left" rowspan="1" colspan="1">type</td>
+              <td class="text-right" rowspan="1" colspan="1">0</td>
+              <td class="text-left" rowspan="1" colspan="1">structure_type</td>
               <td class="text-left" rowspan="1" colspan="1">uint</td>
               <td class="text-left" rowspan="1" colspan="1">
-                <span class="bcp14">MUST</span> be 0x10</td>
+                <span class="bcp14">MUST</span> be 0x10 (PROOF_CHALLENGE)</td>
             </tr>
             <tr>
-              <td class="text-right" rowspan="1" colspan="1">2</td>
+              <td class="text-right" rowspan="1" colspan="1">1</td>
               <td class="text-left" rowspan="1" colspan="1">challenge_nonce</td>
               <td class="text-left" rowspan="1" colspan="1">bstr</td>
               <td class="text-left" rowspan="1" colspan="1">32 bytes, cryptographically random</td>
+            </tr>
+            <tr>
+              <td class="text-right" rowspan="1" colspan="1">2</td>
+              <td class="text-left" rowspan="1" colspan="1">required_assurance</td>
+              <td class="text-left" rowspan="1" colspan="1">uint</td>
+              <td class="text-left" rowspan="1" colspan="1">1=PRESENCE required, 2=DEVICE ok</td>
             </tr>
           </tbody>
         </table>
 <p id="section-7.2-3">The challenger <span class="bcp14">MUST</span> generate challenge_nonce using a
 cryptographically secure random number generator.<a href="#section-7.2-3" class="pilcrow">¶</a></p>
+<p id="section-7.2-4">The required_assurance field allows the challenger to demand a
+specific assurance level.  If set to 1 (PRESENCE), the responder
+<span class="bcp14">MUST</span> authenticate via biometric; a DEVICE-level response to a
+PRESENCE-required challenge <span class="bcp14">MUST</span> be rejected by the challenger.
+If set to 2 (DEVICE), either assurance level is acceptable.<a href="#section-7.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="response-format">
@@ -2326,9 +2404,10 @@ Response = COSE_Sign1(
   protected: { 1 (alg): -7 (ES256) },
   unprotected: {},
   payload: {
-    1 : 0x11,            / type /
-    2 : challenge_nonce,  / echoed from challenge /
-    3 : assurance         / 1=PRESENCE, 2=DEVICE /
+    0 : 0x11,              / structure_type: PROOF_RESPONSE /
+    1 : challenge_nonce,    / echoed from challenge /
+    2 : assurance,          / 1=PRESENCE, 2=DEVICE /
+    3 : channel_binding     / SHA-256 hash of connection context /
   }
 )
 </pre><a href="#section-7.3-2" class="pilcrow">¶</a>
@@ -2336,6 +2415,12 @@ Response = COSE_Sign1(
 <p id="section-7.3-3">The responder signs the response with their Identity Key.  This
 signing operation triggers an authentication event on the
 responder's device.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
+<p id="section-7.3-4">The channel_binding field (key 3) <span class="bcp14">MUST</span> contain the SHA-256 hash of
+a connection-specific value agreed upon during the transport
+handshake (e.g., the concatenation of both peers' Node Key public
+components, or a transport-provided session identifier).  This
+prevents relay attacks where an attacker forwards a challenge to the
+victim's device and relays the response to a different connection.<a href="#section-7.3-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="verification-1">
@@ -2349,11 +2434,23 @@ responder's device.<a href="#section-7.3-3" class="pilcrow">¶</a></p>
             <p id="section-7.4-2.1.1">Decode the COSE_Sign1 structure.<a href="#section-7.4-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.4-2.2">
-            <p id="section-7.4-2.2.1">Verify the signature using the stored Identity Key for the peer.<a href="#section-7.4-2.2.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.2.1">Verify that structure_type (field 0) is 0x11 (PROOF_RESPONSE).<a href="#section-7.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.4-2.3">
-            <p id="section-7.4-2.3.1">Verify that challenge_nonce in the response matches the
-challenge_nonce that was sent.<a href="#section-7.4-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-7.4-2.3.1">Verify the signature using the stored Identity Key for the peer.<a href="#section-7.4-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.4-2.4">
+            <p id="section-7.4-2.4.1">Verify that challenge_nonce in the response matches the
+challenge_nonce that was sent.<a href="#section-7.4-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.4-2.5">
+            <p id="section-7.4-2.5.1">Verify that channel_binding (field 3) matches the expected
+SHA-256 hash of the current connection context.<a href="#section-7.4-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.4-2.6">
+            <p id="section-7.4-2.6.1">If required_assurance in the challenge was 1 (PRESENCE), verify
+that assurance (field 2) in the response is also 1.  If the
+response is DEVICE when PRESENCE was required, reject.<a href="#section-7.4-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -2580,15 +2677,106 @@ This is sufficient for manual comparison.  Implementations <span class="bcp14">S
 also support machine-readable comparison for higher assurance.<a href="#section-9.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="post-quantum-considerations">
+<div id="assurance-level-downgrade">
 <section id="section-9.8">
-        <h3 id="name-post-quantum-considerations">
-<a href="#section-9.8" class="section-number selfRef">9.8. </a><a href="#name-post-quantum-considerations" class="section-name selfRef">Post-Quantum Considerations</a>
+        <h3 id="name-assurance-level-downgrade">
+<a href="#section-9.8" class="section-number selfRef">9.8. </a><a href="#name-assurance-level-downgrade" class="section-name selfRef">Assurance Level Downgrade</a>
         </h3>
-<p id="section-9.8-1">P-256 ECDSA is vulnerable to quantum computers implementing Shor's
+<p id="section-9.8-1">An attacker who compromises the application layer (but not the
+hardware key store) may attempt to forge the assurance field in
+signed structures, claiming PRESENCE when only DEVICE authentication
+occurred.  The assurance field is included in the COSE_Sign1 payload
+and therefore covered by the signature; it cannot be modified without
+invalidating the signature.<a href="#section-9.8-1" class="pilcrow">¶</a></p>
+<p id="section-9.8-2">However, a compromised application could request DEVICE-level
+authentication from the key store and then set the assurance field
+to PRESENCE in the payload before signing.  This attack requires
+compromising the application on the signer's device.  It is
+mitigated by platform-level attestation mechanisms (out of scope
+for this document) that can independently verify the authentication
+type.<a href="#section-9.8-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="type-confusion">
+<section id="section-9.9">
+        <h3 id="name-type-confusion">
+<a href="#section-9.9" class="section-number selfRef">9.9. </a><a href="#name-type-confusion" class="section-name selfRef">Type Confusion</a>
+        </h3>
+<p id="section-9.9-1">Without the structure_type discriminator (field 0), an attacker
+could potentially substitute a signed Contact Payload for a Key
+Binding Certificate or vice versa, since both are COSE_Sign1
+structures signed by the same Identity Key.  The structure_type
+field prevents this: verifiers <span class="bcp14">MUST</span> check that the structure_type
+matches the expected value before processing any other fields.<a href="#section-9.9-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="identity-key-revocation">
+<section id="section-9.10">
+        <h3 id="name-identity-key-revocation">
+<a href="#section-9.10" class="section-number selfRef">9.10. </a><a href="#name-identity-key-revocation" class="section-name selfRef">Identity Key Revocation</a>
+        </h3>
+<p id="section-9.10-1">This document does not define a key revocation mechanism.  If an
+Identity Key is compromised, the key holder <span class="bcp14">SHOULD</span> notify all
+contacts via an out-of-band channel that the key is no longer
+trustworthy.  Contacts <span class="bcp14">MUST</span> remove the compromised Identity Key
+and treat any future signatures from that key as unverified.<a href="#section-9.10-1" class="pilcrow">¶</a></p>
+<p id="section-9.10-2">A formal revocation mechanism (e.g., signed revocation statements,
+revocation lists) is deferred to a companion document.<a href="#section-9.10-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="relay-attack-on-presence-proof">
+<section id="section-9.11">
+        <h3 id="name-relay-attack-on-presence-pr">
+<a href="#section-9.11" class="section-number selfRef">9.11. </a><a href="#name-relay-attack-on-presence-pr" class="section-name selfRef">Relay Attack on Presence Proof</a>
+        </h3>
+<p id="section-9.11-1">Without channel binding, an attacker positioned between two peers
+could relay a Presence Proof Challenge from Peer A to the victim's
+device, collect the signed response, and forward it to Peer A,
+making Peer A believe the victim is present on the attacker's
+connection.  The channel_binding field in the Presence Proof
+Response (<a href="#presence-proof" class="auto internal xref">Section 7</a>) prevents this by binding the response
+to the specific connection context.<a href="#section-9.11-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="post-quantum-considerations">
+<section id="section-9.12">
+        <h3 id="name-post-quantum-considerations">
+<a href="#section-9.12" class="section-number selfRef">9.12. </a><a href="#name-post-quantum-considerations" class="section-name selfRef">Post-Quantum Considerations</a>
+        </h3>
+<p id="section-9.12-1">P-256 ECDSA is vulnerable to quantum computers implementing Shor's
 algorithm.  When post-quantum signature algorithms are available in
 hardware key stores, the protocol <span class="bcp14">SHOULD</span> migrate.  The version field
-in all structures enables this transition.<a href="#section-9.8-1" class="pilcrow">¶</a></p>
+in all structures enables this transition.<a href="#section-9.12-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="privacy-of-identity-key-in-contact-payloads">
+<section id="section-9.13">
+        <h3 id="name-privacy-of-identity-key-in-">
+<a href="#section-9.13" class="section-number selfRef">9.13. </a><a href="#name-privacy-of-identity-key-in-" class="section-name selfRef">Privacy of Identity Key in Contact Payloads</a>
+        </h3>
+<p id="section-9.13-1">The Contact Payload transmits the Identity Key public component in
+cleartext.  Any party that observes or captures a Contact Payload
+obtains a persistent, unique identifier for the user.  This is an
+inherent trade-off: the recipient needs the Identity Key to verify
+the signature and to identify the sender in future connections.<a href="#section-9.13-1" class="pilcrow">¶</a></p>
+<p id="section-9.13-2">Mitigations:<a href="#section-9.13-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-9.13-3.1">
+            <p id="section-9.13-3.1.1">Contact Payloads are exchanged only during deliberate, in-person
+ceremonies, limiting the exposure surface.<a href="#section-9.13-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.13-3.2">
+            <p id="section-9.13-3.2.1">The 5-minute validity window limits the useful lifetime of a
+captured payload.<a href="#section-9.13-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-9.13-3.3">
+            <p id="section-9.13-3.3.1">The Node Key (used for networking) is a separate key that does
+not reveal the Identity Key to network observers.<a href="#section-9.13-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-9.13-4">Applications with heightened privacy requirements <span class="bcp14">SHOULD</span> consider
+exchanging Contact Payloads over an encrypted proximity channel
+(e.g., BLE with encryption enabled) to prevent passive observation.<a href="#section-9.13-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2621,6 +2809,11 @@ registry for these keys.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">0</td>
+                <td class="text-left" rowspan="1" colspan="1">structure_type</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
               <tr>
                 <td class="text-right" rowspan="1" colspan="1">1</td>
                 <td class="text-left" rowspan="1" colspan="1">version</td>
@@ -2676,6 +2869,11 @@ registry for these keys.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
             </thead>
             <tbody>
               <tr>
+                <td class="text-right" rowspan="1" colspan="1">0</td>
+                <td class="text-left" rowspan="1" colspan="1">structure_type</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
                 <td class="text-right" rowspan="1" colspan="1">1</td>
                 <td class="text-left" rowspan="1" colspan="1">version</td>
                 <td class="text-left" rowspan="1" colspan="1">uint</td>
@@ -2724,13 +2922,86 @@ registry for these keys.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
           </table>
 </section>
 </div>
-<div id="presence-proof-message-types">
+<div id="presence-proof-challenge-keys">
 <section id="section-10.1.3">
-          <h4 id="name-presence-proof-message-type">
-<a href="#section-10.1.3" class="section-number selfRef">10.1.3. </a><a href="#name-presence-proof-message-type" class="section-name selfRef">Presence Proof Message Types</a>
+          <h4 id="name-presence-proof-challenge-ke">
+<a href="#section-10.1.3" class="section-number selfRef">10.1.3. </a><a href="#name-presence-proof-challenge-ke" class="section-name selfRef">Presence Proof Challenge Keys</a>
           </h4>
 <table class="center" id="table-7">
             <caption><a href="#table-7" class="selfRef">Table 7</a></caption>
+<thead>
+              <tr>
+                <th class="text-right" rowspan="1" colspan="1">Key</th>
+                <th class="text-left" rowspan="1" colspan="1">Name</th>
+                <th class="text-left" rowspan="1" colspan="1">CBOR Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">0</td>
+                <td class="text-left" rowspan="1" colspan="1">structure_type</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">1</td>
+                <td class="text-left" rowspan="1" colspan="1">challenge_nonce</td>
+                <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">2</td>
+                <td class="text-left" rowspan="1" colspan="1">required_assurance</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+            </tbody>
+          </table>
+</section>
+</div>
+<div id="presence-proof-response-keys">
+<section id="section-10.1.4">
+          <h4 id="name-presence-proof-response-key">
+<a href="#section-10.1.4" class="section-number selfRef">10.1.4. </a><a href="#name-presence-proof-response-key" class="section-name selfRef">Presence Proof Response Keys</a>
+          </h4>
+<table class="center" id="table-8">
+            <caption><a href="#table-8" class="selfRef">Table 8</a></caption>
+<thead>
+              <tr>
+                <th class="text-right" rowspan="1" colspan="1">Key</th>
+                <th class="text-left" rowspan="1" colspan="1">Name</th>
+                <th class="text-left" rowspan="1" colspan="1">CBOR Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">0</td>
+                <td class="text-left" rowspan="1" colspan="1">structure_type</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">1</td>
+                <td class="text-left" rowspan="1" colspan="1">challenge_nonce</td>
+                <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">2</td>
+                <td class="text-left" rowspan="1" colspan="1">assurance</td>
+                <td class="text-left" rowspan="1" colspan="1">uint</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">3</td>
+                <td class="text-left" rowspan="1" colspan="1">channel_binding</td>
+                <td class="text-left" rowspan="1" colspan="1">bstr</td>
+              </tr>
+            </tbody>
+          </table>
+</section>
+</div>
+<div id="structure-type-values">
+<section id="section-10.1.5">
+          <h4 id="name-structure-type-values">
+<a href="#section-10.1.5" class="section-number selfRef">10.1.5. </a><a href="#name-structure-type-values" class="section-name selfRef">Structure Type Values</a>
+          </h4>
+<table class="center" id="table-9">
+            <caption><a href="#table-9" class="selfRef">Table 9</a></caption>
 <thead>
               <tr>
                 <th class="text-right" rowspan="1" colspan="1">Value</th>
@@ -2738,6 +3009,14 @@ registry for these keys.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
               </tr>
             </thead>
             <tbody>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">0x01</td>
+                <td class="text-left" rowspan="1" colspan="1">KBC</td>
+              </tr>
+              <tr>
+                <td class="text-right" rowspan="1" colspan="1">0x02</td>
+                <td class="text-left" rowspan="1" colspan="1">CONTACT_PAYLOAD</td>
+              </tr>
               <tr>
                 <td class="text-right" rowspan="1" colspan="1">0x10</td>
                 <td class="text-left" rowspan="1" colspan="1">PROOF_CHALLENGE</td>
@@ -2751,12 +3030,12 @@ registry for these keys.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="assurance-levels-1">
-<section id="section-10.1.4">
+<section id="section-10.1.6">
           <h4 id="name-assurance-levels-2">
-<a href="#section-10.1.4" class="section-number selfRef">10.1.4. </a><a href="#name-assurance-levels-2" class="section-name selfRef">Assurance Levels</a>
+<a href="#section-10.1.6" class="section-number selfRef">10.1.6. </a><a href="#name-assurance-levels-2" class="section-name selfRef">Assurance Levels</a>
           </h4>
-<table class="center" id="table-8">
-            <caption><a href="#table-8" class="selfRef">Table 8</a></caption>
+<table class="center" id="table-10">
+            <caption><a href="#table-10" class="selfRef">Table 10</a></caption>
 <thead>
               <tr>
                 <th class="text-right" rowspan="1" colspan="1">Value</th>
@@ -2869,8 +3148,8 @@ registry for these keys.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
         </h3>
 <p id="appendix-A.1-1">The abstract "hardware key store" requirement maps to the following
 platform-specific implementations:<a href="#appendix-A.1-1" class="pilcrow">¶</a></p>
-<table class="center" id="table-9">
-          <caption><a href="#table-9" class="selfRef">Table 9</a></caption>
+<table class="center" id="table-11">
+          <caption><a href="#table-11" class="selfRef">Table 11</a></caption>
 <thead>
             <tr>
               <th class="text-left" rowspan="1" colspan="1">Platform</th>

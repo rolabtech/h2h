@@ -233,6 +233,16 @@ with integer keys.  All signed structures use COSE_Sign1 {{RFC9052}}
 with algorithm ES256 (ECDSA w/ SHA-256 using P-256, COSE algorithm
 identifier -7).
 
+Implementations MUST use deterministic CBOR encoding as defined in
+Section 4.2 of {{RFC8949}} (Core Deterministic Encoding Requirements).
+This ensures that the same payload always produces the same byte
+sequence, which is critical for signature verification.
+
+Every CBOR map payload in this protocol includes a structure_type
+field (key 0) that uniquely identifies the payload type.  This
+prevents type confusion attacks where a signed structure of one type
+is substituted for another.
+
 Identity Key public keys are encoded as COSE_Key {{RFC9053}}
 structures with kty=2 (EC2), crv=1 (P-256).
 
@@ -303,9 +313,11 @@ Identity Keys:
     a successful authentication event.  The key store MUST NOT cache
     authentication results across signing operations.
 
-3.  Enrollment-sensitive (RECOMMENDED): If the device's biometric
-    enrollment data changes, the key store SHOULD invalidate the
-    Identity Key.
+3.  Enrollment-sensitive: If the device's biometric enrollment data
+    changes (e.g., a new fingerprint is added), the key store MUST
+    invalidate the Identity Key.  This prevents an attacker who gains
+    temporary physical access from adding their biometric and
+    subsequently producing valid PRESENCE-level signatures.
 
 ## Node Key Rotation
 
@@ -337,15 +349,16 @@ KBC = COSE_Sign1(
 
 KBC_payload is a CBOR map:
 
-| Key | Name         | CBOR Type | Description                       |
-|----:|:-------------|:----------|:----------------------------------|
-|   1 | version      | uint      | MUST be 1                         |
-|   2 | ik_public    | COSE_Key  | P-256 public key (kty=2, crv=1)   |
-|   3 | nk_public    | bstr      | Transport-specific encoding       |
-|   4 | nk_algorithm | tstr      | e.g., "Ed25519", "P-256"          |
-|   5 | timestamp    | uint      | Unix time in milliseconds         |
-|   6 | expiry       | uint      | Unix time in milliseconds         |
-|   7 | assurance    | uint      | 1=PRESENCE, 2=DEVICE              |
+| Key | Name           | CBOR Type | Description                       |
+|----:|:---------------|:----------|:----------------------------------|
+|   0 | structure_type | uint      | MUST be 0x01 (KBC)                |
+|   1 | version        | uint      | MUST be 1                         |
+|   2 | ik_public      | COSE_Key  | P-256 public key (kty=2, crv=1)   |
+|   3 | nk_public      | bstr      | Transport-specific encoding       |
+|   4 | nk_algorithm   | tstr      | e.g., "Ed25519", "P-256"          |
+|   5 | timestamp      | uint      | Unix time in milliseconds         |
+|   6 | expiry         | uint      | Unix time in milliseconds         |
+|   7 | assurance      | uint      | 1=PRESENCE, 2=DEVICE              |
 
 ## Creation
 
@@ -364,13 +377,16 @@ The signer MUST:
 The verifier MUST:
 
 1.  Decode the COSE_Sign1 structure.
-2.  Extract ik_public (field 2) from the payload.
-3.  Verify the COSE_Sign1 signature using ik_public.
-4.  Verify that the current time is >= timestamp (field 5) and
+2.  Verify that structure_type (field 0) is 0x01 (KBC).  If not,
+    reject.  This prevents type confusion with other signed
+    structures.
+3.  Extract ik_public (field 2) from the payload.
+4.  Verify the COSE_Sign1 signature using ik_public.
+5.  Verify that the current time is >= timestamp (field 5) and
     < expiry (field 6).
-5.  Verify that ik_public matches the expected Identity Key for this
+6.  Verify that ik_public matches the expected Identity Key for this
     contact (from a prior contact exchange, {{contact-payload}}).
-6.  Verify that nk_public (field 3) matches the Node Key of the
+7.  Verify that nk_public (field 3) matches the Node Key of the
     transport peer as observed during the transport handshake.
 
 If ANY check fails, the verifier MUST reject the KBC and terminate
@@ -399,17 +415,18 @@ CP = COSE_Sign1(
 
 CP_payload is a CBOR map:
 
-| Key | Name         | CBOR Type | Description                       |
-|----:|:-------------|:----------|:----------------------------------|
-|   1 | version      | uint      | MUST be 1                         |
-|   2 | ik_public    | COSE_Key  | P-256 public key                  |
-|   3 | nk_public    | bstr      | Transport-specific encoding       |
-|   4 | nk_algorithm | tstr      | e.g., "Ed25519"                   |
-|   5 | display_name | tstr      | UTF-8, max 64 bytes               |
-|   6 | timestamp    | uint      | Unix time in milliseconds         |
-|   7 | nonce        | bstr      | 16 bytes, cryptographically random|
-|   8 | addressing   | bstr      | Transport-specific, opaque        |
-|   9 | assurance    | uint      | 1=PRESENCE, 2=DEVICE              |
+| Key | Name           | CBOR Type | Description                       |
+|----:|:---------------|:----------|:----------------------------------|
+|   0 | structure_type | uint      | MUST be 0x02 (Contact Payload)    |
+|   1 | version        | uint      | MUST be 1                         |
+|   2 | ik_public      | COSE_Key  | P-256 public key                  |
+|   3 | nk_public      | bstr      | Transport-specific encoding       |
+|   4 | nk_algorithm   | tstr      | e.g., "Ed25519"                   |
+|   5 | display_name   | tstr      | UTF-8, max 64 bytes               |
+|   6 | timestamp      | uint      | Unix time in milliseconds         |
+|   7 | nonce          | bstr      | 16 bytes, cryptographically random|
+|   8 | addressing     | bstr      | Transport-specific, opaque        |
+|   9 | assurance      | uint      | 1=PRESENCE, 2=DEVICE              |
 
 ## Creation
 
@@ -435,6 +452,16 @@ The proximity mechanism MUST satisfy the following requirements:
 3.  The mechanism provides a human-verifiable indication that the
     exchange is occurring with the intended party (e.g., visual
     confirmation, physical proximity constraint).
+4.  For mechanisms that do not provide visual confirmation of the
+    peer (e.g., wireless discovery), the implementation MUST require
+    explicit user confirmation of the peer's display_name before
+    storing the contact.
+
+The contact exchange MUST be bidirectional: both parties MUST
+exchange and verify Contact Payloads before either party stores
+the other as a verified contact.  An implementation MUST NOT store
+a contact from a unidirectional exchange (where only one party
+scanned the other's payload).
 
 The choice of proximity mechanism is an implementation decision.
 See Appendix A for examples.
@@ -458,23 +485,28 @@ Upon receiving a serialized Contact Payload, the verifier MUST:
 
 2.  Extract the CP_payload.
 
-3.  Verify that version (field 1) is supported.  If unsupported,
+3.  Verify that structure_type (field 0) is 0x02 (Contact Payload).
+    If not, reject.
+
+4.  Verify that version (field 1) is supported.  If unsupported,
     reject.
 
-4.  Verify that timestamp (field 6) is within a 5-minute window of
+5.  Verify that timestamp (field 6) is within a 5-minute window of
     the verifier's current time: abs(now - timestamp) <= 300000
     milliseconds.  If outside the window, reject.
 
-5.  Verify that nonce (field 7) has not been seen in a previous
+6.  Verify that nonce (field 7) has not been seen in a previous
     Contact Payload within the current 5-minute window.  If
     duplicate, reject.
 
-6.  Verify the COSE_Sign1 signature using ik_public (field 2).  If
+7.  Verify the COSE_Sign1 signature using ik_public (field 2).  If
     signature verification fails, reject.
 
-7.  If all checks pass, store the contact: ik_public, nk_public,
-    nk_algorithm, display_name, addressing, assurance level, and
-    the timestamp of the exchange.
+8.  If all checks pass and the exchange is bidirectional (the local
+    device has also transmitted its own Contact Payload to this
+    peer), store the contact: ik_public, nk_public, nk_algorithm,
+    display_name, addressing, assurance level, and the timestamp
+    of the exchange.
 
 ## Clock Skew
 
@@ -504,13 +536,20 @@ evidence that a human is currently present at the remote device.
 
 The challenge is a CBOR map:
 
-| Key | Name            | CBOR Type | Description                  |
-|----:|:----------------|:----------|:-----------------------------|
-|   1 | type            | uint      | MUST be 0x10                 |
-|   2 | challenge_nonce | bstr      | 32 bytes, cryptographically random |
+| Key | Name               | CBOR Type | Description                        |
+|----:|:-------------------|:----------|:-----------------------------------|
+|   0 | structure_type     | uint      | MUST be 0x10 (PROOF_CHALLENGE)     |
+|   1 | challenge_nonce    | bstr      | 32 bytes, cryptographically random |
+|   2 | required_assurance | uint      | 1=PRESENCE required, 2=DEVICE ok   |
 
 The challenger MUST generate challenge_nonce using a
 cryptographically secure random number generator.
+
+The required_assurance field allows the challenger to demand a
+specific assurance level.  If set to 1 (PRESENCE), the responder
+MUST authenticate via biometric; a DEVICE-level response to a
+PRESENCE-required challenge MUST be rejected by the challenger.
+If set to 2 (DEVICE), either assurance level is acceptable.
 
 ## Response Format
 
@@ -521,9 +560,10 @@ Response = COSE_Sign1(
   protected: { 1 (alg): -7 (ES256) },
   unprotected: {},
   payload: {
-    1 : 0x11,            / type /
-    2 : challenge_nonce,  / echoed from challenge /
-    3 : assurance         / 1=PRESENCE, 2=DEVICE /
+    0 : 0x11,              / structure_type: PROOF_RESPONSE /
+    1 : challenge_nonce,    / echoed from challenge /
+    2 : assurance,          / 1=PRESENCE, 2=DEVICE /
+    3 : channel_binding     / SHA-256 hash of connection context /
   }
 )
 ~~~
@@ -532,14 +572,27 @@ The responder signs the response with their Identity Key.  This
 signing operation triggers an authentication event on the
 responder's device.
 
+The channel_binding field (key 3) MUST contain the SHA-256 hash of
+a connection-specific value agreed upon during the transport
+handshake (e.g., the concatenation of both peers' Node Key public
+components, or a transport-provided session identifier).  This
+prevents relay attacks where an attacker forwards a challenge to the
+victim's device and relays the response to a different connection.
+
 ## Verification
 
 The challenger MUST:
 
 1.  Decode the COSE_Sign1 structure.
-2.  Verify the signature using the stored Identity Key for the peer.
-3.  Verify that challenge_nonce in the response matches the
+2.  Verify that structure_type (field 0) is 0x11 (PROOF_RESPONSE).
+3.  Verify the signature using the stored Identity Key for the peer.
+4.  Verify that challenge_nonce in the response matches the
     challenge_nonce that was sent.
+5.  Verify that channel_binding (field 3) matches the expected
+    SHA-256 hash of the current connection context.
+6.  If required_assurance in the challenge was 1 (PRESENCE), verify
+    that assurance (field 2) in the response is also 1.  If the
+    response is DEVICE when PRESENCE was required, reject.
 
 ## Timing
 
@@ -679,12 +732,80 @@ yielding 240 bits of collision resistance.  The human-readable format
 This is sufficient for manual comparison.  Implementations SHOULD
 also support machine-readable comparison for higher assurance.
 
+## Assurance Level Downgrade
+
+An attacker who compromises the application layer (but not the
+hardware key store) may attempt to forge the assurance field in
+signed structures, claiming PRESENCE when only DEVICE authentication
+occurred.  The assurance field is included in the COSE_Sign1 payload
+and therefore covered by the signature; it cannot be modified without
+invalidating the signature.
+
+However, a compromised application could request DEVICE-level
+authentication from the key store and then set the assurance field
+to PRESENCE in the payload before signing.  This attack requires
+compromising the application on the signer's device.  It is
+mitigated by platform-level attestation mechanisms (out of scope
+for this document) that can independently verify the authentication
+type.
+
+## Type Confusion
+
+Without the structure_type discriminator (field 0), an attacker
+could potentially substitute a signed Contact Payload for a Key
+Binding Certificate or vice versa, since both are COSE_Sign1
+structures signed by the same Identity Key.  The structure_type
+field prevents this: verifiers MUST check that the structure_type
+matches the expected value before processing any other fields.
+
+## Identity Key Revocation
+
+This document does not define a key revocation mechanism.  If an
+Identity Key is compromised, the key holder SHOULD notify all
+contacts via an out-of-band channel that the key is no longer
+trustworthy.  Contacts MUST remove the compromised Identity Key
+and treat any future signatures from that key as unverified.
+
+A formal revocation mechanism (e.g., signed revocation statements,
+revocation lists) is deferred to a companion document.
+
+## Relay Attack on Presence Proof
+
+Without channel binding, an attacker positioned between two peers
+could relay a Presence Proof Challenge from Peer A to the victim's
+device, collect the signed response, and forward it to Peer A,
+making Peer A believe the victim is present on the attacker's
+connection.  The channel_binding field in the Presence Proof
+Response ({{presence-proof}}) prevents this by binding the response
+to the specific connection context.
+
 ## Post-Quantum Considerations
 
 P-256 ECDSA is vulnerable to quantum computers implementing Shor's
 algorithm.  When post-quantum signature algorithms are available in
 hardware key stores, the protocol SHOULD migrate.  The version field
 in all structures enables this transition.
+
+## Privacy of Identity Key in Contact Payloads
+
+The Contact Payload transmits the Identity Key public component in
+cleartext.  Any party that observes or captures a Contact Payload
+obtains a persistent, unique identifier for the user.  This is an
+inherent trade-off: the recipient needs the Identity Key to verify
+the signature and to identify the sender in future connections.
+
+Mitigations:
+
+-  Contact Payloads are exchanged only during deliberate, in-person
+   ceremonies, limiting the exposure surface.
+-  The 5-minute validity window limits the useful lifetime of a
+   captured payload.
+-  The Node Key (used for networking) is a separate key that does
+   not reveal the Identity Key to network observers.
+
+Applications with heightened privacy requirements SHOULD consider
+exchanging Contact Payloads over an encrypted proximity channel
+(e.g., BLE with encryption enabled) to prevent passive observation.
 
 
 # IANA Considerations
@@ -697,34 +818,55 @@ registry for these keys.
 
 ### KBC_payload Keys
 
-| Key | Name         | CBOR Type |
-|----:|:-------------|:----------|
-|   1 | version      | uint      |
-|   2 | ik_public    | COSE_Key  |
-|   3 | nk_public    | bstr      |
-|   4 | nk_algorithm | tstr      |
-|   5 | timestamp    | uint      |
-|   6 | expiry       | uint      |
-|   7 | assurance    | uint      |
+| Key | Name           | CBOR Type |
+|----:|:---------------|:----------|
+|   0 | structure_type | uint      |
+|   1 | version        | uint      |
+|   2 | ik_public      | COSE_Key  |
+|   3 | nk_public      | bstr      |
+|   4 | nk_algorithm   | tstr      |
+|   5 | timestamp      | uint      |
+|   6 | expiry         | uint      |
+|   7 | assurance      | uint      |
 
 ### CP_payload Keys
 
-| Key | Name         | CBOR Type |
-|----:|:-------------|:----------|
-|   1 | version      | uint      |
-|   2 | ik_public    | COSE_Key  |
-|   3 | nk_public    | bstr      |
-|   4 | nk_algorithm | tstr      |
-|   5 | display_name | tstr      |
-|   6 | timestamp    | uint      |
-|   7 | nonce        | bstr      |
-|   8 | addressing   | bstr      |
-|   9 | assurance    | uint      |
+| Key | Name           | CBOR Type |
+|----:|:---------------|:----------|
+|   0 | structure_type | uint      |
+|   1 | version        | uint      |
+|   2 | ik_public      | COSE_Key  |
+|   3 | nk_public      | bstr      |
+|   4 | nk_algorithm   | tstr      |
+|   5 | display_name   | tstr      |
+|   6 | timestamp      | uint      |
+|   7 | nonce          | bstr      |
+|   8 | addressing     | bstr      |
+|   9 | assurance      | uint      |
 
-### Presence Proof Message Types
+### Presence Proof Challenge Keys
+
+| Key | Name               | CBOR Type |
+|----:|:-------------------|:----------|
+|   0 | structure_type     | uint      |
+|   1 | challenge_nonce    | bstr      |
+|   2 | required_assurance | uint      |
+
+### Presence Proof Response Keys
+
+| Key | Name            | CBOR Type |
+|----:|:----------------|:----------|
+|   0 | structure_type  | uint      |
+|   1 | challenge_nonce | bstr      |
+|   2 | assurance       | uint      |
+|   3 | channel_binding | bstr      |
+
+### Structure Type Values
 
 | Value | Name            |
 |------:|:----------------|
+|  0x01 | KBC             |
+|  0x02 | CONTACT_PAYLOAD |
 |  0x10 | PROOF_CHALLENGE |
 |  0x11 | PROOF_RESPONSE  |
 

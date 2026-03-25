@@ -245,9 +245,15 @@ ECDSA-Verify(key, data, sig)   P-256 ECDSA verification
 
 ### 2.4.  Encoding
 
-All protocol structures are encoded using CBOR [RFC8949].  All
+All protocol structures are encoded using CBOR [RFC8949] with
+deterministic encoding as defined in Section 4.2 of RFC 8949.  All
 signed structures use COSE_Sign1 [RFC9052] with algorithm identifier
 ES256 (ECDSA w/ SHA-256 on P-256).
+
+Every CBOR map payload includes a structure_type field (key 0) that
+uniquely identifies the payload type, preventing type confusion
+attacks where a signed structure of one type is substituted for
+another.
 
 ---
 
@@ -464,8 +470,10 @@ The following properties MUST hold for the Identity Key:
 
 -  **Invalidated on biometric change**: If biometric authentication
    is used and the device's biometric enrollment changes (e.g., a
-   new fingerprint is added), the key SHOULD be invalidated by the
-   HSM.
+   new fingerprint is added), the key MUST be invalidated by the
+   HSM.  This prevents an attacker who gains temporary physical
+   access from adding their biometric and subsequently producing
+   valid PRESENCE-level signatures.
 
 -  **Single device**: A given Identity Key exists on exactly one
    physical device.  A user with multiple devices has multiple
@@ -504,6 +512,7 @@ Node Key.  It is a COSE_Sign1 structure:
 KBC = COSE_Sign1(IK_private, KBC_payload)
 
 KBC_payload (CBOR map):
+   0 (structure_type): uint, 0x01 (KBC)
    1 (version):       uint, 1
    2 (ik_public):     COSE_Key (P-256)
    3 (nk_public):     bstr (transport-specific encoding)
@@ -614,6 +623,7 @@ and establish a network connection:
 Contact Payload = COSE_Sign1(IK_private, payload)
 
 payload (CBOR map):
+   0 (structure_type): uint, 0x02 (Contact Payload)
    1 (version):       uint, 1
    2 (did):           tstr (did:peer:2.Ez6LS...)
    3 (ik_public):     COSE_Key (P-256)
@@ -650,7 +660,7 @@ Alice                                             Bob
   |  3. -------  Bob scans Alice's QR  ------->     |
   |                                                 |
   |     4. Bob verifies Alice's COSE_Sign1 sig      |
-  |     5. Bob stores Alice's DID + keys + address  |
+  |     5. Bob holds Alice's payload (not yet stored)|
   |                                                 |
   |  6. Bob generates his Contact Payload           |
   |     (triggers auth prompt)                      |
@@ -660,7 +670,9 @@ Alice                                             Bob
   |  8. <------  Alice scans Bob's QR  --------     |
   |                                                 |
   |  9. Alice verifies Bob's COSE_Sign1 sig         |
-  |  10. Alice stores Bob's DID + keys + address    |
+  |                                                 |
+  |  [Exchange is now bidirectional — both store]   |
+  |  10. Both devices store the other's contact     |
   |                                                 |
   |  [both compare Safety Numbers to confirm]       |
   |                                                 |
@@ -671,15 +683,21 @@ Alice                                             Bob
 Upon receiving a Contact Payload, the implementation MUST:
 
 1.  Decode the COSE_Sign1 structure.
-2.  Verify that the version field is supported.
-3.  Verify that the timestamp is within a 5-minute window of the
-    current device time.  This prevents replay of captured QR codes.
-4.  Verify that the nonce has not been seen before (within the
+2.  Verify that structure_type (field 0) is 0x02 (Contact Payload).
+3.  Verify that the version field is supported.
+4.  Verify that the timestamp is within a 5-minute window of the
+    current device time.
+5.  Verify that the nonce has not been seen before (within the
     5-minute window).
-5.  Verify the COSE_Sign1 signature using the ik_public from the
+6.  Verify the COSE_Sign1 signature using the ik_public from the
     payload.
-6.  If all checks pass, store the contact at Trust Tier 1 (in-person
-    verified).
+7.  If all checks pass AND the exchange is bidirectional (the local
+    device has also transmitted its own Contact Payload to this
+    peer), store the contact at Trust Tier 1 (in-person verified).
+
+The contact exchange MUST be bidirectional: both parties MUST
+exchange and verify Contact Payloads before either party stores
+the other as a verified contact.
 
 If ANY check fails, the implementation MUST reject the payload and
 MUST NOT store any contact information.
@@ -1117,16 +1135,29 @@ requesting the other peer to produce a fresh Presence Proof.
 
 ```
 Challenge (CBOR map):
-   1 (type):           uint, 0x10
-   2 (challenge_nonce): bstr (32 bytes, random)
+   0 (structure_type):    uint, 0x10 (PROOF_CHALLENGE)
+   1 (challenge_nonce):   bstr (32 bytes, random)
+   2 (required_assurance): uint (1 = PRESENCE required, 2 = DEVICE ok)
 
 Response = COSE_Sign1(IK_private, response_payload)
 
 response_payload (CBOR map):
-   1 (type):           uint, 0x11
-   2 (challenge_nonce): bstr (echoed from challenge)
-   3 (assurance):      uint (1 = PRESENCE, 2 = DEVICE)
+   0 (structure_type):    uint, 0x11 (PROOF_RESPONSE)
+   1 (challenge_nonce):   bstr (echoed from challenge)
+   2 (assurance):         uint (1 = PRESENCE, 2 = DEVICE)
+   3 (channel_binding):   bstr (SHA-256 of connection context)
 ```
+
+The required_assurance field allows the challenger to demand a
+specific assurance level.  If set to 1 (PRESENCE), the responder
+MUST authenticate via biometric; a DEVICE-level response MUST be
+rejected.
+
+The channel_binding field MUST contain the SHA-256 hash of a
+connection-specific value (e.g., the concatenation of both peers'
+Node Key public components).  This prevents relay attacks where an
+attacker forwards a challenge to the victim and relays the response
+to a different connection.
 
 ### 11.3.  Timing Constraints
 
@@ -1433,7 +1464,45 @@ Trust Tier 3 (video verified) is explicitly weaker than Tier 1
 because real-time deepfakes exist.  Implementations MUST clearly
 communicate that Tier 3 provides lower assurance.
 
-### 16.10. Quantum Computing
+### 16.10. Type Confusion
+
+Without the structure_type discriminator (field 0), an attacker
+could substitute a signed Contact Payload for a Key Binding
+Certificate or vice versa, since both are COSE_Sign1 structures
+signed by the same Identity Key.  Implementations MUST verify that
+the structure_type matches the expected value before processing any
+other fields.
+
+### 16.11. Relay Attack on Presence Proof
+
+Without channel binding, an attacker between two peers could relay a
+Presence Proof Challenge to the victim's device and forward the
+response to the challenger, falsely demonstrating presence.  The
+channel_binding field in the Presence Proof Response (Section 11)
+binds the response to the specific connection, preventing this
+attack.
+
+### 16.12. Assurance Level Downgrade
+
+An attacker who compromises the application layer (but not the
+hardware key store) may attempt to produce DEVICE-level signatures
+while claiming PRESENCE.  Since the assurance field is inside the
+COSE_Sign1 payload, it is covered by the signature and cannot be
+modified without invalidation.  However, a compromised application
+could request DEVICE authentication and set assurance to PRESENCE
+before signing.  This requires application-level compromise on the
+signer's device.
+
+### 16.13. Identity Key Revocation
+
+This protocol does not define a formal key revocation mechanism.
+If an Identity Key is compromised, the key holder SHOULD notify all
+contacts via an out-of-band channel.  Contacts MUST remove the
+compromised Identity Key and treat future signatures from that key
+as unverified.  A formal revocation mechanism is deferred to a
+companion document.
+
+### 16.14. Quantum Computing
 
 P-256 ECDSA is vulnerable to quantum computers running Shor's
 algorithm.  When post-quantum signature schemes are standardized
@@ -1456,15 +1525,24 @@ The protocol does not specify metadata protection mechanisms.
 Implementations requiring metadata privacy SHOULD layer additional
 protections (VPN, Tor, mixnets).
 
-### 17.2.  Identity Key as Persistent Identifier
+### 17.2.  Identity Key in Cleartext Contact Payloads
 
-The Identity Key's public component is a persistent, unique
-identifier.  The protocol mitigates this:
+The Contact Payload transmits the Identity Key public component in
+cleartext via the proximity exchange mechanism.  Any party that
+observes or captures a Contact Payload obtains a persistent, unique
+identifier for the user.
 
--  The Identity Key is shared only during deliberate contact
-   exchange, not broadcast.
+Mitigations:
+
+-  Contact Payloads are exchanged only during deliberate, in-person
+   ceremonies, limiting the exposure surface.
+-  The 5-minute validity window limits the useful lifetime of a
+   captured payload.
 -  The Node Key (used for networking) is a separate key and does
    not directly reveal the Identity Key to network observers.
+
+Applications with heightened privacy requirements SHOULD consider
+exchanging Contact Payloads over an encrypted proximity channel.
 
 ### 17.3.  Node Key Correlation
 

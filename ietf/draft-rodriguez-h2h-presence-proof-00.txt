@@ -83,29 +83,29 @@ Copyright Notice
 
 Table of Contents
 
-   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   3
-     1.1.  Problem Statement . . . . . . . . . . . . . . . . . . . .   3
+   1.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   4
+     1.1.  Problem Statement . . . . . . . . . . . . . . . . . . . .   4
      1.2.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .   4
      1.3.  Scope . . . . . . . . . . . . . . . . . . . . . . . . . .   4
    2.  Conventions and Definitions . . . . . . . . . . . . . . . . .   5
      2.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .   5
      2.2.  CBOR and COSE Conventions . . . . . . . . . . . . . . . .   6
    3.  Architecture  . . . . . . . . . . . . . . . . . . . . . . . .   6
-     3.1.  Two-Key Design  . . . . . . . . . . . . . . . . . . . . .   6
+     3.1.  Two-Key Design  . . . . . . . . . . . . . . . . . . . . .   7
      3.2.  Assurance Levels  . . . . . . . . . . . . . . . . . . . .   7
      3.3.  Identity Key Requirements . . . . . . . . . . . . . . . .   8
      3.4.  Node Key Rotation . . . . . . . . . . . . . . . . . . . .   8
-   4.  Key Binding Certificate . . . . . . . . . . . . . . . . . . .   8
-     4.1.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .   8
+   4.  Key Binding Certificate . . . . . . . . . . . . . . . . . . .   9
+     4.1.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .   9
      4.2.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .   9
-     4.3.  Verification  . . . . . . . . . . . . . . . . . . . . . .   9
+     4.3.  Verification  . . . . . . . . . . . . . . . . . . . . . .  10
      4.4.  Renewal . . . . . . . . . . . . . . . . . . . . . . . . .  10
    5.  Contact Payload . . . . . . . . . . . . . . . . . . . . . . .  10
      5.1.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  10
      5.2.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .  11
-     5.3.  Encoding for Exchange . . . . . . . . . . . . . . . . . .  11
+     5.3.  Encoding for Exchange . . . . . . . . . . . . . . . . . .  12
      5.4.  Size Considerations . . . . . . . . . . . . . . . . . . .  12
-   6.  Contact Exchange Verification . . . . . . . . . . . . . . . .  12
+   6.  Contact Exchange Verification . . . . . . . . . . . . . . . .  13
 
 
 
@@ -114,43 +114,61 @@ Rodriguez               Expires 26 September 2026               [Page 2]
 Internet-Draft             H2H Presence Proof                 March 2026
 
 
-     6.1.  Procedure . . . . . . . . . . . . . . . . . . . . . . . .  12
+     6.1.  Procedure . . . . . . . . . . . . . . . . . . . . . . . .  13
      6.2.  Clock Skew  . . . . . . . . . . . . . . . . . . . . . . .  13
      6.3.  Replay Protection . . . . . . . . . . . . . . . . . . . .  13
-   7.  Presence Proof Challenge  . . . . . . . . . . . . . . . . . .  13
-     7.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  13
-     7.2.  Challenge Format  . . . . . . . . . . . . . . . . . . . .  13
-     7.3.  Response Format . . . . . . . . . . . . . . . . . . . . .  13
-     7.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  14
-     7.5.  Timing  . . . . . . . . . . . . . . . . . . . . . . . . .  14
-   8.  Safety Numbers  . . . . . . . . . . . . . . . . . . . . . . .  14
-     8.1.  Computation . . . . . . . . . . . . . . . . . . . . . . .  14
-     8.2.  Properties  . . . . . . . . . . . . . . . . . . . . . . .  15
-     8.3.  Verification Procedure  . . . . . . . . . . . . . . . . .  15
-   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  15
-     9.1.  Attacker Model  . . . . . . . . . . . . . . . . . . . . .  15
-     9.2.  Hardware Key Store Trust  . . . . . . . . . . . . . . . .  16
-     9.3.  Authentication Bypass . . . . . . . . . . . . . . . . . .  16
-     9.4.  Contact Payload Capture . . . . . . . . . . . . . . . . .  16
-     9.5.  Key Binding Certificate Expiry  . . . . . . . . . . . . .  17
-     9.6.  Non-Repudiation . . . . . . . . . . . . . . . . . . . . .  17
-     9.7.  Safety Number Limitations . . . . . . . . . . . . . . . .  17
-     9.8.  Post-Quantum Considerations . . . . . . . . . . . . . . .  17
-   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  17
-     10.1.  H2H CBOR Map Keys  . . . . . . . . . . . . . . . . . . .  17
-       10.1.1.  KBC_payload Keys . . . . . . . . . . . . . . . . . .  18
-       10.1.2.  CP_payload Keys  . . . . . . . . . . . . . . . . . .  18
-       10.1.3.  Presence Proof Message Types . . . . . . . . . . . .  19
-       10.1.4.  Assurance Levels . . . . . . . . . . . . . . . . . .  19
-   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  19
-     11.1.  Normative References . . . . . . . . . . . . . . . . . .  19
-     11.2.  Informative References . . . . . . . . . . . . . . . . .  20
-   Appendix A.  Implementation Considerations  . . . . . . . . . . .  20
-     A.1.  Platform Key Store Mapping  . . . . . . . . . . . . . . .  20
-     A.2.  QR Code Parameters  . . . . . . . . . . . . . . . . . . .  21
-     A.3.  BLE Exchange Parameters . . . . . . . . . . . . . . . . .  21
-   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  21
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  22
+   7.  Presence Proof Challenge  . . . . . . . . . . . . . . . . . .  14
+     7.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  14
+     7.2.  Challenge Format  . . . . . . . . . . . . . . . . . . . .  14
+     7.3.  Response Format . . . . . . . . . . . . . . . . . . . . .  14
+     7.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  15
+     7.5.  Timing  . . . . . . . . . . . . . . . . . . . . . . . . .  15
+   8.  Safety Numbers  . . . . . . . . . . . . . . . . . . . . . . .  16
+     8.1.  Computation . . . . . . . . . . . . . . . . . . . . . . .  16
+     8.2.  Properties  . . . . . . . . . . . . . . . . . . . . . . .  16
+     8.3.  Verification Procedure  . . . . . . . . . . . . . . . . .  16
+   9.  Security Considerations . . . . . . . . . . . . . . . . . . .  17
+     9.1.  Attacker Model  . . . . . . . . . . . . . . . . . . . . .  17
+     9.2.  Hardware Key Store Trust  . . . . . . . . . . . . . . . .  17
+     9.3.  Authentication Bypass . . . . . . . . . . . . . . . . . .  17
+     9.4.  Contact Payload Capture . . . . . . . . . . . . . . . . .  18
+     9.5.  Key Binding Certificate Expiry  . . . . . . . . . . . . .  18
+     9.6.  Non-Repudiation . . . . . . . . . . . . . . . . . . . . .  18
+     9.7.  Safety Number Limitations . . . . . . . . . . . . . . . .  18
+     9.8.  Assurance Level Downgrade . . . . . . . . . . . . . . . .  18
+     9.9.  Type Confusion  . . . . . . . . . . . . . . . . . . . . .  19
+     9.10. Identity Key Revocation . . . . . . . . . . . . . . . . .  19
+     9.11. Relay Attack on Presence Proof  . . . . . . . . . . . . .  19
+     9.12. Post-Quantum Considerations . . . . . . . . . . . . . . .  19
+     9.13. Privacy of Identity Key in Contact Payloads . . . . . . .  20
+   10. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  20
+     10.1.  H2H CBOR Map Keys  . . . . . . . . . . . . . . . . . . .  20
+       10.1.1.  KBC_payload Keys . . . . . . . . . . . . . . . . . .  20
+       10.1.2.  CP_payload Keys  . . . . . . . . . . . . . . . . . .  21
+       10.1.3.  Presence Proof Challenge Keys  . . . . . . . . . . .  21
+       10.1.4.  Presence Proof Response Keys . . . . . . . . . . . .  22
+       10.1.5.  Structure Type Values  . . . . . . . . . . . . . . .  22
+       10.1.6.  Assurance Levels . . . . . . . . . . . . . . . . . .  22
+   11. References  . . . . . . . . . . . . . . . . . . . . . . . . .  22
+     11.1.  Normative References . . . . . . . . . . . . . . . . . .  22
+     11.2.  Informative References . . . . . . . . . . . . . . . . .  23
+   Appendix A.  Implementation Considerations  . . . . . . . . . . .  24
+     A.1.  Platform Key Store Mapping  . . . . . . . . . . . . . . .  24
+     A.2.  QR Code Parameters  . . . . . . . . . . . . . . . . . . .  24
+     A.3.  BLE Exchange Parameters . . . . . . . . . . . . . . . . .  25
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  25
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  25
+
+
+
+
+
+
+
+Rodriguez               Expires 26 September 2026               [Page 3]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
 1.  Introduction
 
@@ -162,14 +180,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    Protocol [Signal], MLS [RFC9420]).  None provide a mechanism for one
    individual to cryptographically prove their identity to another
    individual in a peer-to-peer manner without dependence on a trusted
-
-
-
-Rodriguez               Expires 26 September 2026               [Page 3]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
-
    third party.
 
    The increasing capability of generative AI to synthesize realistic
@@ -208,6 +218,14 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    This document specifies:
 
+
+
+
+Rodriguez               Expires 26 September 2026               [Page 4]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
    *  The Key Binding Certificate format (Section 4)
 
    *  The Contact Payload format (Section 5)
@@ -217,14 +235,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    *  The Presence Proof challenge-response mechanism (Section 7)
 
    *  Safety Number computation (Section 8)
-
-
-
-
-Rodriguez               Expires 26 September 2026               [Page 4]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
    This document does not specify:
 
@@ -263,6 +273,15 @@ Internet-Draft             H2H Presence Proof                 March 2026
       the transport layer and is not constrained by this document.
 
    Hardware Key Store:  A hardware component that generates, stores, and
+
+
+
+
+Rodriguez               Expires 26 September 2026               [Page 5]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
       uses cryptographic keys without exposing private key material to
       software.  The key store MUST support P-256 key generation with
       non-exportable private keys and per-operation authentication
@@ -274,13 +293,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
       operation.  An authentication event has one of two assurance
       levels: PRESENCE (biometric verification) or DEVICE (credential
       verification).
-
-
-
-Rodriguez               Expires 26 September 2026               [Page 5]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
    Key Binding Certificate (KBC):  A COSE_Sign1 [RFC9052] structure
       binding an Identity Key to a Node Key.
@@ -303,32 +315,20 @@ Internet-Draft             H2H Presence Proof                 March 2026
    with algorithm ES256 (ECDSA w/ SHA-256 using P-256, COSE algorithm
    identifier -7).
 
+   Implementations MUST use deterministic CBOR encoding as defined in
+   Section 4.2 of [RFC8949] (Core Deterministic Encoding Requirements).
+   This ensures that the same payload always produces the same byte
+   sequence, which is critical for signature verification.
+
+   Every CBOR map payload in this protocol includes a structure_type
+   field (key 0) that uniquely identifies the payload type.  This
+   prevents type confusion attacks where a signed structure of one type
+   is substituted for another.
+
    Identity Key public keys are encoded as COSE_Key [RFC9053] structures
    with kty=2 (EC2), crv=1 (P-256).
 
 3.  Architecture
-
-3.1.  Two-Key Design
-
-   The protocol employs two asymmetric key pairs per user:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -337,6 +337,10 @@ Rodriguez               Expires 26 September 2026               [Page 6]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
+
+3.1.  Two-Key Design
+
+   The protocol employs two asymmetric key pairs per user:
 
    +--------------------------------------------------+
    |  Identity Key (IK)                               |
@@ -375,15 +379,11 @@ Internet-Draft             H2H Presence Proof                 March 2026
    indicating the type of authentication event that authorized the
    signing operation:
 
-     +=======+==========+============================================+
-     | Value | Label    | Meaning                                    |
-     +=======+==========+============================================+
-     |     1 | PRESENCE | Biometric authentication was performed     |
-     +-------+----------+--------------------------------------------+
-     |     2 | DEVICE   | Device credential authentication performed |
-     +-------+----------+--------------------------------------------+
 
-                                  Table 1
+
+
+
+
 
 
 
@@ -393,6 +393,16 @@ Rodriguez               Expires 26 September 2026               [Page 7]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
+
+     +=======+==========+============================================+
+     | Value | Label    | Meaning                                    |
+     +=======+==========+============================================+
+     |     1 | PRESENCE | Biometric authentication was performed     |
+     +-------+----------+--------------------------------------------+
+     |     2 | DEVICE   | Device credential authentication performed |
+     +-------+----------+--------------------------------------------+
+
+                                  Table 1
 
    Relying parties (receiving peers) MUST be informed of the assurance
    level and SHOULD make it visible to the user.
@@ -410,9 +420,11 @@ Internet-Draft             H2H Presence Proof                 March 2026
        a successful authentication event.  The key store MUST NOT cache
        authentication results across signing operations.
 
-   3.  Enrollment-sensitive (RECOMMENDED): If the device's biometric
-       enrollment data changes, the key store SHOULD invalidate the
-       Identity Key.
+   3.  Enrollment-sensitive: If the device's biometric enrollment data
+       changes (e.g., a new fingerprint is added), the key store MUST
+       invalidate the Identity Key.  This prevents an attacker who gains
+       temporary physical access from adding their biometric and
+       subsequently producing valid PRESENCE-level signatures.
 
 3.4.  Node Key Rotation
 
@@ -431,6 +443,13 @@ Internet-Draft             H2H Presence Proof                 March 2026
    signature.  If valid, the peer updates its stored NK for that
    contact.
 
+
+
+Rodriguez               Expires 26 September 2026               [Page 8]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
 4.  Key Binding Certificate
 
 4.1.  Format
@@ -443,40 +462,49 @@ Internet-Draft             H2H Presence Proof                 March 2026
      payload: KBC_payload
    )
 
-
-
-Rodriguez               Expires 26 September 2026               [Page 8]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
-
    KBC_payload is a CBOR map:
 
-   +=====+==============+===========+=================================+
-   | Key | Name         | CBOR Type | Description                     |
-   +=====+==============+===========+=================================+
-   |   1 | version      | uint      | MUST be 1                       |
-   +-----+--------------+-----------+---------------------------------+
-   |   2 | ik_public    | COSE_Key  | P-256 public key (kty=2, crv=1) |
-   +-----+--------------+-----------+---------------------------------+
-   |   3 | nk_public    | bstr      | Transport-specific encoding     |
-   +-----+--------------+-----------+---------------------------------+
-   |   4 | nk_algorithm | tstr      | e.g., "Ed25519", "P-256"        |
-   +-----+--------------+-----------+---------------------------------+
-   |   5 | timestamp    | uint      | Unix time in milliseconds       |
-   +-----+--------------+-----------+---------------------------------+
-   |   6 | expiry       | uint      | Unix time in milliseconds       |
-   +-----+--------------+-----------+---------------------------------+
-   |   7 | assurance    | uint      | 1=PRESENCE, 2=DEVICE            |
-   +-----+--------------+-----------+---------------------------------+
+         +=====+================+===========+====================+
+         | Key | Name           | CBOR Type | Description        |
+         +=====+================+===========+====================+
+         |   0 | structure_type | uint      | MUST be 0x01 (KBC) |
+         +-----+----------------+-----------+--------------------+
+         |   1 | version        | uint      | MUST be 1          |
+         +-----+----------------+-----------+--------------------+
+         |   2 | ik_public      | COSE_Key  | P-256 public key   |
+         |     |                |           | (kty=2, crv=1)     |
+         +-----+----------------+-----------+--------------------+
+         |   3 | nk_public      | bstr      | Transport-specific |
+         |     |                |           | encoding           |
+         +-----+----------------+-----------+--------------------+
+         |   4 | nk_algorithm   | tstr      | e.g., "Ed25519",   |
+         |     |                |           | "P-256"            |
+         +-----+----------------+-----------+--------------------+
+         |   5 | timestamp      | uint      | Unix time in       |
+         |     |                |           | milliseconds       |
+         +-----+----------------+-----------+--------------------+
+         |   6 | expiry         | uint      | Unix time in       |
+         |     |                |           | milliseconds       |
+         +-----+----------------+-----------+--------------------+
+         |   7 | assurance      | uint      | 1=PRESENCE,        |
+         |     |                |           | 2=DEVICE           |
+         +-----+----------------+-----------+--------------------+
 
-                                 Table 2
+                                  Table 2
 
 4.2.  Creation
 
    The signer MUST:
 
    1.  Populate all fields of KBC_payload.
+
+
+
+
+Rodriguez               Expires 26 September 2026               [Page 9]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
    2.  Set expiry to no more than 30 days after timestamp.
 
@@ -494,25 +522,21 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    1.  Decode the COSE_Sign1 structure.
 
-   2.  Extract ik_public (field 2) from the payload.
+   2.  Verify that structure_type (field 0) is 0x01 (KBC).  If not,
+       reject.  This prevents type confusion with other signed
+       structures.
 
-   3.  Verify the COSE_Sign1 signature using ik_public.
+   3.  Extract ik_public (field 2) from the payload.
 
+   4.  Verify the COSE_Sign1 signature using ik_public.
 
-
-
-Rodriguez               Expires 26 September 2026               [Page 9]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
-
-   4.  Verify that the current time is >= timestamp (field 5) and <
+   5.  Verify that the current time is >= timestamp (field 5) and <
        expiry (field 6).
 
-   5.  Verify that ik_public matches the expected Identity Key for this
+   6.  Verify that ik_public matches the expected Identity Key for this
        contact (from a prior contact exchange, Section 5).
 
-   6.  Verify that nk_public (field 3) matches the Node Key of the
+   7.  Verify that nk_public (field 3) matches the Node Key of the
        transport peer as observed during the transport handshake.
 
    If ANY check fails, the verifier MUST reject the KBC and terminate
@@ -530,30 +554,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    The Contact Payload is a COSE_Sign1 structure:
 
-   CP = COSE_Sign1(
-     protected: { 1 (alg): -7 (ES256) },
-     unprotected: {},
-     payload: CP_payload
-   )
-
-   CP_payload is a CBOR map:
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -562,30 +562,44 @@ Rodriguez               Expires 26 September 2026              [Page 10]
 Internet-Draft             H2H Presence Proof                 March 2026
 
 
-     +=====+==============+===========+=============================+
-     | Key | Name         | CBOR Type | Description                 |
-     +=====+==============+===========+=============================+
-     |   1 | version      | uint      | MUST be 1                   |
-     +-----+--------------+-----------+-----------------------------+
-     |   2 | ik_public    | COSE_Key  | P-256 public key            |
-     +-----+--------------+-----------+-----------------------------+
-     |   3 | nk_public    | bstr      | Transport-specific encoding |
-     +-----+--------------+-----------+-----------------------------+
-     |   4 | nk_algorithm | tstr      | e.g., "Ed25519"             |
-     +-----+--------------+-----------+-----------------------------+
-     |   5 | display_name | tstr      | UTF-8, max 64 bytes         |
-     +-----+--------------+-----------+-----------------------------+
-     |   6 | timestamp    | uint      | Unix time in milliseconds   |
-     +-----+--------------+-----------+-----------------------------+
-     |   7 | nonce        | bstr      | 16 bytes, cryptographically |
-     |     |              |           | random                      |
-     +-----+--------------+-----------+-----------------------------+
-     |   8 | addressing   | bstr      | Transport-specific, opaque  |
-     +-----+--------------+-----------+-----------------------------+
-     |   9 | assurance    | uint      | 1=PRESENCE, 2=DEVICE        |
-     +-----+--------------+-----------+-----------------------------+
+   CP = COSE_Sign1(
+     protected: { 1 (alg): -7 (ES256) },
+     unprotected: {},
+     payload: CP_payload
+   )
 
-                                 Table 3
+   CP_payload is a CBOR map:
+
+   +=====+================+===========+================================+
+   | Key | Name           | CBOR Type | Description                    |
+   +=====+================+===========+================================+
+   |   0 | structure_type | uint      | MUST be 0x02 (Contact          |
+   |     |                |           | Payload)                       |
+   +-----+----------------+-----------+--------------------------------+
+   |   1 | version        | uint      | MUST be 1                      |
+   +-----+----------------+-----------+--------------------------------+
+   |   2 | ik_public      | COSE_Key  | P-256 public key               |
+   +-----+----------------+-----------+--------------------------------+
+   |   3 | nk_public      | bstr      | Transport-specific             |
+   |     |                |           | encoding                       |
+   +-----+----------------+-----------+--------------------------------+
+   |   4 | nk_algorithm   | tstr      | e.g., "Ed25519"                |
+   +-----+----------------+-----------+--------------------------------+
+   |   5 | display_name   | tstr      | UTF-8, max 64 bytes            |
+   +-----+----------------+-----------+--------------------------------+
+   |   6 | timestamp      | uint      | Unix time in                   |
+   |     |                |           | milliseconds                   |
+   +-----+----------------+-----------+--------------------------------+
+   |   7 | nonce          | bstr      | 16 bytes,                      |
+   |     |                |           | cryptographically random       |
+   +-----+----------------+-----------+--------------------------------+
+   |   8 | addressing     | bstr      | Transport-specific,            |
+   |     |                |           | opaque                         |
+   +-----+----------------+-----------+--------------------------------+
+   |   9 | assurance      | uint      | 1=PRESENCE, 2=DEVICE           |
+   +-----+----------------+-----------+--------------------------------+
+
+                                  Table 3
 
 5.2.  Creation
 
@@ -596,6 +610,13 @@ Internet-Draft             H2H Presence Proof                 March 2026
    2.  Set timestamp (field 6) to the current time.
 
    3.  Populate all other fields.
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 11]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
    4.  Serialize CP_payload as CBOR.
 
@@ -611,13 +632,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    The proximity mechanism MUST satisfy the following requirements:
 
-
-
-Rodriguez               Expires 26 September 2026              [Page 11]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
-
    1.  Both parties are physically co-present during the exchange.
 
    2.  The mechanism can transfer at least 512 bytes of binary data.
@@ -625,6 +639,17 @@ Internet-Draft             H2H Presence Proof                 March 2026
    3.  The mechanism provides a human-verifiable indication that the
        exchange is occurring with the intended party (e.g., visual
        confirmation, physical proximity constraint).
+
+   4.  For mechanisms that do not provide visual confirmation of the
+       peer (e.g., wireless discovery), the implementation MUST require
+       explicit user confirmation of the peer's display_name before
+       storing the contact.
+
+   The contact exchange MUST be bidirectional: both parties MUST
+   exchange and verify Contact Payloads before either party stores the
+   other as a verified contact.  An implementation MUST NOT store a
+   contact from a unidirectional exchange (where only one party scanned
+   the other's payload).
 
    The choice of proximity mechanism is an implementation decision.  See
    Appendix A for examples.
@@ -635,6 +660,19 @@ Internet-Draft             H2H Presence Proof                 March 2026
    the display name length and addressing information size.
    Implementations SHOULD ensure their chosen proximity mechanism
    supports payloads of at least 512 bytes.
+
+
+
+
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 12]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
 6.  Contact Exchange Verification
 
@@ -647,32 +685,28 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    2.  Extract the CP_payload.
 
-   3.  Verify that version (field 1) is supported.  If unsupported,
+   3.  Verify that structure_type (field 0) is 0x02 (Contact Payload).
+       If not, reject.
+
+   4.  Verify that version (field 1) is supported.  If unsupported,
        reject.
 
-   4.  Verify that timestamp (field 6) is within a 5-minute window of
+   5.  Verify that timestamp (field 6) is within a 5-minute window of
        the verifier's current time: abs(now - timestamp) <= 300000
        milliseconds.  If outside the window, reject.
 
-   5.  Verify that nonce (field 7) has not been seen in a previous
+   6.  Verify that nonce (field 7) has not been seen in a previous
        Contact Payload within the current 5-minute window.  If
        duplicate, reject.
 
-   6.  Verify the COSE_Sign1 signature using ik_public (field 2).  If
+   7.  Verify the COSE_Sign1 signature using ik_public (field 2).  If
        signature verification fails, reject.
 
-   7.  If all checks pass, store the contact: ik_public, nk_public,
-       nk_algorithm, display_name, addressing, assurance level, and the
-       timestamp of the exchange.
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 12]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
+   8.  If all checks pass and the exchange is bidirectional (the local
+       device has also transmitted its own Contact Payload to this
+       peer), store the contact: ik_public, nk_public, nk_algorithm,
+       display_name, addressing, assurance level, and the timestamp of
+       the exchange.
 
 6.2.  Clock Skew
 
@@ -689,6 +723,13 @@ Internet-Draft             H2H Presence Proof                 March 2026
    of seen nonces for at least 5 minutes and SHOULD discard them after
    10 minutes.
 
+
+
+Rodriguez               Expires 26 September 2026              [Page 13]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
 7.  Presence Proof Challenge
 
 7.1.  Overview
@@ -701,19 +742,29 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    The challenge is a CBOR map:
 
-     +=====+=================+===========+==========================+
-     | Key | Name            | CBOR Type | Description              |
-     +=====+=================+===========+==========================+
-     |   1 | type            | uint      | MUST be 0x10             |
-     +-----+-----------------+-----------+--------------------------+
-     |   2 | challenge_nonce | bstr      | 32 bytes,                |
-     |     |                 |           | cryptographically random |
-     +-----+-----------------+-----------+--------------------------+
+    +=====+====================+===========+==========================+
+    | Key | Name               | CBOR Type | Description              |
+    +=====+====================+===========+==========================+
+    |   0 | structure_type     | uint      | MUST be 0x10             |
+    |     |                    |           | (PROOF_CHALLENGE)        |
+    +-----+--------------------+-----------+--------------------------+
+    |   1 | challenge_nonce    | bstr      | 32 bytes,                |
+    |     |                    |           | cryptographically random |
+    +-----+--------------------+-----------+--------------------------+
+    |   2 | required_assurance | uint      | 1=PRESENCE required,     |
+    |     |                    |           | 2=DEVICE ok              |
+    +-----+--------------------+-----------+--------------------------+
 
-                                 Table 4
+                                  Table 4
 
    The challenger MUST generate challenge_nonce using a
    cryptographically secure random number generator.
+
+   The required_assurance field allows the challenger to demand a
+   specific assurance level.  If set to 1 (PRESENCE), the responder MUST
+   authenticate via biometric; a DEVICE-level response to a PRESENCE-
+   required challenge MUST be rejected by the challenger.  If set to 2
+   (DEVICE), either assurance level is acceptable.
 
 7.3.  Response Format
 
@@ -725,7 +776,12 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
 
 
-Rodriguez               Expires 26 September 2026              [Page 13]
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 14]
 
 Internet-Draft             H2H Presence Proof                 March 2026
 
@@ -734,9 +790,10 @@ Internet-Draft             H2H Presence Proof                 March 2026
      protected: { 1 (alg): -7 (ES256) },
      unprotected: {},
      payload: {
-       1 : 0x11,            / type /
-       2 : challenge_nonce,  / echoed from challenge /
-       3 : assurance         / 1=PRESENCE, 2=DEVICE /
+       0 : 0x11,              / structure_type: PROOF_RESPONSE /
+       1 : challenge_nonce,    / echoed from challenge /
+       2 : assurance,          / 1=PRESENCE, 2=DEVICE /
+       3 : channel_binding     / SHA-256 hash of connection context /
      }
    )
 
@@ -744,16 +801,32 @@ Internet-Draft             H2H Presence Proof                 March 2026
    signing operation triggers an authentication event on the responder's
    device.
 
+   The channel_binding field (key 3) MUST contain the SHA-256 hash of a
+   connection-specific value agreed upon during the transport handshake
+   (e.g., the concatenation of both peers' Node Key public components,
+   or a transport-provided session identifier).  This prevents relay
+   attacks where an attacker forwards a challenge to the victim's device
+   and relays the response to a different connection.
+
 7.4.  Verification
 
    The challenger MUST:
 
    1.  Decode the COSE_Sign1 structure.
 
-   2.  Verify the signature using the stored Identity Key for the peer.
+   2.  Verify that structure_type (field 0) is 0x11 (PROOF_RESPONSE).
 
-   3.  Verify that challenge_nonce in the response matches the
+   3.  Verify the signature using the stored Identity Key for the peer.
+
+   4.  Verify that challenge_nonce in the response matches the
        challenge_nonce that was sent.
+
+   5.  Verify that channel_binding (field 3) matches the expected
+       SHA-256 hash of the current connection context.
+
+   6.  If required_assurance in the challenge was 1 (PRESENCE), verify
+       that assurance (field 2) in the response is also 1.  If the
+       response is DEVICE when PRESENCE was required, reject.
 
 7.5.  Timing
 
@@ -761,6 +834,13 @@ Internet-Draft             H2H Presence Proof                 March 2026
       once per 300 seconds (5 minutes).
 
    *  The responder MUST produce a response within 60 seconds.
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 15]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
    *  If no valid response is received within 60 seconds, the challenger
       SHOULD inform the user.
@@ -777,14 +857,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
 
    Given two Identity Key public keys, IK_A and IK_B, encoded as
    uncompressed P-256 points (65 bytes each, starting with 0x04):
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 14]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
    sorted = sort_lexicographic(IK_A, IK_B)
    digest = SHA-256("H2H-SafetyNumber-v1" || sorted[0] || sorted[1])
@@ -819,6 +891,13 @@ Internet-Draft             H2H Presence Proof                 March 2026
    an out-of-band channel (e.g., reading aloud, or comparing a visual
    encoding displayed on both devices).
 
+
+
+Rodriguez               Expires 26 September 2026              [Page 16]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
    Implementations MUST provide a user interface for displaying Safety
    Numbers.  Implementations SHOULD alert the user when a stored
    contact's Safety Number changes.
@@ -832,15 +911,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    *  Network attacker: Can observe, modify, drop, replay, and inject
       messages on the network.  Mitigated by transport-layer encryption
       (assumed) and COSE_Sign1 signatures.
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 15]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
    *  Remote attacker: Can attempt to impersonate a user without
       physical access to their device.  Mitigated by the hardware key
@@ -876,6 +946,14 @@ Internet-Draft             H2H Presence Proof                 March 2026
    signatures with lower confidence and MUST display the assurance level
    to the user.
 
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 17]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
 9.4.  Contact Payload Capture
 
    A captured Contact Payload (e.g., photographed visual encoding or
@@ -888,15 +966,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    *  Replay the payload after 5 minutes (timestamp check).
 
    *  Replay within 5 minutes if the nonce was already seen.
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 16]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
    The attacker CAN attempt to connect to the victim's transport address
    but cannot complete H2H authentication (they lack a KBC for an
@@ -924,83 +993,14 @@ Internet-Draft             H2H Presence Proof                 March 2026
    This is sufficient for manual comparison.  Implementations SHOULD
    also support machine-readable comparison for higher assurance.
 
-9.8.  Post-Quantum Considerations
+9.8.  Assurance Level Downgrade
 
-   P-256 ECDSA is vulnerable to quantum computers implementing Shor's
-   algorithm.  When post-quantum signature algorithms are available in
-   hardware key stores, the protocol SHOULD migrate.  The version field
-   in all structures enables this transition.
-
-10.  IANA Considerations
-
-10.1.  H2H CBOR Map Keys
-
-   This document defines CBOR integer map keys for use in H2H protocol
-   structures.  A future revision may request establishment of an IANA
-   registry for these keys.
-
-
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 17]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
-
-10.1.1.  KBC_payload Keys
-
-                    +=====+==============+===========+
-                    | Key | Name         | CBOR Type |
-                    +=====+==============+===========+
-                    |   1 | version      | uint      |
-                    +-----+--------------+-----------+
-                    |   2 | ik_public    | COSE_Key  |
-                    +-----+--------------+-----------+
-                    |   3 | nk_public    | bstr      |
-                    +-----+--------------+-----------+
-                    |   4 | nk_algorithm | tstr      |
-                    +-----+--------------+-----------+
-                    |   5 | timestamp    | uint      |
-                    +-----+--------------+-----------+
-                    |   6 | expiry       | uint      |
-                    +-----+--------------+-----------+
-                    |   7 | assurance    | uint      |
-                    +-----+--------------+-----------+
-
-                                 Table 5
-
-10.1.2.  CP_payload Keys
-
-                    +=====+==============+===========+
-                    | Key | Name         | CBOR Type |
-                    +=====+==============+===========+
-                    |   1 | version      | uint      |
-                    +-----+--------------+-----------+
-                    |   2 | ik_public    | COSE_Key  |
-                    +-----+--------------+-----------+
-                    |   3 | nk_public    | bstr      |
-                    +-----+--------------+-----------+
-                    |   4 | nk_algorithm | tstr      |
-                    +-----+--------------+-----------+
-                    |   5 | display_name | tstr      |
-                    +-----+--------------+-----------+
-                    |   6 | timestamp    | uint      |
-                    +-----+--------------+-----------+
-                    |   7 | nonce        | bstr      |
-                    +-----+--------------+-----------+
-                    |   8 | addressing   | bstr      |
-                    +-----+--------------+-----------+
-                    |   9 | assurance    | uint      |
-                    +-----+--------------+-----------+
-
-                                 Table 6
+   An attacker who compromises the application layer (but not the
+   hardware key store) may attempt to forge the assurance field in
+   signed structures, claiming PRESENCE when only DEVICE authentication
+   occurred.  The assurance field is included in the COSE_Sign1 payload
+   and therefore covered by the signature; it cannot be modified without
+   invalidating the signature.
 
 
 
@@ -1010,19 +1010,207 @@ Rodriguez               Expires 26 September 2026              [Page 18]
 Internet-Draft             H2H Presence Proof                 March 2026
 
 
-10.1.3.  Presence Proof Message Types
+   However, a compromised application could request DEVICE-level
+   authentication from the key store and then set the assurance field to
+   PRESENCE in the payload before signing.  This attack requires
+   compromising the application on the signer's device.  It is mitigated
+   by platform-level attestation mechanisms (out of scope for this
+   document) that can independently verify the authentication type.
+
+9.9.  Type Confusion
+
+   Without the structure_type discriminator (field 0), an attacker could
+   potentially substitute a signed Contact Payload for a Key Binding
+   Certificate or vice versa, since both are COSE_Sign1 structures
+   signed by the same Identity Key.  The structure_type field prevents
+   this: verifiers MUST check that the structure_type matches the
+   expected value before processing any other fields.
+
+9.10.  Identity Key Revocation
+
+   This document does not define a key revocation mechanism.  If an
+   Identity Key is compromised, the key holder SHOULD notify all
+   contacts via an out-of-band channel that the key is no longer
+   trustworthy.  Contacts MUST remove the compromised Identity Key and
+   treat any future signatures from that key as unverified.
+
+   A formal revocation mechanism (e.g., signed revocation statements,
+   revocation lists) is deferred to a companion document.
+
+9.11.  Relay Attack on Presence Proof
+
+   Without channel binding, an attacker positioned between two peers
+   could relay a Presence Proof Challenge from Peer A to the victim's
+   device, collect the signed response, and forward it to Peer A, making
+   Peer A believe the victim is present on the attacker's connection.
+   The channel_binding field in the Presence Proof Response (Section 7)
+   prevents this by binding the response to the specific connection
+   context.
+
+9.12.  Post-Quantum Considerations
+
+   P-256 ECDSA is vulnerable to quantum computers implementing Shor's
+   algorithm.  When post-quantum signature algorithms are available in
+   hardware key stores, the protocol SHOULD migrate.  The version field
+   in all structures enables this transition.
+
+
+
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 19]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
+9.13.  Privacy of Identity Key in Contact Payloads
+
+   The Contact Payload transmits the Identity Key public component in
+   cleartext.  Any party that observes or captures a Contact Payload
+   obtains a persistent, unique identifier for the user.  This is an
+   inherent trade-off: the recipient needs the Identity Key to verify
+   the signature and to identify the sender in future connections.
+
+   Mitigations:
+
+   *  Contact Payloads are exchanged only during deliberate, in-person
+      ceremonies, limiting the exposure surface.
+
+   *  The 5-minute validity window limits the useful lifetime of a
+      captured payload.
+
+   *  The Node Key (used for networking) is a separate key that does not
+      reveal the Identity Key to network observers.
+
+   Applications with heightened privacy requirements SHOULD consider
+   exchanging Contact Payloads over an encrypted proximity channel
+   (e.g., BLE with encryption enabled) to prevent passive observation.
+
+10.  IANA Considerations
+
+10.1.  H2H CBOR Map Keys
+
+   This document defines CBOR integer map keys for use in H2H protocol
+   structures.  A future revision may request establishment of an IANA
+   registry for these keys.
+
+10.1.1.  KBC_payload Keys
+
+                   +=====+================+===========+
+                   | Key | Name           | CBOR Type |
+                   +=====+================+===========+
+                   |   0 | structure_type | uint      |
+                   +-----+----------------+-----------+
+                   |   1 | version        | uint      |
+                   +-----+----------------+-----------+
+                   |   2 | ik_public      | COSE_Key  |
+                   +-----+----------------+-----------+
+                   |   3 | nk_public      | bstr      |
+                   +-----+----------------+-----------+
+                   |   4 | nk_algorithm   | tstr      |
+                   +-----+----------------+-----------+
+                   |   5 | timestamp      | uint      |
+                   +-----+----------------+-----------+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 20]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
+                   |   6 | expiry         | uint      |
+                   +-----+----------------+-----------+
+                   |   7 | assurance      | uint      |
+                   +-----+----------------+-----------+
+
+                                 Table 5
+
+10.1.2.  CP_payload Keys
+
+                   +=====+================+===========+
+                   | Key | Name           | CBOR Type |
+                   +=====+================+===========+
+                   |   0 | structure_type | uint      |
+                   +-----+----------------+-----------+
+                   |   1 | version        | uint      |
+                   +-----+----------------+-----------+
+                   |   2 | ik_public      | COSE_Key  |
+                   +-----+----------------+-----------+
+                   |   3 | nk_public      | bstr      |
+                   +-----+----------------+-----------+
+                   |   4 | nk_algorithm   | tstr      |
+                   +-----+----------------+-----------+
+                   |   5 | display_name   | tstr      |
+                   +-----+----------------+-----------+
+                   |   6 | timestamp      | uint      |
+                   +-----+----------------+-----------+
+                   |   7 | nonce          | bstr      |
+                   +-----+----------------+-----------+
+                   |   8 | addressing     | bstr      |
+                   +-----+----------------+-----------+
+                   |   9 | assurance      | uint      |
+                   +-----+----------------+-----------+
+
+                                 Table 6
+
+10.1.3.  Presence Proof Challenge Keys
+
+                 +=====+====================+===========+
+                 | Key | Name               | CBOR Type |
+                 +=====+====================+===========+
+                 |   0 | structure_type     | uint      |
+                 +-----+--------------------+-----------+
+                 |   1 | challenge_nonce    | bstr      |
+                 +-----+--------------------+-----------+
+                 |   2 | required_assurance | uint      |
+                 +-----+--------------------+-----------+
+
+                                 Table 7
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 21]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
+10.1.4.  Presence Proof Response Keys
+
+                   +=====+=================+===========+
+                   | Key | Name            | CBOR Type |
+                   +=====+=================+===========+
+                   |   0 | structure_type  | uint      |
+                   +-----+-----------------+-----------+
+                   |   1 | challenge_nonce | bstr      |
+                   +-----+-----------------+-----------+
+                   |   2 | assurance       | uint      |
+                   +-----+-----------------+-----------+
+                   |   3 | channel_binding | bstr      |
+                   +-----+-----------------+-----------+
+
+                                  Table 8
+
+10.1.5.  Structure Type Values
 
                         +=======+=================+
                         | Value | Name            |
                         +=======+=================+
+                        |  0x01 | KBC             |
+                        +-------+-----------------+
+                        |  0x02 | CONTACT_PAYLOAD |
+                        +-------+-----------------+
                         |  0x10 | PROOF_CHALLENGE |
                         +-------+-----------------+
                         |  0x11 | PROOF_RESPONSE  |
                         +-------+-----------------+
 
-                                  Table 7
+                                  Table 9
 
-10.1.4.  Assurance Levels
+10.1.6.  Assurance Levels
 
                            +=======+==========+
                            | Value | Name     |
@@ -1032,11 +1220,19 @@ Internet-Draft             H2H Presence Proof                 March 2026
                            |     2 | DEVICE   |
                            +-------+----------+
 
-                                 Table 8
+                                 Table 10
 
 11.  References
 
 11.1.  Normative References
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 22]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
    [FIPS180-4]
               National Institute of Standards and Technology, "Secure
@@ -1054,17 +1250,6 @@ Internet-Draft             H2H Presence Proof                 March 2026
    [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
-
-
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 19]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
    [RFC8949]  Bormann, C. and P. Hoffman, "Concise Binary Object
               Representation (CBOR)", STD 94, RFC 8949,
@@ -1098,6 +1283,13 @@ Internet-Draft             H2H Presence Proof                 March 2026
               Security (MLS) Protocol", RFC 9420, DOI 10.17487/RFC9420,
               July 2023, <https://www.rfc-editor.org/rfc/rfc9420>.
 
+
+
+Rodriguez               Expires 26 September 2026              [Page 23]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
+
    [Signal]   Marlinspike, M. and T. Perrin, "The X3DH Key Agreement
               Protocol", 2016,
               <https://signal.org/docs/specifications/x3dh/>.
@@ -1115,13 +1307,6 @@ A.1.  Platform Key Store Mapping
    The abstract "hardware key store" requirement maps to the following
    platform-specific implementations:
 
-
-
-Rodriguez               Expires 26 September 2026              [Page 20]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
-
    +==========+================+=======+==============================+
    | Platform | Key Store      | P-256 | Auth Gating                  |
    +==========+================+=======+==============================+
@@ -1137,7 +1322,7 @@ Internet-Draft             H2H Presence Proof                 March 2026
    | Linux    | TPM 2.0        | Yes   | PKCS#11 with PIN             |
    +----------+----------------+-------+------------------------------+
 
-                                 Table 9
+                                 Table 11
 
 A.2.  QR Code Parameters
 
@@ -1150,6 +1335,16 @@ A.2.  QR Code Parameters
    *  Recommended error correction: M (15% recovery)
 
    *  Maximum payload at Version 25, EC level M: 1,269 bytes
+
+
+
+
+
+
+Rodriguez               Expires 26 September 2026              [Page 24]
+
+Internet-Draft             H2H Presence Proof                 March 2026
+
 
 A.3.  BLE Exchange Parameters
 
@@ -1168,15 +1363,6 @@ Acknowledgements
    The H2H protocol builds on foundational work in FIDO2/WebAuthn
    [WebAuthn], the Signal Protocol [Signal], and the CBOR/COSE encoding
    standards [RFC8949] [RFC9052].
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 21]
-
-Internet-Draft             H2H Presence Proof                 March 2026
-
 
 Author's Address
 
@@ -1211,22 +1397,4 @@ Author's Address
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 26 September 2026              [Page 22]
+Rodriguez               Expires 26 September 2026              [Page 25]
