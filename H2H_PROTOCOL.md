@@ -19,7 +19,7 @@ to another human without relying on a trusted third party.
 H2H binds a device's hardware security module and biometric
 authentication to a persistent cryptographic identity represented as
 a Decentralized Identifier (DID).  The protocol introduces the
-concept of a **Presence Proof**: cryptographic evidence that a
+concept of a **Human Proof**: cryptographic evidence that a
 specific, biometrically verified individual authorized a particular
 operation at a particular time.
 
@@ -59,9 +59,9 @@ appropriate credit.
 8.  Social Recovery
 9.  Data Transfer Layer
 10. Channel Types
-11. Presence Proof Challenges
+11. Human Proof Challenges
 12. Mailbox Nodes
-13. Safety Numbers
+13. Key Verification Fingerprint
 14. Version Negotiation
 15. Wire Formats
 16. Security Considerations
@@ -111,7 +111,7 @@ identity verification of a specific individual.
 
 The protocol is designed with the following goals, in priority order:
 
-1.  **Presence Proof**: Signed operations SHOULD be authorized by a
+1.  **Human Proof**: Signed operations SHOULD be authorized by a
     biometric authentication event on the sender's device, producing
     cryptographic evidence of human presence.  The protocol defines
     two assurance levels for operations where biometric authentication
@@ -148,9 +148,9 @@ This document specifies:
 -  Social key recovery (Section 8)
 -  Peer-to-peer data transfer requirements (Section 9)
 -  Application-layer channel types (Section 10)
--  Presence Proof challenges (Section 11)
+-  Human Proof challenges (Section 11)
 -  Optional store-and-forward via mailbox nodes (Section 12)
--  Safety number computation (Section 13)
+-  Key Verification Fingerprint (Section 13)
 -  Version negotiation (Section 14)
 -  Wire formats using CBOR and COSE (Section 15)
 
@@ -177,16 +177,15 @@ capitals, as shown here.
 
 ### 2.2.  Definitions
 
-**Presence Proof**:  Cryptographic evidence that a specific
-   biometric authentication event occurred on a specific hardware
-   device immediately prior to a signing operation.  Distinct from
-   proof-of-personhood (which proves humanness but not specific
-   identity).  A Presence Proof proves that a specific, previously
-   verified individual authorized a specific operation.
+**Human Proof**:  A COSE_Sign1 structure that provides cryptographic
+   evidence a specific, biometrically verified individual authorized
+   an operation.  Distinct from proof-of-personhood (which proves
+   that an entity is A human); a Human Proof proves that a specific,
+   previously verified individual authorized a specific operation.
 
 **Device Authentication**:  A signing operation authorized by a
    device credential (PIN, passcode, pattern) rather than a biometric.
-   Provides lower assurance than a Presence Proof.  Used as a
+   Provides lower assurance than a Human Proof.  Used as a
    fallback when biometric authentication is unavailable.
 
 **Identity Key (IK)**:  A P-256 ECDSA key pair generated inside a
@@ -194,25 +193,26 @@ capitals, as shown here.
    hardware.  The public key, combined with key metadata, forms the
    user's Decentralized Identifier (DID).
 
-**Node Key (NK)**:  An asymmetric key pair used for peer-to-peer
+**Transport Key (TK)**:  An asymmetric key pair used for peer-to-peer
    networking.  Generated in software.  Signed by the Identity Key
    to create a Key Binding Certificate.  The algorithm depends on
    the transport implementation (e.g., Ed25519 for QUIC-based
    transports).
 
 **Key Binding Certificate (KBC)**:  A COSE_Sign1 [RFC9052] signed
-   statement binding an Identity Key to a Node Key.  Proves that
+   statement binding an Identity Key to a Transport Key.  Proves that
    a specific human (who controls the IK) authorizes a specific
-   network node (identified by the NK).
+   network node (identified by the TK).
 
 **Contact Payload**:  A COSE_Sign1 signed structure exchanged in
    person (via QR code, BLE, or NFC) containing the sender's
-   Identity Key, Node Key, network addressing information, and a
+   Identity Key, Transport Key, network addressing information, and a
    signature over all fields.
 
-**Safety Number**:  A human-readable numeric string derived from both
-   peers' Identity Keys.  Used for out-of-band verification that no
-   man-in-the-middle attack has occurred.
+**Key Verification Fingerprint**:  A short value derived from both
+   peers' Identity Keys, used for optional out-of-band verification
+   that no key substitution occurred during contact exchange.  The
+   human-readable encoding is application-defined.
 
 **Hardware Security Module (HSM)**:  A tamper-resistant hardware
    component that generates, stores, and uses cryptographic keys
@@ -266,19 +266,19 @@ The H2H Protocol operates in four phases:
 ```
 Phase 1: Identity Creation
    User creates a P-256 identity key in the hardware security module
-   and a Node Key for networking.  The identity key signs the node
+   and a Transport Key for networking.  The identity key signs the node
    key, producing a Key Binding Certificate.  The identity is
    represented as a did:peer DID.
 
 Phase 2: Contact Exchange (in person)
    Two users meet physically.  Each generates a Contact Payload
-   containing their DID, Node Key, network addressing, and a
+   containing their DID, Transport Key, network addressing, and a
    COSE_Sign1 signature.  Payloads are exchanged via QR code or
    BLE.  Each user verifies the other's signature and stores the
    contact.
 
 Phase 3: Connection Establishment
-   Using the Node Key and addressing info from the Contact Payload,
+   Using the Transport Key and addressing info from the Contact Payload,
    peers establish a direct encrypted connection.  The connection
    is authenticated by verifying the Key Binding Certificate against
    the stored Identity Key.
@@ -308,7 +308,7 @@ purpose:
          | signs (Key Binding Certificate, COSE_Sign1)
          v
 +--------------------------------------------------+
-|  Node Key (transport-specific algorithm)         |
+|  Transport Key (transport-specific algorithm)         |
 |  - Lives in software                             |
 |  - Used for peer-to-peer transport               |
 |  - Purpose: ROUTE "reach me at this address"     |
@@ -317,12 +317,12 @@ purpose:
 
 The Identity Key is the trust anchor.  It is constrained by hardware
 to require biometric or device authentication for every use, making
-it a proxy for human presence.  The Node Key handles high-frequency
+it a proxy for human presence.  The Transport Key handles high-frequency
 networking operations (handshakes, keepalives) that cannot
 practically require authentication prompts.
 
 The Key Binding Certificate links the two: "I, the human who
-controls Identity Key IK, authorize Node Key NK to act as my
+controls Identity Key IK, authorize Transport Key TK to act as my
 network endpoint."
 
 ### 3.3.  Assurance Levels
@@ -400,9 +400,9 @@ provide end-to-end encryption (specified in companion doc H2H-CRYPTO):
 | KDF                | HKDF-SHA-256      | [RFC5869]    |
 | AEAD               | AES-256-GCM       | [RFC5116]    |
 
-The Node Key algorithm is not mandated by this specification, as
+The Transport Key algorithm is not mandated by this specification, as
 it depends on the transport implementation.  Implementations MUST
-document which Node Key algorithm they use.
+document which Transport Key algorithm they use.
 
 ### 4.2.  Why P-256
 
@@ -420,7 +420,7 @@ across consumer devices:
 | Key                | Algorithm | Private  | Public          |
 |--------------------|-----------|----------|-----------------|
 | Identity Key (IK)  | P-256     | 32 bytes | 65 bytes (uncompressed) or 33 bytes (compressed) |
-| Node Key (NK)      | Transport-dependent | Varies | Varies |
+| Transport Key (TK)      | Transport-dependent | Varies | Varies |
 
 Identity Key public keys MUST be encoded as COSE_Key structures
 [RFC9053] with key type EC2 (kty: 2) and curve P-256 (crv: 1).
@@ -448,7 +448,7 @@ procedure is:
        accessibility (see Section 3.3)
     -  The key is tagged with a unique, application-scoped identifier
 
-3.  Generate a Node Key pair appropriate for the transport layer.
+3.  Generate a Transport Key pair appropriate for the transport layer.
 
 4.  Construct the Key Binding Certificate (Section 5.4).
 
@@ -488,7 +488,7 @@ using the did:peer method [DID-PEER], specifically Method 2
 
 The DID encodes:
 -  The Identity Key public key (authentication)
--  The current Node Key public key (key agreement / service endpoint)
+-  The current Transport Key public key (key agreement / service endpoint)
 -  A service endpoint for network addressing
 
 Example:
@@ -506,7 +506,7 @@ Credentials [VC-DATA-MODEL] and DIDComm [DIDCOMM-V2].
 ### 5.4.  Key Binding Certificate
 
 The Key Binding Certificate (KBC) binds an Identity Key to a
-Node Key.  It is a COSE_Sign1 structure:
+Transport Key.  It is a COSE_Sign1 structure:
 
 ```
 KBC = COSE_Sign1(IK_private, KBC_payload)
@@ -515,8 +515,8 @@ KBC_payload (CBOR map):
    0 (structure_type): uint, 0x01 (KBC)
    1 (version):       uint, 1
    2 (ik_public):     COSE_Key (P-256)
-   3 (nk_public):     bstr (transport-specific encoding)
-   4 (nk_algorithm):  tstr (e.g., "Ed25519", "P-256")
+   3 (tk_public):     bstr (transport-specific encoding)
+   4 (tk_algorithm):  tstr (e.g., "Ed25519", "P-256")
    5 (timestamp):     uint (Unix milliseconds)
    6 (expiry):        uint (Unix milliseconds)
    7 (assurance):     uint (1 = PRESENCE, 2 = DEVICE)
@@ -530,42 +530,70 @@ Verification of a KBC:
 1.  Decode the COSE_Sign1 structure.
 2.  Verify that the current time is between timestamp and expiry.
 3.  Verify the ECDSA signature using the ik_public from the payload.
-4.  If verification succeeds, the NK is authorized to act on behalf
+4.  If verification succeeds, the TK is authorized to act on behalf
     of the human who controls IK.
 
 The expiry SHOULD be set to 30 days from the timestamp.
 Implementations MUST re-sign the KBC before expiry to maintain
 connectivity.
 
-### 5.5.  Node Key Rotation
+### 5.5.  Transport Key Rotation
 
-The Node Key MAY be rotated at any time to limit the window during
+The Transport Key MAY be rotated at any time to limit the window during
 which a network observer can correlate a user's activity to a stable
 identifier.
 
 The rotation procedure is:
 
-1.  Generate a new Node Key pair.
-2.  Sign a new KBC binding the Identity Key to the new Node Key.
+1.  Generate a new Transport Key pair.
+2.  Sign a new KBC binding the Identity Key to the new Transport Key.
     This signing operation requires authentication (biometric or
     device credential).
-3.  Notify connected peers of the new Node Key via a KEY_ROTATION
+3.  Notify connected peers of the new Transport Key via a KEY_ROTATION
     message on the Control Channel (Section 10.2).
-4.  Update the DID document to reflect the new Node Key.
-5.  Discard the old Node Key private material.
+4.  Update the DID document to reflect the new Transport Key.
+5.  Discard the old Transport Key private material.
 
 Peers that receive a KEY_ROTATION message MUST:
 
 1.  Verify the new KBC signature against the stored Identity Key.
-2.  If valid, update the stored Node Key and addressing information.
-3.  Reconnect using the new Node Key.
+2.  If valid, update the stored Transport Key and addressing information.
+3.  Reconnect using the new Transport Key.
 
-Implementations SHOULD rotate the Node Key at least once every 30
+Implementations SHOULD rotate the Transport Key at least once every 30
 days.  Implementations MAY rotate more frequently (e.g., per
 connection or per session) at the cost of reduced reachability
 during the rotation window.
 
-### 5.6.  Identity Lifecycle
+### 5.6.  Offline Rotation
+
+When the Transport Key is rotated while a contact is offline, the
+contact will be unable to locate the key holder using the previous
+Transport Key.  Implementations MUST address this using one or more
+of the following:
+
+-  **Stable addressing (RECOMMENDED)**: The addressing field in the
+   Contact Payload (Section 6.2, field 9) SHOULD contain addressing
+   information that survives Transport Key rotation (e.g., a relay
+   server address or discovery service endpoint).  When a contact
+   reconnects via the stable address, the key holder presents the
+   current KBC containing the new Transport Key.
+
+-  **Mailbox deposit**: If the implementation supports mailbox nodes
+   (Section 12), the key holder SHOULD deposit the new KBC at their
+   mailbox node.  Offline contacts retrieve the updated KBC upon
+   reconnection.
+
+-  **Overlap period**: The key holder MAY continue to accept
+   connections on the old Transport Key for a limited time after
+   rotation (RECOMMENDED: no more than 24 hours).  Connections on
+   the old key SHOULD be used only to deliver the new KBC and
+   redirect the contact.
+
+Implementations MUST NOT rotate the Transport Key without a
+mechanism for offline contacts to discover the new key.
+
+### 5.7.  Identity Lifecycle
 
 ```
 +-------------------+
@@ -627,8 +655,8 @@ payload (CBOR map):
    1 (version):       uint, 1
    2 (did):           tstr (did:peer:2.Ez6LS...)
    3 (ik_public):     COSE_Key (P-256)
-   4 (nk_public):     bstr (transport-specific)
-   5 (nk_algorithm):  tstr (e.g., "Ed25519")
+   4 (tk_public):     bstr (transport-specific)
+   5 (tk_algorithm):  tstr (e.g., "Ed25519")
    6 (display_name):  tstr (UTF-8, max 64 bytes)
    7 (timestamp):     uint (Unix milliseconds)
    8 (nonce):         bstr (16 bytes, cryptographically random)
@@ -674,7 +702,7 @@ Alice                                             Bob
   |  [Exchange is now bidirectional — both store]   |
   |  10. Both devices store the other's contact     |
   |                                                 |
-  |  [both compare Safety Numbers to confirm]       |
+  |  [optionally compare fingerprints to confirm]   |
   |                                                 |
 ```
 
@@ -739,7 +767,7 @@ H2H defines a hierarchical trust model with four tiers:
 Tier 1: In-Person Verified (PRESENCE)
    You met this person face-to-face and exchanged Contact Payloads
    with biometric-level assurance.  Highest trust.  The only tier
-   that provides full Presence Proof.
+   that provides full Human Proof.
 
 Tier 2: Vouched Introduction
    A Tier 1 contact introduced this person via a signed vouching
@@ -747,7 +775,7 @@ Tier 2: Vouched Introduction
 
 Tier 3: Video Verified
    You conducted a live video call with this person and compared
-   Safety Numbers.  Moderate trust -- susceptible to real-time
+   Key Verification Fingerprints.  Moderate trust -- susceptible to real-time
    deepfakes.
 
 Tier 4: Key Only
@@ -901,7 +929,7 @@ implementation MUST provide:
     support unreliable datagrams for real-time media.
 
 4.  **Authenticated peer identity**: The transport MUST expose the
-    peer's Node Key public key so that the H2H protocol layer can
+    peer's Transport Key public key so that the H2H protocol layer can
     verify it against the stored Key Binding Certificate.
 
 5.  **NAT traversal**: The transport SHOULD provide automatic NAT
@@ -920,7 +948,7 @@ implementation with P2P extensions.
 ```
 Alice (initiator)                          Bob (responder)
   |                                          |
-  |  1. Look up Bob's NK + addressing from   |
+  |  1. Look up Bob's TK + addressing from   |
   |     stored contact                       |
   |                                          |
   |  2. Establish encrypted connection       |
@@ -928,13 +956,13 @@ Alice (initiator)                          Bob (responder)
   |  ---- transport handshake -------------> |
   |                                          |
   |  3. Both sides exchange KBCs             |
-  |  <--- KBC(Bob.IK -> Bob.NK) ----------- |
-  |  ---- KBC(Alice.IK -> Alice.NK) ------> |
+  |  <--- KBC(Bob.IK -> Bob.TK) ----------- |
+  |  ---- KBC(Alice.IK -> Alice.TK) ------> |
   |                                          |
   |  4. Each side verifies:                  |
   |     a. KBC signature is valid (COSE)     |
   |     b. IK matches stored contact DID     |
-  |     c. NK matches the transport peer     |
+  |     c. TK matches the transport peer     |
   |     d. KBC has not expired               |
   |                                          |
   |  5. If all checks pass:                  |
@@ -961,8 +989,8 @@ chain proves:
 ```
 Stored IK (from in-person meeting)
   = IK in KBC (verified by COSE_Sign1 signature)
-    = IK that signed NK
-      = NK of the transport peer (verified by transport handshake)
+    = IK that signed TK
+      = TK of the transport peer (verified by transport handshake)
 ```
 
 Therefore, the transport peer is controlled by the same human who
@@ -977,9 +1005,54 @@ servers are untrusted transport.  They:
 -  CANNOT read message content (transport encryption).
 -  CANNOT forge messages (no access to Identity Keys).
 -  CANNOT forge Key Binding Certificates.
--  CAN observe connection metadata (source/destination Node Keys,
+-  CAN observe connection metadata (source/destination Transport Keys,
    timing, data volume).
 -  CAN drop or delay packets (denial of service).
+
+### 9.5.  When to Use Signed Messages vs Transport Authentication
+
+Once the KBC is verified and the transport connection is established,
+the transport layer already provides authentication and encryption.
+The question is: when do applications need the additional SSK-signed
+messages defined in Section 10.1?
+
+**Use SSK-signed messages when:**
+
+-  **Messages are stored or forwarded**: Text messages saved in chat
+   history, files delivered via mailbox nodes, or any content that
+   outlives the transport session.  A signed message is self-contained
+   and verifiable without the original transport connection.
+-  **Non-repudiation is needed**: Approval workflows, financial
+   authorizations, or any operation where the receiver needs to prove
+   the sender produced the content.  Transport auth only proves "this
+   came over Bob's connection" — it cannot be verified after the
+   connection closes.
+-  **Relay or store-and-forward delivery**: A compromised relay could
+   inject or modify unsigned content.  SSK signatures protect integrity
+   end-to-end regardless of the delivery path.
+
+**Transport authentication alone is sufficient when:**
+
+-  **Real-time media streams**: Audio and video frames over an
+   authenticated, direct transport connection.  The KBC already proved
+   the transport peer is the person from the ceremony.  Signing every
+   frame would add latency with no practical security benefit.
+-  **Ephemeral signaling**: Keepalive, typing indicators, read receipts,
+   or other transient data that has no value after the session ends.
+
+**Summary by channel type:**
+
+| Channel | Signed Messages | Rationale |
+|:--------|:----------------|:----------|
+| Control (0x00) | No | Transport-authenticated, ephemeral signaling |
+| Messages (0x01) | Yes (SHOULD) | Stored, forwarded, non-repudiation |
+| Files (0x02) | Yes (header) | Significant operation, stored |
+| Audio (0x03) | No | Real-time, latency-sensitive |
+| Video (0x04) | No | Real-time, latency-sensitive |
+
+For channels that do not use SSK signatures, human presence during the
+session is verified via Human Proof Challenges on the Control Channel
+(Section 11).
 
 ---
 
@@ -1018,10 +1091,9 @@ SC_payload (CBOR map):
    2 (ssk_public):      COSE_Key (ephemeral P-256)
    3 (ik_public):       COSE_Key (issuing Identity Key)
    4 (peer_ik_hash):    bstr (SHA-256 of peer's IK_public)
-   5 (channel_binding): bstr (SHA-256 of connection context)
-   6 (timestamp):       uint (Unix milliseconds)
-   7 (expiry):          uint (Unix milliseconds, application-defined)
-   8 (assurance):       uint (1 = PRESENCE, 2 = DEVICE)
+   5 (timestamp):       uint (Unix milliseconds)
+   6 (expiry):          uint (Unix milliseconds, application-defined)
+   7 (assurance):       uint (1 = PRESENCE, 2 = DEVICE)
 ```
 
 Creation requires an authentication event (biometric or device
@@ -1086,7 +1158,7 @@ H2H Connection (one transport connection)
 |
 +-- Channel 0x00: Control (reliable, ordered)
 |     Signaling, version negotiation, capability advertisement,
-|     keepalive, Presence Proof challenges, key rotation
+|     keepalive, Human Proof challenges, key rotation
 |
 +-- Channel 0x01: Messages (reliable, ordered)
 |     Text messages, reactions, read receipts
@@ -1117,7 +1189,7 @@ connection authentication.  It carries:
 -  **Channel open/close requests**: A peer MUST request to open a
    channel before sending data on it.
 -  **Keepalive**: RECOMMENDED interval of 30 seconds.
--  **Presence Proof challenges** (Section 11)
+-  **Human Proof challenges** (Section 11)
 -  **Key rotation notifications** (Section 5.5)
 
 ### 10.4.  Message Channel (0x01)
@@ -1170,7 +1242,7 @@ AudioFrame (CBOR map):
 ```
 
 Audio frames are NOT individually signed (latency constraint).
-Human presence during calls is verified via Presence Proof
+Human presence during calls is verified via Human Proof
 challenges on the Control Channel (Section 11).
 
 ### 10.7.  Video Channel (0x04)
@@ -1191,13 +1263,13 @@ Like audio, video frames are not individually signed.
 
 ---
 
-## 11.  Presence Proof Challenges
+## 11.  Human Proof Challenges
 
 ### 11.1.  Overview
 
 During a long-lived connection (e.g., an ongoing call), either
-peer MAY send a Presence Proof Challenge on the Control Channel,
-requesting the other peer to produce a fresh Presence Proof.
+peer MAY send a Human Proof Challenge on the Control Channel,
+requesting the other peer to produce a fresh Human Proof.
 
 ### 11.2.  Challenge-Response
 
@@ -1223,7 +1295,7 @@ rejected.
 
 The channel_binding field MUST contain the SHA-256 hash of a
 connection-specific value (e.g., the concatenation of both peers'
-Node Key public components).  This prevents relay attacks where an
+Transport Key public components).  This prevents relay attacks where an
 attacker forwards a challenge to the victim and relays the response
 to a different connection.
 
@@ -1258,19 +1330,19 @@ A mailbox node is UNTRUSTED infrastructure.  It:
 -  Stores only opaque byte blobs (encrypted messages).
 -  CANNOT read, modify, or forge message content.
 -  CANNOT determine sender or recipient identity beyond their
-   Node Keys (which may be rotated).
+   Transport Keys (which may be rotated).
 -  MAY observe message timing and size metadata.
 -  MUST delete messages after successful delivery.
 
 ### 12.3.  Mailbox Registration
 
 A user registers with a mailbox node by providing their current
-Node Key.  The mailbox node stores messages addressed to that
-Node Key.  Registration does not require Identity Key disclosure.
+Transport Key.  The mailbox node stores messages addressed to that
+Transport Key.  Registration does not require Identity Key disclosure.
 
 ```
 MailboxRegister (CBOR map):
-   1 (nk_public):     bstr
+   1 (tk_public):     bstr
    2 (expiry):        uint (Unix ms, registration validity)
 ```
 
@@ -1281,7 +1353,7 @@ at the peer's registered mailbox node:
 
 ```
 MailboxDeposit (CBOR map):
-   1 (recipient_nk):  bstr (recipient's Node Key)
+   1 (recipient_nk):  bstr (recipient's Transport Key)
    2 (payload):       bstr (opaque encrypted message)
    3 (timestamp):     uint
    4 (ttl):           uint (seconds until message expires)
@@ -1294,7 +1366,7 @@ retrieves pending messages:
 
 ```
 MailboxRetrieve request:
-   1 (nk_public):     bstr (prove ownership via transport auth)
+   1 (tk_public):     bstr (prove ownership via transport auth)
 
 MailboxRetrieve response:
    1 (messages):      array of MailboxDeposit
@@ -1312,44 +1384,69 @@ or use a commercial mailbox service.
 
 ---
 
-## 13.  Safety Numbers
+## 13.  Key Verification Fingerprint
 
-### 13.1.  Computation
+### 13.1.  Overview
 
-Safety Numbers allow two users to verify that they have each
-other's correct Identity Keys.
+The Key Verification Fingerprint enables two users to verify
+out-of-band that they hold each other's correct Identity Keys,
+detecting man-in-the-middle key substitution.
+
+Key verification is OPTIONAL.  Its necessity depends on the
+contact exchange mechanism:
+
+-  Physical proximity exchange (visual scanning, NFC tap): key
+   verification MAY be skipped — MITM is not feasible.
+-  Server-mediated or remote exchange: both parties MUST verify
+   fingerprints through a separate trusted channel.
+-  Exchange involving an intermediary (e.g., a reference/URL that
+   points to a server-hosted payload): key verification SHOULD
+   be performed regardless of physical proximity.
+
+### 13.2.  Computation
 
 ```
 sorted_keys = sort([IK_public_A, IK_public_B])  // lexicographic
-fingerprint = SHA-256(
-   "H2H-SafetyNumber-v1" || sorted_keys[0] || sorted_keys[1]
+digest = SHA-256(
+   "H2H-KeyFingerprint-v1" || sorted_keys[0] || sorted_keys[1]
 )
 ```
 
-The fingerprint (32 bytes) is converted to a human-readable
-format by taking the first 30 bytes and encoding each 5-byte
-group as a zero-padded decimal number modulo 100000:
+This protocol defines the digest computation but does NOT mandate
+a specific human-readable encoding.  Applications choose the
+encoding appropriate for their user experience.
 
+RECOMMENDED encodings (implementations MUST support at least one):
+
+**Numeric (8 digits)**:
 ```
-group[i] = big_endian_uint(fingerprint[i*5..(i+1)*5]) % 100000
-safety_number = sprintf("%05d %05d %05d %05d %05d %05d",
-                        group[0..5])
+fingerprint = sprintf("%08d", BE_uint(digest[0..3]) mod 100000000)
 ```
+Example: "48371205"
 
-Example output: "34521 08837 65092 18374 90125 63748"
+**Numeric (6 digits)**:
+```
+fingerprint = sprintf("%06d", BE_uint(digest[0..3]) mod 1000000)
+```
+Example: "371205"
 
-### 13.2.  Verification
+**Visual comparison**: Display the full digest as a visual pattern
+(identicon, color grid) on both devices for side-by-side comparison.
 
-After contact exchange, both users SHOULD compare Safety Numbers
-by reading them aloud.  Implementations MUST provide a UI for
-displaying Safety Numbers.  Implementations MAY additionally
-provide a QR code encoding for scanning.
+### 13.3.  Properties
 
-### 13.3.  Stability
+-  The fingerprint is deterministic: the same pair of Identity Keys
+   always produces the same fingerprint.
+-  The fingerprint is symmetric: computed identically by both parties
+   (due to the lexicographic sort).
+-  The fingerprint changes if and only if either party's Identity
+   Key changes.
 
-The Safety Number is deterministic and stable.  It changes if and
-only if either party's Identity Key changes.  When a change is
-detected, the implementation MUST alert the user.
+### 13.4.  Key Change Notification
+
+Implementations SHOULD alert the user when a stored contact's
+Identity Key changes.  This may indicate a new device (benign) or
+a man-in-the-middle attack.
 
 ---
 
@@ -1436,7 +1533,7 @@ Error codes:
 
 ### 16.1.  Hardware Security Module Trust
 
-The Presence Proof property depends entirely on the integrity of
+The Human Proof property depends entirely on the integrity of
 the hardware security module.  If an HSM is compromised (e.g., via
 a hardware exploit or firmware vulnerability), the attacker can
 sign arbitrary data without biometric authentication.
@@ -1449,7 +1546,7 @@ modules when feasible.
 
 The protocol is only as strong as the device's biometric
 authentication.  An attacker who can spoof the biometric sensor
-can produce valid Presence Proofs.  This is a device-level
+can produce valid Human Proofs.  This is a device-level
 vulnerability, not a protocol-level one.
 
 The protocol mitigates this through the in-person contact
@@ -1541,12 +1638,12 @@ signed by the same Identity Key.  Implementations MUST verify that
 the structure_type matches the expected value before processing any
 other fields.
 
-### 16.11. Relay Attack on Presence Proof
+### 16.11. Relay Attack on Human Proof
 
 Without channel binding, an attacker between two peers could relay a
-Presence Proof Challenge to the victim's device and forward the
+Human Proof Challenge to the victim's device and forward the
 response to the challenger, falsely demonstrating presence.  The
-channel_binding field in the Presence Proof Response (Section 11)
+channel_binding field in the Human Proof Response (Section 11)
 binds the response to the specific connection, preventing this
 attack.
 
@@ -1586,7 +1683,7 @@ migration.
 
 Connection metadata is visible to:
 
--  Relay servers: source and destination Node Keys, timing, volume.
+-  Relay servers: source and destination Transport Keys, timing, volume.
 -  Network observers: IP addresses of peers or relay connections.
 
 The protocol does not specify metadata protection mechanisms.
@@ -1606,22 +1703,22 @@ Mitigations:
    ceremonies, limiting the exposure surface.
 -  The 5-minute validity window limits the useful lifetime of a
    captured payload.
--  The Node Key (used for networking) is a separate key and does
+-  The Transport Key (used for networking) is a separate key and does
    not directly reveal the Identity Key to network observers.
 
 Applications with heightened privacy requirements SHOULD consider
 exchanging Contact Payloads over an encrypted proximity channel.
 
-### 17.3.  Node Key Correlation
+### 17.3.  Transport Key Correlation
 
-The Node Key is visible to relay servers and network observers.
-If the Node Key is long-lived, observers can correlate a user's
+The Transport Key is visible to relay servers and network observers.
+If the Transport Key is long-lived, observers can correlate a user's
 activity across connections and time.
 
-Implementations SHOULD rotate the Node Key periodically
+Implementations SHOULD rotate the Transport Key periodically
 (Section 5.5) to limit the correlation window.  The trade-off is
 that frequent rotation reduces reachability (contacts must learn
-the new NK before they can connect).
+the new TK before they can connect).
 
 ### 17.4.  Contact Graph
 
@@ -1763,8 +1860,8 @@ SHOULD generate interoperability test vectors for:
 
 1.  COSE_Sign1 Contact Payload creation and verification
 2.  COSE_Sign1 Key Binding Certificate creation and verification
-3.  Safety Number computation for known key pairs
-4.  COSE_Sign1 Presence Proof challenge-response
+3.  Key Verification Fingerprint computation for known key pairs
+4.  COSE_Sign1 Human Proof challenge-response
 5.  CBOR frame encoding and decoding
 
 ---
@@ -1823,7 +1920,7 @@ presence.
 ### C.7.  KERI (Key Event Receipt Infrastructure)
 
 KERI provides self-certifying identifiers with key rotation
-history.  H2H's Node Key rotation (Section 5.5) serves a similar
+history.  H2H's Transport Key rotation (Section 5.5) serves a similar
 purpose but is scoped to the networking key only, while the
 Identity Key is immutable (bound to hardware).
 

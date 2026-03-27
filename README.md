@@ -24,7 +24,7 @@ H2H fills this gap.
 
 3. **Connection** — Later, you connect peer-to-peer. Your device proves it holds the same key you exchanged in person, creating an unbroken trust chain from the physical meeting to the digital conversation.
 
-4. **Presence Proof** — At any point, either party can challenge the other to produce a fresh signature, requiring a live biometric check. This proves a human is present *right now*, not just that a human set things up earlier.
+4. **Human Proof** — At any point, either party can challenge the other to produce a fresh signature, requiring a live biometric check. This proves a human is present *right now*, not just that a human set things up earlier.
 
 ## Key Properties
 
@@ -47,9 +47,9 @@ It covers:
 - Trust tiers: in-person, vouched, video, unverified (Section 7)
 - Social key recovery (Section 8)
 - Generic data transfer with multiplexed channels (Sections 9-10)
-- Presence Proof challenges (Section 11)
+- Human Proof challenges (Section 11)
 - Optional mailbox nodes for offline messaging (Section 12)
-- Safety number verification (Section 13)
+- Key Verification Fingerprint (Section 13)
 - Wire formats using CBOR and COSE (Section 15)
 - Security and privacy considerations (Sections 16-17)
 
@@ -64,7 +64,7 @@ It covers:
 
 ## Prior Art and Novelty
 
-H2H builds on established cryptographic standards (P-256 ECDSA, CBOR, COSE, did:peer, QUIC) and draws inspiration from existing systems (passkeys, Signal safety numbers, PGP web of trust, ISO 18013-5). The novel contribution is the specific combination of hardware-bound biometric identity, in-person trust bootstrapping, Presence Proofs, and tiered peer-to-peer trust — which has no equivalent in any existing specification.
+H2H builds on established cryptographic standards (P-256 ECDSA, CBOR, COSE, did:peer, QUIC) and draws inspiration from existing systems (passkeys, Signal key verification, PGP web of trust, ISO 18013-5). The novel contribution is the specific combination of hardware-bound biometric identity, in-person trust bootstrapping, Human Proofs, and tiered peer-to-peer trust — which has no equivalent in any existing specification.
 
 ## Status
 
