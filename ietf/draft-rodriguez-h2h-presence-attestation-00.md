@@ -411,27 +411,82 @@ Assurance Value:
 
 ## Assurance Values
 
-This document defines two assurance values.  Higher numeric values
+This document defines three assurance values.  Higher numeric values
 indicate stronger assurance:
 
-| Value | Label    | Meaning |
-|------:|:---------|:--------|
-|     1 | DEVICE   | The platform reported device credential or equivalent local verification for this signing operation. |
-|     2 | PRESENCE | The platform reported biometric or equivalent presence-oriented local verification for this signing operation. |
+| Value | Label             | Meaning |
+|------:|:------------------|:--------|
+|     1 | CREDENTIAL        | The platform reported knowledge-based verification (PIN, password, pattern) for this signing operation. |
+|     2 | BIOMETRIC         | The platform reported biometric verification (face, fingerprint, iris) for this signing operation. |
+|     3 | HARDWARE_VERIFIED | The signing operation includes hardware attestation evidence from the platform's root of trust, proving the key is hardware-bound and the verification event is genuine.  See {{hardware-attestation}}. |
 
 A response with assurance value N satisfies a requirement for
 assurance value M if and only if N >= M.
 
-A verifier MUST treat these values as claims produced by the signing
-platform.  A verifier MUST NOT interpret them as independent proof of
-humanness, lack of coercion, or legal attribution.  A verifier MUST
-treat the assurance value as an input to local policy, not as a
-portable cross-platform security equivalence class.  Two
-implementations that both emit PRESENCE are not necessarily providing
-equivalent user-verification guarantees.
+Values 1 and 2 are application-reported claims: the application
+sets the assurance field based on what the platform reported.  A
+compromised application could misrepresent the verification type.
+Value 3 (HARDWARE_VERIFIED) includes cryptographic evidence from
+the platform's hardware root of trust (e.g., Android Key
+Attestation, Apple App Attest) that the key properties and
+verification event are genuine.  This evidence is independently
+verifiable against the hardware vendor's certificate chain and
+cannot be forged by a compromised application.
+
+Values 4 and above are reserved for future extensions.  The
+N >= M comparison rule ensures forward compatibility: a verifier
+unaware of new levels will accept them when they satisfy its minimum
+requirement.
+
+A verifier MUST treat values 1 and 2 as claims produced by the
+signing application.  A verifier MUST NOT interpret them as
+independent proof of humanness, lack of coercion, or legal
+attribution.  A verifier MUST treat the assurance value as an input
+to local policy, not as a portable cross-platform security
+equivalence class.
+
+A verifier receiving value 3 (HARDWARE_VERIFIED) MAY place higher
+trust in the claim, subject to its trust in the hardware vendor's
+certificate chain.  The hardware attestation strengthens the claim
+about the signing event but does not alter the peer-to-peer trust
+model for identity -- the in-person ceremony remains the sole trust
+anchor for "who is this person."
 
 Relying parties (receiving peers) MUST be informed of the assurance
 value and SHOULD make it visible to the user.
+
+## Hardware Attestation {#hardware-attestation}
+
+When the assurance value is set to 3 (HARDWARE_VERIFIED), the
+signed object MUST include hardware attestation evidence in an
+additional field (attestation_evidence).  This evidence is a
+platform-specific certificate chain or attestation object that
+allows the verifier to confirm:
+
+1.  The Identity Key was generated inside a genuine hardware
+    security module (Secure Enclave, StrongBox, TPM).
+2.  The Identity Key is non-exportable, as enforced by the
+    hardware -- not merely claimed by the application.
+3.  The key is configured to require user verification (biometric
+    or credential) before each signing operation.
+
+Implementations running on platforms that support hardware key
+attestation (e.g., Android Key Attestation, Apple App Attest)
+SHOULD include attestation evidence in Contact Objects exchanged
+during the in-person ceremony.  This allows the receiving peer to
+verify the Identity Key's hardware properties at the moment of
+initial trust establishment.
+
+The attestation evidence is opaque to this specification.  Its
+format and verification procedure are determined by the platform
+vendor.  A verifier that does not recognize or cannot verify the
+attestation evidence MUST treat the assurance value as 2
+(BIOMETRIC) rather than 3.
+
+Including hardware attestation introduces a trust dependency on the
+platform vendor's certificate chain for the specific claim that the
+key store properties are genuine.  It does not replace the in-person
+ceremony as the trust anchor for identity.
 
 ## CBOR and COSE Conventions
 
@@ -514,15 +569,24 @@ ensure:
     changes (e.g., a new fingerprint is added), the platform SHOULD
     invalidate the Identity Key.  This prevents an attacker who
     gains temporary physical access from adding their biometric and
-    subsequently producing valid PRESENCE-level signatures.
+    subsequently producing valid BIOMETRIC-level signatures.
 
 4.  The platform MUST expose sufficient information for the
     implementation to label the resulting signature with one of
     the defined assurance values.
 
+5.  Hardware attestation: On platforms that support hardware key
+    attestation (e.g., Android Key Attestation, Apple App Attest),
+    implementations SHOULD obtain attestation evidence for the
+    Identity Key at generation time and include it in Contact
+    Objects (see {{hardware-attestation}}).
+
 This document does not require any specific hardware architecture.
 It intentionally abstracts over secure enclaves, secure elements,
-TPMs, TEEs, and comparable mechanisms.
+TPMs, TEEs, and comparable mechanisms.  However, platforms that can
+provide hardware attestation evidence offer a stronger assurance
+level (HARDWARE_VERIFIED) that is independently verifiable by the
+receiving peer.
 
 ## Transport Key Rotation {#tk-rotation}
 
@@ -602,6 +666,7 @@ Contact_payload is a CBOR map:
 |   7 | nonce          | bstr      | 16 bytes, cryptographically random|
 |   8 | addressing     | bstr      | Transport-specific, max 1024 bytes|
 |   9 | assurance      | uint      | Assurance value for signing       |
+|  10 | attestation_evidence | bstr | OPTIONAL. Hardware attestation evidence (platform-specific). Present when assurance is 3 (HARDWARE_VERIFIED). |
 
 The tk_public field MUST contain the raw public key bytes in the
 canonical encoding for the algorithm identified by tk_algorithm.
@@ -623,11 +688,15 @@ The sender MUST:
     secure random number generator (CSPRNG).
 2.  Set timestamp (field 6) to the current time.
 3.  Populate all other fields.
-4.  Serialize Contact_payload as deterministic CBOR.
-5.  Sign using COSE_Sign1 with the Identity Key.  This operation
+4.  If the platform supports hardware key attestation,
+    obtain attestation evidence for the Identity Key and include
+    it in field 10 (attestation_evidence).  Set assurance (field 9)
+    to 3 (HARDWARE_VERIFIED).
+5.  Serialize Contact_payload as deterministic CBOR.
+6.  Sign using COSE_Sign1 with the Identity Key.  This operation
     triggers a local user-verification event.
-6.  Record the assurance value reported for that signing event in
-    field 9.
+7.  If attestation evidence was not included, record the assurance
+    value reported for that signing event in field 9.
 
 ## Verification {#contact-verification}
 
@@ -657,11 +726,20 @@ verification:
 7.  Verify the COSE_Sign1 signature using ik_public (field 2).  If
     signature verification fails, reject.
 
-8.  If all checks pass and the exchange is bidirectional (the local
+8.  If attestation_evidence (field 10) is present and assurance
+    (field 9) is 3 (HARDWARE_VERIFIED), verify the attestation
+    evidence against the platform vendor's certificate chain.  If
+    the attestation evidence is present but verification fails,
+    reject.  If the verifier cannot process the attestation format,
+    it MUST treat the assurance value as 2 (BIOMETRIC) rather than
+    3 and MAY accept the Contact Object at the reduced assurance
+    level.
+
+9.  If all checks pass and the exchange is bidirectional (the local
     device has also transmitted its own Contact Object to this
     peer), store the contact: ik_public, tk_public, tk_algorithm,
-    display_name, addressing, assurance value, and the timestamp of
-    the exchange.
+    display_name, addressing, assurance value, attestation evidence
+    (if present), and the timestamp of the exchange.
 
 A verifier MAY compute and compare a Relationship Fingerprint
 ({{relationship-fingerprint}}) as an additional defense if the
@@ -1164,11 +1242,12 @@ The challenger MUST generate challenge_nonce using a
 cryptographically secure random number generator.
 
 The required_assurance field allows the challenger to demand a
-minimum assurance level.  If set to 2 (PRESENCE), the responder
-MUST authenticate via biometric or equivalent; a DEVICE-level
-response to a PRESENCE-required challenge MUST be rejected by the
-challenger.  If set to 1 (DEVICE), either assurance level is
-acceptable (since PRESENCE satisfies the DEVICE requirement).
+minimum assurance level.  If set to 2 (BIOMETRIC), the responder
+MUST authenticate via biometric or equivalent; a CREDENTIAL-level
+response to a BIOMETRIC-required challenge MUST be rejected by the
+challenger.  If set to 1 (CREDENTIAL), any assurance level is
+acceptable.  If set to 3 (HARDWARE_VERIFIED), the response MUST
+include hardware attestation evidence (see {{hardware-attestation}}).
 
 ## Response Format
 
@@ -1431,18 +1510,26 @@ windows.
 
 An attacker who compromises the application layer (but not the
 platform key store) may attempt to forge the assurance field in
-signed structures, claiming PRESENCE (2) when only DEVICE (1)
+signed structures, claiming BIOMETRIC (2) when only CREDENTIAL (1)
 verification occurred.  The assurance field is included in the
 COSE_Sign1 payload and therefore covered by the signature; it
 cannot be modified without invalidating the signature.  However, a
-compromised application could request DEVICE-level verification
-from the platform and then set the assurance field to PRESENCE in
+compromised application could request CREDENTIAL-level verification
+from the platform and then set the assurance field to BIOMETRIC in
 the payload before signing.
 
-Deployments that require stronger semantics SHOULD define local
-policy for acceptable platforms, maximum verification age, session
-credential lifetimes, and when direct IK use is required instead
-of delegated signing.
+The HARDWARE_VERIFIED (3) assurance level mitigates this attack.
+When hardware attestation evidence is present, the verifier can
+confirm the key's properties and authentication requirements
+directly against the hardware vendor's certificate chain,
+independent of the application layer.  A compromised application
+cannot forge hardware attestation evidence.
+
+Deployments that require stronger semantics SHOULD require
+HARDWARE_VERIFIED assurance where platform support is available,
+and SHOULD define local policy for acceptable platforms, maximum
+verification age, session credential lifetimes, and when direct
+IK use is required instead of delegated signing.
 
 ## Relay Attack on Presence Response
 
@@ -1618,10 +1705,11 @@ defined in the body of this document and in the CDDL schema
 
 ## Assurance Values
 
-| Value | Name     |
-|------:|:---------|
-|     1 | DEVICE   |
-|     2 | PRESENCE |
+| Value | Name              |
+|------:|:------------------|
+|     1 | CREDENTIAL        |
+|     2 | BIOMETRIC         |
+|     3 | HARDWARE_VERIFIED |
 
 ## Transport Key Algorithms
 
@@ -1652,7 +1740,8 @@ structures.  This schema is normative.
 
 ; -- Common types --
 
-assurance_value = 1 / 2       ; 1=DEVICE, 2=PRESENCE
+assurance_value = 1 / 2 / 3   ; 1=CREDENTIAL, 2=BIOMETRIC,
+                              ; 3=HARDWARE_VERIFIED
 
 ; P-256 public key as COSE_Key (kty=EC2, crv=P-256)
 P256_COSE_Key = {
@@ -1711,6 +1800,7 @@ Contact_payload = {
   7 => bstr .size 16,        ; nonce: 16 random bytes
   8 => bstr .size (0..1024), ; addressing: transport-specific
   9 => assurance_value,      ; assurance
+  ? 10 => bstr,              ; attestation_evidence: OPTIONAL
 }
 
 ; -- Session Credential --

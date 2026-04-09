@@ -95,17 +95,17 @@ Table of Contents
    2.  Conventions and Definitions . . . . . . . . . . . . . . . . .   9
      2.1.  Terminology . . . . . . . . . . . . . . . . . . . . . . .  10
      2.2.  Assurance Values  . . . . . . . . . . . . . . . . . . . .  11
-     2.3.  CBOR and COSE Conventions . . . . . . . . . . . . . . . .  11
-   3.  Identity and Binding Model  . . . . . . . . . . . . . . . . .  12
-     3.1.  Two-Key Model . . . . . . . . . . . . . . . . . . . . . .  12
-     3.2.  Identity Key Requirements . . . . . . . . . . . . . . . .  13
-     3.3.  Transport Key Rotation  . . . . . . . . . . . . . . . . .  13
-       3.3.1.  Offline Rotation  . . . . . . . . . . . . . . . . . .  14
-   4.  Contact Object  . . . . . . . . . . . . . . . . . . . . . . .  14
-     4.1.  Purpose . . . . . . . . . . . . . . . . . . . . . . . . .  14
-     4.2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  14
-     4.3.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .  15
-     4.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  16
+     2.3.  Hardware Attestation  . . . . . . . . . . . . . . . . . .  12
+     2.4.  CBOR and COSE Conventions . . . . . . . . . . . . . . . .  13
+   3.  Identity and Binding Model  . . . . . . . . . . . . . . . . .  13
+     3.1.  Two-Key Model . . . . . . . . . . . . . . . . . . . . . .  13
+     3.2.  Identity Key Requirements . . . . . . . . . . . . . . . .  14
+     3.3.  Transport Key Rotation  . . . . . . . . . . . . . . . . .  15
+       3.3.1.  Offline Rotation  . . . . . . . . . . . . . . . . . .  15
+   4.  Contact Object  . . . . . . . . . . . . . . . . . . . . . . .  16
+     4.1.  Purpose . . . . . . . . . . . . . . . . . . . . . . . . .  16
+     4.2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  16
+     4.3.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .  18
 
 
 
@@ -114,54 +114,54 @@ Rodriguez               Expires 27 September 2026               [Page 2]
 Internet-Draft          P2P Presence Verification             March 2026
 
 
-     4.5.  Ceremony Requirement  . . . . . . . . . . . . . . . . . .  17
-     4.6.  Size Considerations . . . . . . . . . . . . . . . . . . .  17
-     4.7.  Clock Skew  . . . . . . . . . . . . . . . . . . . . . . .  17
-     4.8.  Replay Protection . . . . . . . . . . . . . . . . . . . .  18
-   5.  Key Binding Object  . . . . . . . . . . . . . . . . . . . . .  18
-     5.1.  Purpose . . . . . . . . . . . . . . . . . . . . . . . . .  18
-     5.2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  18
-     5.3.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .  19
-     5.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  19
-     5.5.  Renewal . . . . . . . . . . . . . . . . . . . . . . . . .  20
-   6.  Session Credential  . . . . . . . . . . . . . . . . . . . . .  20
-     6.1.  Purpose . . . . . . . . . . . . . . . . . . . . . . . . .  20
-     6.2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  20
-     6.3.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .  21
-     6.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  22
-     6.5.  Credential Lifecycle  . . . . . . . . . . . . . . . . . .  22
-     6.6.  Security Note . . . . . . . . . . . . . . . . . . . . . .  23
-   7.  Signed Message  . . . . . . . . . . . . . . . . . . . . . . .  23
-     7.1.  Applicability . . . . . . . . . . . . . . . . . . . . . .  23
-     7.2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  24
-     7.3.  Message Ordering and Replay Protection  . . . . . . . . .  25
-       7.3.1.  Reliable Transports . . . . . . . . . . . . . . . . .  25
-       7.3.2.  Unreliable Transports . . . . . . . . . . . . . . . .  25
-       7.3.3.  Replay State Model  . . . . . . . . . . . . . . . . .  25
-     7.4.  Replay State  . . . . . . . . . . . . . . . . . . . . . .  26
-     7.5.  Verification  . . . . . . . . . . . . . . . . . . . . . .  26
-   8.  Presence Challenge and Presence Response  . . . . . . . . . .  27
-     8.1.  Purpose . . . . . . . . . . . . . . . . . . . . . . . . .  27
-     8.2.  Challenge Format  . . . . . . . . . . . . . . . . . . . .  28
-     8.3.  Response Format . . . . . . . . . . . . . . . . . . . . .  29
-     8.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  30
-     8.5.  Timing  . . . . . . . . . . . . . . . . . . . . . . . . .  31
-   9.  Relationship Fingerprint  . . . . . . . . . . . . . . . . . .  31
-     9.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  31
-     9.2.  Computation . . . . . . . . . . . . . . . . . . . . . . .  31
-     9.3.  Properties  . . . . . . . . . . . . . . . . . . . . . . .  32
-     9.4.  Key Change Notification . . . . . . . . . . . . . . . . .  32
-   10. Security Considerations . . . . . . . . . . . . . . . . . . .  33
-     10.1.  What This Protocol Does Provide  . . . . . . . . . . . .  33
-     10.2.  What This Protocol Does Not Provide  . . . . . . . . . .  33
-     10.3.  Platform Trust . . . . . . . . . . . . . . . . . . . . .  33
-     10.4.  Compromised Applications and Trusted UI  . . . . . . . .  33
-     10.5.  Stolen, Unlocked, or Coerced Device State  . . . . . . .  34
-     10.6.  Contact Object Capture . . . . . . . . . . . . . . . . .  34
-     10.7.  Key Binding Object Expiry  . . . . . . . . . . . . . . .  34
-     10.8.  Assurance Semantics and Policy . . . . . . . . . . . . .  35
-     10.9.  Relay Attack on Presence Response  . . . . . . . . . . .  35
-     10.10. Type Confusion . . . . . . . . . . . . . . . . . . . . .  35
+     4.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  18
+     4.5.  Ceremony Requirement  . . . . . . . . . . . . . . . . . .  19
+     4.6.  Size Considerations . . . . . . . . . . . . . . . . . . .  20
+     4.7.  Clock Skew  . . . . . . . . . . . . . . . . . . . . . . .  20
+     4.8.  Replay Protection . . . . . . . . . . . . . . . . . . . .  20
+   5.  Key Binding Object  . . . . . . . . . . . . . . . . . . . . .  20
+     5.1.  Purpose . . . . . . . . . . . . . . . . . . . . . . . . .  20
+     5.2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  20
+     5.3.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .  21
+     5.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  21
+     5.5.  Renewal . . . . . . . . . . . . . . . . . . . . . . . . .  22
+   6.  Session Credential  . . . . . . . . . . . . . . . . . . . . .  22
+     6.1.  Purpose . . . . . . . . . . . . . . . . . . . . . . . . .  22
+     6.2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  23
+     6.3.  Creation  . . . . . . . . . . . . . . . . . . . . . . . .  24
+     6.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  24
+     6.5.  Credential Lifecycle  . . . . . . . . . . . . . . . . . .  25
+     6.6.  Security Note . . . . . . . . . . . . . . . . . . . . . .  25
+   7.  Signed Message  . . . . . . . . . . . . . . . . . . . . . . .  26
+     7.1.  Applicability . . . . . . . . . . . . . . . . . . . . . .  26
+     7.2.  Format  . . . . . . . . . . . . . . . . . . . . . . . . .  26
+     7.3.  Message Ordering and Replay Protection  . . . . . . . . .  27
+       7.3.1.  Reliable Transports . . . . . . . . . . . . . . . . .  27
+       7.3.2.  Unreliable Transports . . . . . . . . . . . . . . . .  27
+       7.3.3.  Replay State Model  . . . . . . . . . . . . . . . . .  28
+     7.4.  Replay State  . . . . . . . . . . . . . . . . . . . . . .  28
+     7.5.  Verification  . . . . . . . . . . . . . . . . . . . . . .  29
+   8.  Presence Challenge and Presence Response  . . . . . . . . . .  30
+     8.1.  Purpose . . . . . . . . . . . . . . . . . . . . . . . . .  30
+     8.2.  Challenge Format  . . . . . . . . . . . . . . . . . . . .  30
+     8.3.  Response Format . . . . . . . . . . . . . . . . . . . . .  31
+     8.4.  Verification  . . . . . . . . . . . . . . . . . . . . . .  33
+     8.5.  Timing  . . . . . . . . . . . . . . . . . . . . . . . . .  33
+   9.  Relationship Fingerprint  . . . . . . . . . . . . . . . . . .  33
+     9.1.  Overview  . . . . . . . . . . . . . . . . . . . . . . . .  34
+     9.2.  Computation . . . . . . . . . . . . . . . . . . . . . . .  34
+     9.3.  Properties  . . . . . . . . . . . . . . . . . . . . . . .  35
+     9.4.  Key Change Notification . . . . . . . . . . . . . . . . .  35
+   10. Security Considerations . . . . . . . . . . . . . . . . . . .  35
+     10.1.  What This Protocol Does Provide  . . . . . . . . . . . .  35
+     10.2.  What This Protocol Does Not Provide  . . . . . . . . . .  35
+     10.3.  Platform Trust . . . . . . . . . . . . . . . . . . . . .  36
+     10.4.  Compromised Applications and Trusted UI  . . . . . . . .  36
+     10.5.  Stolen, Unlocked, or Coerced Device State  . . . . . . .  36
+     10.6.  Contact Object Capture . . . . . . . . . . . . . . . . .  37
+     10.7.  Key Binding Object Expiry  . . . . . . . . . . . . . . .  37
+     10.8.  Assurance Semantics and Policy . . . . . . . . . . . . .  37
+     10.9.  Relay Attack on Presence Response  . . . . . . . . . . .  38
 
 
 
@@ -170,31 +170,32 @@ Rodriguez               Expires 27 September 2026               [Page 3]
 Internet-Draft          P2P Presence Verification             March 2026
 
 
-     10.11. Relationship Fingerprint Limitations . . . . . . . . . .  35
-     10.12. Privacy Considerations . . . . . . . . . . . . . . . . .  36
-       10.12.1.  Identity Key as a Stable Identifier . . . . . . . .  36
-       10.12.2.  Relationship Correlation  . . . . . . . . . . . . .  36
-       10.12.3.  Metadata Exposure . . . . . . . . . . . . . . . . .  36
-       10.12.4.  Fingerprint Handling  . . . . . . . . . . . . . . .  37
-     10.13. Denial of Service via Presence Challenges  . . . . . . .  37
-     10.14. Post-Quantum Considerations  . . . . . . . . . . . . . .  37
-     10.15. Forward Secrecy of Authentication  . . . . . . . . . . .  37
-     10.16. Session Credential Expiry and In-Flight Messages . . . .  37
-     10.17. Device Loss and Recovery . . . . . . . . . . . . . . . .  38
-     10.18. Terminology Caution  . . . . . . . . . . . . . . . . . .  38
-   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  38
-     11.1.  Structure Type Values  . . . . . . . . . . . . . . . . .  38
-     11.2.  Assurance Values . . . . . . . . . . . . . . . . . . . .  39
-     11.3.  Transport Key Algorithms . . . . . . . . . . . . . . . .  39
-   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  39
-     12.1.  Normative References . . . . . . . . . . . . . . . . . .  39
-     12.2.  Informative References . . . . . . . . . . . . . . . . .  40
-   Appendix A.  CDDL Schema  . . . . . . . . . . . . . . . . . . . .  41
-   Appendix B.  Implementation Considerations  . . . . . . . . . . .  44
-     B.1.  Platform Key Store Mapping  . . . . . . . . . . . . . . .  44
-     B.2.  Payload Size Limits . . . . . . . . . . . . . . . . . . .  44
-   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  44
-   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  44
+     10.10. Type Confusion . . . . . . . . . . . . . . . . . . . . .  38
+     10.11. Relationship Fingerprint Limitations . . . . . . . . . .  38
+     10.12. Privacy Considerations . . . . . . . . . . . . . . . . .  38
+       10.12.1.  Identity Key as a Stable Identifier . . . . . . . .  38
+       10.12.2.  Relationship Correlation  . . . . . . . . . . . . .  39
+       10.12.3.  Metadata Exposure . . . . . . . . . . . . . . . . .  39
+       10.12.4.  Fingerprint Handling  . . . . . . . . . . . . . . .  39
+     10.13. Denial of Service via Presence Challenges  . . . . . . .  39
+     10.14. Post-Quantum Considerations  . . . . . . . . . . . . . .  40
+     10.15. Forward Secrecy of Authentication  . . . . . . . . . . .  40
+     10.16. Session Credential Expiry and In-Flight Messages . . . .  40
+     10.17. Device Loss and Recovery . . . . . . . . . . . . . . . .  40
+     10.18. Terminology Caution  . . . . . . . . . . . . . . . . . .  41
+   11. IANA Considerations . . . . . . . . . . . . . . . . . . . . .  41
+     11.1.  Structure Type Values  . . . . . . . . . . . . . . . . .  41
+     11.2.  Assurance Values . . . . . . . . . . . . . . . . . . . .  42
+     11.3.  Transport Key Algorithms . . . . . . . . . . . . . . . .  42
+   12. References  . . . . . . . . . . . . . . . . . . . . . . . . .  42
+     12.1.  Normative References . . . . . . . . . . . . . . . . . .  42
+     12.2.  Informative References . . . . . . . . . . . . . . . . .  43
+   Appendix A.  CDDL Schema  . . . . . . . . . . . . . . . . . . . .  44
+   Appendix B.  Implementation Considerations  . . . . . . . . . . .  46
+     B.1.  Platform Key Store Mapping  . . . . . . . . . . . . . . .  47
+     B.2.  Payload Size Limits . . . . . . . . . . . . . . . . . . .  47
+   Acknowledgements  . . . . . . . . . . . . . . . . . . . . . . . .  47
+   Author's Address  . . . . . . . . . . . . . . . . . . . . . . . .  47
 
 1.  Introduction
 
@@ -217,7 +218,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    increase the value of mechanisms that reduce reliance on
    unauthenticated audio, video, or text interactions for sensitive
    approvals.  This document does not attempt to detect synthetic media
-   or prove biological humanness.  Instead, it specifies interoperable
 
 
 
@@ -226,6 +226,7 @@ Rodriguez               Expires 27 September 2026               [Page 4]
 Internet-Draft          P2P Presence Verification             March 2026
 
 
+   or prove biological humanness.  Instead, it specifies interoperable
    signed objects and verification rules that bind sensitive
    authorizations to a prior relationship ceremony and to a fresh,
    platform-mediated local user-verification event.
@@ -273,7 +274,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    1.  *Contact Exchange*: Two peers meet in person and exchange Contact
        Objects -- signed structures containing their Identity Keys,
        Transport Keys, and addressing information.
-
 
 
 
@@ -564,38 +564,117 @@ Internet-Draft          P2P Presence Verification             March 2026
 
 2.2.  Assurance Values
 
-   This document defines two assurance values.  Higher numeric values
+   This document defines three assurance values.  Higher numeric values
    indicate stronger assurance:
 
-      +=======+==========+==========================================+
-      | Value | Label    | Meaning                                  |
-      +=======+==========+==========================================+
-      |     1 | DEVICE   | The platform reported device credential  |
-      |       |          | or equivalent local verification for     |
-      |       |          | this signing operation.                  |
-      +-------+----------+------------------------------------------+
-      |     2 | PRESENCE | The platform reported biometric or       |
-      |       |          | equivalent presence-oriented local       |
-      |       |          | verification for this signing operation. |
-      +-------+----------+------------------------------------------+
+    +=======+===================+====================================+
+    | Value | Label             | Meaning                            |
+    +=======+===================+====================================+
+    |     1 | CREDENTIAL        | The platform reported knowledge-   |
+    |       |                   | based verification (PIN, password, |
+    |       |                   | pattern) for this signing          |
+    |       |                   | operation.                         |
+    +-------+-------------------+------------------------------------+
+    |     2 | BIOMETRIC         | The platform reported biometric    |
+    |       |                   | verification (face, fingerprint,   |
+    |       |                   | iris) for this signing operation.  |
+    +-------+-------------------+------------------------------------+
+    |     3 | HARDWARE_VERIFIED | The signing operation includes     |
+    |       |                   | hardware attestation evidence from |
+    |       |                   | the platform's root of trust,      |
+    |       |                   | proving the key is hardware-bound  |
+    |       |                   | and the verification event is      |
+    |       |                   | genuine.  See Section 2.3.         |
+    +-------+-------------------+------------------------------------+
 
-                                  Table 1
+                                 Table 1
 
    A response with assurance value N satisfies a requirement for
    assurance value M if and only if N >= M.
 
-   A verifier MUST treat these values as claims produced by the signing
-   platform.  A verifier MUST NOT interpret them as independent proof of
-   humanness, lack of coercion, or legal attribution.  A verifier MUST
-   treat the assurance value as an input to local policy, not as a
-   portable cross-platform security equivalence class.  Two
-   implementations that both emit PRESENCE are not necessarily providing
-   equivalent user-verification guarantees.
+   Values 1 and 2 are application-reported claims: the application sets
+   the assurance field based on what the platform reported.  A
+   compromised application could misrepresent the verification type.
+   Value 3 (HARDWARE_VERIFIED) includes cryptographic evidence from the
+   platform's hardware root of trust (e.g., Android Key Attestation,
+   Apple App Attest) that the key properties and verification event are
+   genuine.  This evidence is independently verifiable against the
+   hardware vendor's certificate chain and cannot be forged by a
+   compromised application.
+
+   Values 4 and above are reserved for future extensions.  The N >= M
+   comparison rule ensures forward compatibility: a verifier unaware of
+   new levels will accept them when they satisfy its minimum
+   requirement.
+
+   A verifier MUST treat values 1 and 2 as claims produced by the
+   signing application.  A verifier MUST NOT interpret them as
+   independent proof of humanness, lack of coercion, or legal
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 11]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
+   attribution.  A verifier MUST treat the assurance value as an input
+   to local policy, not as a portable cross-platform security
+   equivalence class.
+
+   A verifier receiving value 3 (HARDWARE_VERIFIED) MAY place higher
+   trust in the claim, subject to its trust in the hardware vendor's
+   certificate chain.  The hardware attestation strengthens the claim
+   about the signing event but does not alter the peer-to-peer trust
+   model for identity -- the in-person ceremony remains the sole trust
+   anchor for "who is this person."
 
    Relying parties (receiving peers) MUST be informed of the assurance
    value and SHOULD make it visible to the user.
 
-2.3.  CBOR and COSE Conventions
+2.3.  Hardware Attestation
+
+   When the assurance value is set to 3 (HARDWARE_VERIFIED), the signed
+   object MUST include hardware attestation evidence in an additional
+   field (attestation_evidence).  This evidence is a platform-specific
+   certificate chain or attestation object that allows the verifier to
+   confirm:
+
+   1.  The Identity Key was generated inside a genuine hardware security
+       module (Secure Enclave, StrongBox, TPM).
+
+   2.  The Identity Key is non-exportable, as enforced by the hardware
+       -- not merely claimed by the application.
+
+   3.  The key is configured to require user verification (biometric or
+       credential) before each signing operation.
+
+   Implementations running on platforms that support hardware key
+   attestation (e.g., Android Key Attestation, Apple App Attest) SHOULD
+   include attestation evidence in Contact Objects exchanged during the
+   in-person ceremony.  This allows the receiving peer to verify the
+   Identity Key's hardware properties at the moment of initial trust
+   establishment.
+
+   The attestation evidence is opaque to this specification.  Its format
+   and verification procedure are determined by the platform vendor.  A
+   verifier that does not recognize or cannot verify the attestation
+   evidence MUST treat the assurance value as 2 (BIOMETRIC) rather than
+   3.
+
+   Including hardware attestation introduces a trust dependency on the
+   platform vendor's certificate chain for the specific claim that the
+   key store properties are genuine.  It does not replace the in-person
+   ceremony as the trust anchor for identity.
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 12]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
+2.4.  CBOR and COSE Conventions
 
    All protocol payloads in this document are encoded as CBOR maps
    [RFC8949] with integer keys.  All signed objects are encoded as
@@ -606,17 +685,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    Section 4.2 of [RFC8949] (Core Deterministic Encoding Requirements).
    This ensures that the same payload always produces the same byte
    sequence, which is critical for signature verification.
-
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 11]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
    Each payload includes a structure_type discriminator at key 0.  A
    verifier MUST check this value before processing any other payload
@@ -653,6 +721,15 @@ Internet-Draft          P2P Presence Verification             March 2026
    |  Purpose: Peer-to-peer transport identity        |
    +--------------------------------------------------+
 
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 13]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    The Identity Key is the relationship anchor.  It is exchanged during
    the in-person ceremony and later used to verify continuity.  Its
    private key never leaves the platform key store, and every use
@@ -662,17 +739,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    (handshakes, keepalives) that cannot practically require per-
    operation user verification.  A Key Binding Object (Section 5) links
    the TK to the IK, extending the trust anchor to the transport layer.
-
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 12]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
 3.2.  Identity Key Requirements
 
@@ -692,15 +758,33 @@ Internet-Draft          P2P Presence Verification             March 2026
        changes (e.g., a new fingerprint is added), the platform SHOULD
        invalidate the Identity Key.  This prevents an attacker who gains
        temporary physical access from adding their biometric and
-       subsequently producing valid PRESENCE-level signatures.
+       subsequently producing valid BIOMETRIC-level signatures.
 
    4.  The platform MUST expose sufficient information for the
        implementation to label the resulting signature with one of the
        defined assurance values.
 
+   5.  Hardware attestation: On platforms that support hardware key
+       attestation (e.g., Android Key Attestation, Apple App Attest),
+       implementations SHOULD obtain attestation evidence for the
+       Identity Key at generation time and include it in Contact Objects
+       (see Section 2.3).
+
    This document does not require any specific hardware architecture.
    It intentionally abstracts over secure enclaves, secure elements,
-   TPMs, TEEs, and comparable mechanisms.
+   TPMs, TEEs, and comparable mechanisms.  However, platforms that can
+   provide hardware attestation evidence offer a stronger assurance
+   level (HARDWARE_VERIFIED) that is independently verifiable by the
+   receiving peer.
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 14]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
 3.3.  Transport Key Rotation
 
@@ -719,16 +803,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    Peers that receive a new KBO for a known IK MUST verify the KBO
    signature.  If valid, the peer updates its stored TK for that
    contact.
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 13]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
 3.3.1.  Offline Rotation
 
@@ -759,6 +833,15 @@ Internet-Draft          P2P Presence Verification             March 2026
    Implementations MUST NOT rotate the Transport Key without a mechanism
    for offline contacts to discover the new key.
 
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 15]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
 4.  Contact Object
 
 4.1.  Purpose
@@ -781,45 +864,95 @@ Internet-Draft          P2P Presence Verification             March 2026
 
 
 
-Rodriguez               Expires 27 September 2026              [Page 14]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 16]
 
 Internet-Draft          P2P Presence Verification             March 2026
 
 
-   +=====+================+===========+===============================+
-   | Key | Name           | CBOR Type | Description                   |
-   +=====+================+===========+===============================+
-   |   0 | structure_type | uint      | MUST be 0x02 (CONTACT_OBJECT) |
-   +-----+----------------+-----------+-------------------------------+
-   |   1 | version        | uint      | MUST be 1                     |
-   +-----+----------------+-----------+-------------------------------+
-   |   2 | ik_public      | COSE_Key  | Sender Identity Key (P-256)   |
-   +-----+----------------+-----------+-------------------------------+
-   |   3 | tk_public      | bstr      | Sender Transport Key public   |
-   |     |                |           | bytes                         |
-   +-----+----------------+-----------+-------------------------------+
-   |   4 | tk_algorithm   | int       | Algorithm identifier for      |
-   |     |                |           | tk_public                     |
-   +-----+----------------+-----------+-------------------------------+
-   |   5 | display_name   | tstr      | UTF-8, max 64 bytes of UTF-8  |
-   |     |                |           | content                       |
-   +-----+----------------+-----------+-------------------------------+
-   |   6 | timestamp      | uint      | Unix time in milliseconds     |
-   +-----+----------------+-----------+-------------------------------+
-   |   7 | nonce          | bstr      | 16 bytes, cryptographically   |
-   |     |                |           | random                        |
-   +-----+----------------+-----------+-------------------------------+
-   |   8 | addressing     | bstr      | Transport-specific, max 1024  |
-   |     |                |           | bytes                         |
-   +-----+----------------+-----------+-------------------------------+
-   |   9 | assurance      | uint      | Assurance value for signing   |
-   +-----+----------------+-----------+-------------------------------+
+   +=====+======================+==========+===========================+
+   | Key | Name                 | CBOR     | Description               |
+   |     |                      | Type     |                           |
+   +=====+======================+==========+===========================+
+   |   0 | structure_type       | uint     | MUST be 0x02              |
+   |     |                      |          | (CONTACT_OBJECT)          |
+   +-----+----------------------+----------+---------------------------+
+   |   1 | version              | uint     | MUST be 1                 |
+   +-----+----------------------+----------+---------------------------+
+   |   2 | ik_public            | COSE_Key | Sender Identity Key       |
+   |     |                      |          | (P-256)                   |
+   +-----+----------------------+----------+---------------------------+
+   |   3 | tk_public            | bstr     | Sender Transport Key      |
+   |     |                      |          | public bytes              |
+   +-----+----------------------+----------+---------------------------+
+   |   4 | tk_algorithm         | int      | Algorithm identifier      |
+   |     |                      |          | for tk_public             |
+   +-----+----------------------+----------+---------------------------+
+   |   5 | display_name         | tstr     | UTF-8, max 64 bytes       |
+   |     |                      |          | of UTF-8 content          |
+   +-----+----------------------+----------+---------------------------+
+   |   6 | timestamp            | uint     | Unix time in              |
+   |     |                      |          | milliseconds              |
+   +-----+----------------------+----------+---------------------------+
+   |   7 | nonce                | bstr     | 16 bytes,                 |
+   |     |                      |          | cryptographically         |
+   |     |                      |          | random                    |
+   +-----+----------------------+----------+---------------------------+
+   |   8 | addressing           | bstr     | Transport-specific,       |
+   |     |                      |          | max 1024 bytes            |
+   +-----+----------------------+----------+---------------------------+
+   |   9 | assurance            | uint     | Assurance value for       |
+   |     |                      |          | signing                   |
+   +-----+----------------------+----------+---------------------------+
+   |  10 | attestation_evidence | bstr     | OPTIONAL.  Hardware       |
+   |     |                      |          | attestation evidence      |
+   |     |                      |          | (platform-specific).      |
+   |     |                      |          | Present when              |
+   |     |                      |          | assurance is 3            |
+   |     |                      |          | (HARDWARE_VERIFIED).      |
+   +-----+----------------------+----------+---------------------------+
 
-                                 Table 2
+                                  Table 2
 
    The tk_public field MUST contain the raw public key bytes in the
    canonical encoding for the algorithm identified by tk_algorithm.  See
    the transport key algorithm table (Section 11) for defined encodings.
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 17]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    The addressing field is opaque to this specification.  It MUST carry
    only the minimum information needed for rendezvous or re-contact in
@@ -835,24 +968,22 @@ Internet-Draft          P2P Presence Verification             March 2026
    1.  Generate a 16-byte nonce (field 7) using a cryptographically
        secure random number generator (CSPRNG).
 
-
-
-Rodriguez               Expires 27 September 2026              [Page 15]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    2.  Set timestamp (field 6) to the current time.
 
    3.  Populate all other fields.
 
-   4.  Serialize Contact_payload as deterministic CBOR.
+   4.  If the platform supports hardware key attestation, obtain
+       attestation evidence for the Identity Key and include it in field
+       10 (attestation_evidence).  Set assurance (field 9) to 3
+       (HARDWARE_VERIFIED).
 
-   5.  Sign using COSE_Sign1 with the Identity Key.  This operation
+   5.  Serialize Contact_payload as deterministic CBOR.
+
+   6.  Sign using COSE_Sign1 with the Identity Key.  This operation
        triggers a local user-verification event.
 
-   6.  Record the assurance value reported for that signing event in
-       field 9.
+   7.  If attestation evidence was not included, record the assurance
+       value reported for that signing event in field 9.
 
 4.4.  Verification
 
@@ -871,6 +1002,14 @@ Internet-Draft          P2P Presence Verification             March 2026
    4.  Verify that version (field 1) is supported.  If unsupported,
        reject.
 
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 18]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    5.  Verify that timestamp (field 6) is within a 5-minute window of
        the receiver's current time: abs(now - timestamp) <= 300000
        milliseconds.  If outside the window, reject.
@@ -882,21 +1021,19 @@ Internet-Draft          P2P Presence Verification             March 2026
    7.  Verify the COSE_Sign1 signature using ik_public (field 2).  If
        signature verification fails, reject.
 
-   8.  If all checks pass and the exchange is bidirectional (the local
+   8.  If attestation_evidence (field 10) is present and assurance
+       (field 9) is 3 (HARDWARE_VERIFIED), verify the attestation
+       evidence against the platform vendor's certificate chain.  If the
+       attestation evidence is present but verification fails, reject.
+       If the verifier cannot process the attestation format, it MUST
+       treat the assurance value as 2 (BIOMETRIC) rather than 3 and MAY
+       accept the Contact Object at the reduced assurance level.
+
+   9.  If all checks pass and the exchange is bidirectional (the local
        device has also transmitted its own Contact Object to this peer),
        store the contact: ik_public, tk_public, tk_algorithm,
-       display_name, addressing, assurance value, and the timestamp of
-       the exchange.
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 16]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
+       display_name, addressing, assurance value, attestation evidence
+       (if present), and the timestamp of the exchange.
 
    A verifier MAY compute and compare a Relationship Fingerprint
    (Section 9) as an additional defense if the exchange path includes
@@ -919,6 +1056,16 @@ Internet-Draft          P2P Presence Verification             March 2026
        exchange is occurring with the intended party (e.g., visual
        confirmation, physical proximity constraint).
 
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 19]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    4.  For mechanisms that do not provide visual confirmation of the
        peer (e.g., wireless discovery), the implementation MUST require
        explicit user confirmation of the peer's display_name before
@@ -939,20 +1086,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    between devices.  Implementations SHOULD use network time
    synchronization (NTP) when available but MUST NOT reject payloads
    solely due to minor clock differences within the window.
-
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 17]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
 4.8.  Replay Protection
 
@@ -981,6 +1114,14 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    KBO_payload is a CBOR map:
 
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 20]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
     +=====+================+===========+=============================+
     | Key | Name           | CBOR Type | Description                 |
     +=====+================+===========+=============================+
@@ -1002,13 +1143,6 @@ Internet-Draft          P2P Presence Verification             March 2026
     +-----+----------------+-----------+-----------------------------+
 
                                  Table 3
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 18]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
    The tk_public and tk_algorithm fields follow the same encoding rules
    as in the Contact Object (Section 4).
@@ -1037,6 +1171,13 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    1.  Decode the COSE_Sign1 structure.  If decoding fails, reject.
 
+
+
+Rodriguez               Expires 27 September 2026              [Page 21]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    2.  Verify that structure_type (field 0) is 0x01 (KEY_BINDING).  If
        not, reject.
 
@@ -1058,13 +1199,6 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    If ANY check fails, the verifier MUST reject the KBO and terminate
    the connection.
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 19]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
 5.5.  Renewal
 
@@ -1088,6 +1222,18 @@ Internet-Draft          P2P Presence Verification             March 2026
    This creates a verifiable chain from any signed message back to the
    Identity Key established during the in-person contact exchange:
 
+
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 22]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    Stored IK_public (from in-person ceremony)
      |
      v  verifies
@@ -1107,20 +1253,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    )
 
    SC_payload is a CBOR map:
-
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 20]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
         +=====+================+===========+======================+
         | Key | Name           | CBOR Type | Description          |
@@ -1150,6 +1282,14 @@ Internet-Draft          P2P Presence Verification             March 2026
 
                                   Table 4
 
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 23]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
 6.3.  Creation
 
    The signer MUST:
@@ -1169,14 +1309,6 @@ Internet-Draft          P2P Presence Verification             March 2026
        risk profiles MAY choose shorter durations (e.g., 5 minutes for
        financial transactions) or longer durations (e.g., 8 hours for a
        workday session).
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 21]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
    4.  Serialize SC_payload as deterministic CBOR.
 
@@ -1205,6 +1337,15 @@ Internet-Draft          P2P Presence Verification             March 2026
    4.  Verify that ik_public (field 3) matches the stored Identity Key
        for the peer.  If no match, reject.
 
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 24]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    5.  Verify that peer_ik_hash (field 4) matches SHA-256 of the
        verifier's own IK_public (confirms the credential is scoped to
        this relationship).  If no match, reject.
@@ -1226,13 +1367,6 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    *  When a credential expires, the sender MUST create a new one, which
       requires a fresh user-verification event.
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 22]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
    *  If the connection closes, the SSK private material MUST be
       discarded immediately.
@@ -1260,6 +1394,14 @@ Internet-Draft          P2P Presence Verification             March 2026
    *  The Session Credential MUST have a finite expiry, limiting the
       forgery window.
 
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 25]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    *  The SSK MUST be discarded when the session ends.
 
    *  The peer_ik_hash field prevents the stolen SSK from being used
@@ -1282,14 +1424,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    authentication for data in transit.  Signed Messages add value when
    content must be verifiable independent of the transport session --
    for example, stored messages, forwarded content, or operations
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 23]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    requiring non-repudiation.  Real-time streams (audio, video) over an
    authenticated direct connection typically do not require per-unit
    signatures; the KBO-verified transport and Presence Challenges
@@ -1314,6 +1448,16 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    SM_payload is a CBOR map:
 
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 26]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    +=====+================+===========+===============================+
    | Key | Name           | CBOR Type | Description                   |
    +=====+================+===========+===============================+
@@ -1334,17 +1478,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    The SSK signing operation does NOT require a user-verification event
    (it uses the software-held ephemeral key).  This enables signing
    application units without user interaction.
-
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 24]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
 7.3.  Message Ordering and Replay Protection
 
@@ -1373,6 +1506,14 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    1.  If message_id > highest_seen: accept, update highest_seen.
 
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 27]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    2.  If message_id < highest_seen - window_size: reject (too old).
 
    3.  If message_id is within the window and has NOT been seen: accept,
@@ -1385,22 +1526,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    Section 4.1.2.6 of DTLS [RFC6347].
 
 7.3.3.  Replay State Model
-
-
-
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 25]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
    Reliable transport (strict):
 
@@ -1432,6 +1557,19 @@ Internet-Draft          P2P Presence Verification             March 2026
    window bitmap) for each active Session Credential until that
    credential expires or is otherwise discarded.
 
+
+
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 28]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    If replay state is lost, the verifier MUST treat subsequently
    received Signed Messages under the affected Session Credential as
    potentially replayed.  In that case, the verifier MUST either reject
@@ -1443,20 +1581,6 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    The full trust chain from a signed message back to the in-person
    ceremony:
-
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 26]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
     In-person ceremony
           |
@@ -1493,6 +1617,15 @@ Internet-Draft          P2P Presence Verification             March 2026
        sliding window for unreliable transports (see Section 7.3).  If
        the check fails, reject.
 
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 29]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
    7.  Verify the COSE_Sign1 signature using ssk_public.  If signature
        verification fails, reject.
 
@@ -1504,15 +1637,6 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    A Presence Challenge requests fresh evidence that the peer can
    perform an IK operation on the current connection.
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 27]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
 
    After a connection is established and authenticated via KBO exchange,
    either peer MAY issue a Presence Challenge to request on-demand
@@ -1547,6 +1671,17 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    The Presence Challenge is an unsigned CBOR map:
 
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 30]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
     +=====+====================+===========+==========================+
     | Key | Name               | CBOR Type | Description              |
     +=====+====================+===========+==========================+
@@ -1562,23 +1697,16 @@ Internet-Draft          P2P Presence Verification             March 2026
 
                                   Table 6
 
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 28]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    The challenger MUST generate challenge_nonce using a
    cryptographically secure random number generator.
 
    The required_assurance field allows the challenger to demand a
-   minimum assurance level.  If set to 2 (PRESENCE), the responder MUST
-   authenticate via biometric or equivalent; a DEVICE-level response to
-   a PRESENCE-required challenge MUST be rejected by the challenger.  If
-   set to 1 (DEVICE), either assurance level is acceptable (since
-   PRESENCE satisfies the DEVICE requirement).
+   minimum assurance level.  If set to 2 (BIOMETRIC), the responder MUST
+   authenticate via biometric or equivalent; a CREDENTIAL-level response
+   to a BIOMETRIC-required challenge MUST be rejected by the challenger.
+   If set to 1 (CREDENTIAL), any assurance level is acceptable.  If set
+   to 3 (HARDWARE_VERIFIED), the response MUST include hardware
+   attestation evidence (see Section 2.3).
 
 8.3.  Response Format
 
@@ -1591,6 +1719,24 @@ Internet-Draft          P2P Presence Verification             March 2026
    )
 
    PR_payload is a CBOR map:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 31]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
         +=====+=================+===========+=====================+
         | Key | Name            | CBOR Type | Description         |
@@ -1616,16 +1762,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    The responder signs the response with their Identity Key.  This
    signing operation triggers a local user-verification event.
 
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 29]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    The channel_binding field (key 3) MUST contain the SHA-256 hash of a
    connection-specific value agreed upon during the transport handshake.
    This prevents relay attacks where an attacker forwards a challenge to
@@ -1647,6 +1783,16 @@ Internet-Draft          P2P Presence Verification             March 2026
    before issuing or responding to challenges.  When no transport
    profile is in effect, implementations MUST use the mandatory-to-
    implement computation above.
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 32]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
 8.4.  Verification
 
@@ -1673,15 +1819,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    7.  Verify the COSE_Sign1 signature using the stored Identity Key for
        the peer.  If signature verification fails, reject.
 
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 30]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
 8.5.  Timing
 
    *  Implementations SHOULD NOT issue challenges more frequently than
@@ -1701,6 +1838,17 @@ Internet-Draft          P2P Presence Verification             March 2026
    coercion.
 
 9.  Relationship Fingerprint
+
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 33]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
 9.1.  Overview
 
@@ -1729,15 +1877,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    Given two Identity Key public keys, IK_A and IK_B, encoded as
    uncompressed P-256 points (65 bytes each, starting with 0x04):
 
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 31]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    sorted = sort_lexicographic(IK_A, IK_B)
    prefix = "H2H-RelationshipFingerprint-v1"
    digest = SHA-256(prefix || sorted[0] || sorted[1])
@@ -1758,6 +1897,14 @@ Internet-Draft          P2P Presence Verification             March 2026
    Example: "48371205"
 
    *Numeric (6 digits)*: Same approach, modulo 1,000,000:
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 34]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    fingerprint = sprintf("%06d", BE_uint(digest[0..3]) mod 1000000)
 
@@ -1783,17 +1930,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    Identity Key changes (and therefore the fingerprint changes).  This
    may indicate a new device (benign) or a man-in-the-middle attack.
 
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 32]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
 10.  Security Considerations
 
 10.1.  What This Protocol Does Provide
@@ -1815,6 +1951,16 @@ Internet-Draft          P2P Presence Verification             March 2026
    *  protection against coercion
 
    *  protection against a compromised platform key store
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 35]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    *  protection against a compromised application falsely describing
       the platform's assurance event unless the deployment adds
@@ -1841,15 +1987,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    assume that a valid protocol object implies that the signer saw or
    understood the application semantics associated with that object.
 
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 33]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    For the same reason, deployments SHOULD distinguish between
    cryptographic authorization of a protocol object and user consent to
    higher-level application meaning.  This document standardizes only
@@ -1868,6 +2005,18 @@ Internet-Draft          P2P Presence Verification             March 2026
    only that the platform authorized key use under its current policy.
    Verifiers MUST NOT infer voluntariness, freedom from duress, or the
    absence of local compromise.
+
+
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 36]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
 10.6.  Contact Object Capture
 
@@ -1892,20 +2041,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    Transport Key can be used.  Frequent TK rotation (Section 3.3)
    reduces this window further.
 
-
-
-
-
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 34]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
 10.8.  Assurance Semantics and Policy
 
    The assurance values defined by this document are signer-reported,
@@ -1916,18 +2051,34 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    An attacker who compromises the application layer (but not the
    platform key store) may attempt to forge the assurance field in
-   signed structures, claiming PRESENCE (2) when only DEVICE (1)
+   signed structures, claiming BIOMETRIC (2) when only CREDENTIAL (1)
    verification occurred.  The assurance field is included in the
    COSE_Sign1 payload and therefore covered by the signature; it cannot
    be modified without invalidating the signature.  However, a
-   compromised application could request DEVICE-level verification from
-   the platform and then set the assurance field to PRESENCE in the
-   payload before signing.
+   compromised application could request CREDENTIAL-level verification
+   from the platform and then set the assurance field to BIOMETRIC in
+   the payload before signing.
 
-   Deployments that require stronger semantics SHOULD define local
-   policy for acceptable platforms, maximum verification age, session
-   credential lifetimes, and when direct IK use is required instead of
-   delegated signing.
+   The HARDWARE_VERIFIED (3) assurance level mitigates this attack.
+   When hardware attestation evidence is present, the verifier can
+   confirm the key's properties and authentication requirements directly
+   against the hardware vendor's certificate chain, independent of the
+   application layer.  A compromised application cannot forge hardware
+   attestation evidence.
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 37]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
+   Deployments that require stronger semantics SHOULD require
+   HARDWARE_VERIFIED assurance where platform support is available, and
+   SHOULD define local policy for acceptable platforms, maximum
+   verification age, session credential lifetimes, and when direct IK
+   use is required instead of delegated signing.
 
 10.9.  Relay Attack on Presence Response
 
@@ -1954,14 +2105,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    to generate approximately 67 million key pairs to find a collision.
    A 6-digit encoding provides approximately 20 bits.
 
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 35]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    For applications requiring stronger assurance, implementations SHOULD
    support machine-readable comparison which can compare the full
    256-bit digest without human error.
@@ -1978,6 +2121,14 @@ Internet-Draft          P2P Presence Verification             March 2026
 
    *  Contact Objects are exchanged only during deliberate, in-person
       ceremonies, limiting the exposure surface.
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 38]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    *  The 5-minute validity window limits the useful lifetime of a
       captured object.
@@ -2010,14 +2161,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    avoid unnecessary stable identifiers, and avoid embedding data in the
    addressing field that is broader than required for rendezvous.
 
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 36]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
 10.12.4.  Fingerprint Handling
 
    Relationship Fingerprints are intended for optional out-of-band
@@ -2035,6 +2178,13 @@ Internet-Draft          P2P Presence Verification             March 2026
    limit (Section 8) mitigates this but does not eliminate it.
    Implementations SHOULD allow users to disable Presence Challenge
    responses from specific contacts.
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 39]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
 10.14.  Post-Quantum Considerations
 
@@ -2066,14 +2216,6 @@ Internet-Draft          P2P Presence Verification             March 2026
    Signed Message if the message's own timestamp (field 2) falls within
    the Session Credential's validity window, even if the message arrives
    after the credential has expired, provided the arrival delay is
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 37]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    within a locally configured grace period (RECOMMENDED: no more than
    60 seconds past expiry).  After the grace period, verifiers MUST
    reject the message and require a new Session Credential.
@@ -2089,6 +2231,16 @@ Internet-Draft          P2P Presence Verification             March 2026
    deployments will typically require an out-of-band re-verification
    ceremony, explicit peer approval of a new Identity Key, or an
    application-defined recovery mechanism.
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 40]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    Similarly, if an Identity Key is believed to be compromised, this
    document does not define a protocol-native revocation object or
@@ -2122,14 +2274,6 @@ Internet-Draft          P2P Presence Verification             March 2026
                       +-------+--------------------+
                       |  0x02 | CONTACT_OBJECT     |
                       +-------+--------------------+
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 38]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
                       |  0x03 | SESSION_CREDENTIAL |
                       +-------+--------------------+
                       |  0x04 | SIGNED_MESSAGE     |
@@ -2141,17 +2285,32 @@ Internet-Draft          P2P Presence Verification             March 2026
 
                                  Table 8
 
+
+
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 41]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
+
 11.2.  Assurance Values
 
-                           +=======+==========+
-                           | Value | Name     |
-                           +=======+==========+
-                           |     1 | DEVICE   |
-                           +-------+----------+
-                           |     2 | PRESENCE |
-                           +-------+----------+
+                       +=======+===================+
+                       | Value | Name              |
+                       +=======+===================+
+                       |     1 | CREDENTIAL        |
+                       +-------+-------------------+
+                       |     2 | BIOMETRIC         |
+                       +-------+-------------------+
+                       |     3 | HARDWARE_VERIFIED |
+                       +-------+-------------------+
 
-                                 Table 9
+                                  Table 9
 
 11.3.  Transport Key Algorithms
 
@@ -2178,14 +2337,6 @@ Internet-Draft          P2P Presence Verification             March 2026
 
 12.1.  Normative References
 
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 39]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    [FIPS180-4]
               National Institute of Standards and Technology, "Secure
               Hash Standard (SHS)", FIPS PUB 180-4, August 2015.
@@ -2193,6 +2344,15 @@ Internet-Draft          P2P Presence Verification             March 2026
    [FIPS186-5]
               National Institute of Standards and Technology, "Digital
               Signature Standard (DSS)", FIPS PUB 186-5, February 2023.
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 42]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
               Requirement Levels", BCP 14, RFC 2119,
@@ -2232,16 +2392,6 @@ Internet-Draft          P2P Presence Verification             March 2026
               DOI 10.17487/RFC6973, July 2013,
               <https://www.rfc-editor.org/rfc/rfc6973>.
 
-
-
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 40]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
    [RFC8446]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 8446, DOI 10.17487/RFC8446, August 2018,
               <https://www.rfc-editor.org/rfc/rfc8446>.
@@ -2251,6 +2401,14 @@ Internet-Draft          P2P Presence Verification             March 2026
               Express Concise Binary Object Representation (CBOR) and
               JSON Data Structures", RFC 8610, DOI 10.17487/RFC8610,
               June 2019, <https://www.rfc-editor.org/rfc/rfc8610>.
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 43]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    [RFC9345]  Barnes, R., Iyengar, S., Sullivan, N., and E. Rescorla,
               "Delegated Credentials for TLS and DTLS", RFC 9345,
@@ -2284,20 +2442,13 @@ Appendix A.  CDDL Schema
 
    ; -- Common types --
 
-   assurance_value = 1 / 2       ; 1=DEVICE, 2=PRESENCE
+   assurance_value = 1 / 2 / 3   ; 1=CREDENTIAL, 2=BIOMETRIC,
+                                 ; 3=HARDWARE_VERIFIED
 
    ; P-256 public key as COSE_Key (kty=EC2, crv=P-256)
    P256_COSE_Key = {
      1  => 2,                    ; kty: EC2
      -1 => 1,                   ; crv: P-256
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 41]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
      -2 => bstr .size 32,       ; x coordinate
      -3 => bstr .size 32,       ; y coordinate
    }
@@ -2307,6 +2458,13 @@ Internet-Draft          P2P Presence Verification             March 2026
    ; Each signed structure is a COSE_Sign1 with ES256 algorithm.
    ; The payload is a CBOR-encoded map defined below.
    ; ============================================================
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 44]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    H2H_COSE_Sign1<PayloadType> = #6.18([
      protected: bstr .cbor {1 => -7},  ; alg: ES256
@@ -2346,22 +2504,23 @@ Internet-Draft          P2P Presence Verification             March 2026
      2 => P256_COSE_Key,        ; ik_public
      3 => bstr,                 ; tk_public: raw key bytes
      4 => int,                  ; tk_algorithm: COSE alg id
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 42]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
      5 => tstr .size (0..64),   ; display_name: UTF-8, max 64 bytes
      6 => uint,                 ; timestamp: Unix ms
      7 => bstr .size 16,        ; nonce: 16 random bytes
      8 => bstr .size (0..1024), ; addressing: transport-specific
      9 => assurance_value,      ; assurance
+     ? 10 => bstr,              ; attestation_evidence: OPTIONAL
    }
 
    ; -- Session Credential --
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 45]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
    SC_payload = {
      0 => 3,                    ; structure_type: SESSION_CREDENTIAL
@@ -2402,18 +2561,22 @@ Internet-Draft          P2P Presence Verification             March 2026
      4 => uint,                 ; timestamp: Unix ms
    }
 
-
-
-
-Rodriguez               Expires 27 September 2026              [Page 43]
-
-Internet-Draft          P2P Presence Verification             March 2026
-
-
 Appendix B.  Implementation Considerations
 
    The following implementation guidance is informative and does not
    alter the protocol requirements in this document.
+
+
+
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 46]
+
+Internet-Draft          P2P Presence Verification             March 2026
+
 
 B.1.  Platform Key Store Mapping
 
@@ -2461,4 +2624,9 @@ Author's Address
 
 
 
-Rodriguez               Expires 27 September 2026              [Page 44]
+
+
+
+
+
+Rodriguez               Expires 27 September 2026              [Page 47]

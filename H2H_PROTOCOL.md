@@ -1942,9 +1942,28 @@ versions or companion documents:
 3.  **End-to-end encryption (H2H-CRYPTO)**: X3DH and Double Ratchet
     adapted for P-256, layered on the H2H Data Transfer Layer.
 
-4.  **Hardware attestation**: Mechanisms for peers to prove their
-    Identity Key is genuinely hardware-backed (e.g., Android Key
-    Attestation, Apple App Attest).
+4.  **Hardware attestation and verified assurance levels**: The base
+    protocol's assurance values (DEVICE, PRESENCE) are application-
+    reported claims.  A future extension would define higher assurance
+    levels backed by hardware attestation evidence from the platform's
+    root of trust (e.g., Android Key Attestation, Apple App Attest).
+    This would enable peers to cryptographically verify:
+
+    -  The Identity Key was generated inside a genuine hardware
+       security module and is non-exportable (hardware-enforced).
+    -  The biometric/device credential check actually occurred on
+       real hardware, not merely reported by the application.
+    -  At ceremony time, the Contact Object could include attestation
+       evidence, allowing the receiving peer to verify IK hardware
+       properties before accepting the contact.
+
+    Hardware attestation introduces a trust dependency on the platform
+    vendor (Apple, Google, etc.) for the specific claim that key store
+    properties are genuine.  This does not replace the peer-to-peer
+    ceremony for identity -- the ceremony remains the sole trust anchor
+    for "who is this person."  The vendor trust is limited to "is this
+    real hardware doing what it claims."  Applications choose whether
+    to require hardware attestation based on their threat model.
 
 5.  **Post-quantum migration**: Adoption of post-quantum signature
     schemes when standardized for hardware security modules.
