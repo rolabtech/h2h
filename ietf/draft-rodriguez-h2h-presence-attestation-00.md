@@ -6,7 +6,7 @@ docname: draft-rodriguez-h2h-presence-attestation-00
 ipr: trust200902
 submissiontype: independent
 number:
-date: 2026-03-26
+date: 2026-04-09
 v: 3
 keyword:
   - peer-to-peer authentication
@@ -50,7 +50,19 @@ informative:
   RFC9345:
   RFC9420:
   RFC8446:
-  RFC6347:
+  RFC9147:
+  PlayIntegrity:
+    title: "Play Integrity API Overview"
+    author:
+      org: Google
+    date: 2024
+    target: https://developer.android.com/google/play/integrity/overview
+  AppAttest:
+    title: "DeviceCheck | Apple Developer Documentation"
+    author:
+      org: Apple
+    date: 2024
+    target: https://developer.apple.com/documentation/devicecheck
   WebAuthn:
     title: "Web Authentication: An API for accessing Public Key Credentials Level 2"
     author:
@@ -428,7 +440,8 @@ sets the assurance field based on what the platform reported.  A
 compromised application could misrepresent the verification type.
 Value 3 (HARDWARE_VERIFIED) includes cryptographic evidence from
 the platform's hardware root of trust (e.g., Android Key
-Attestation, Apple App Attest) that the key properties and
+Attestation, Apple Secure Enclave key attestation) that the key
+properties and
 verification event are genuine.  This evidence is independently
 verifiable against the hardware vendor's certificate chain and
 cannot be forged by a compromised application.
@@ -471,11 +484,11 @@ allows the verifier to confirm:
     or credential) before each signing operation.
 
 Implementations running on platforms that support hardware key
-attestation (e.g., Android Key Attestation, Apple App Attest)
-SHOULD include attestation evidence in Contact Objects exchanged
-during the in-person ceremony.  This allows the receiving peer to
-verify the Identity Key's hardware properties at the moment of
-initial trust establishment.
+attestation (e.g., Android Key Attestation, Apple Secure Enclave
+key attestation) SHOULD include attestation evidence in Contact
+Objects exchanged during the in-person ceremony.  This allows the
+receiving peer to verify the Identity Key's hardware properties at
+the moment of initial trust establishment.
 
 The attestation evidence is opaque to this specification.  Its
 format and verification procedure are determined by the platform
@@ -544,11 +557,12 @@ the in-person ceremony and later used to verify continuity.  Its
 private key never leaves the platform key store, and every use
 requires a local user-verification event.
 
-The Transport Key handles high-frequency transport operations
-(handshakes, keepalives) that cannot practically require
-per-operation user verification.  A Key Binding Object
-({{key-binding-object}}) links the TK to the IK, extending
-the trust anchor to the transport layer.
+The Transport Key identifies the peer at the transport layer.
+Transport operations (handshakes, session resumption) require a
+key that the transport library can use without per-operation user
+verification.  A Key Binding Object ({{key-binding-object}}) links
+the TK to the IK, extending the trust anchor to the transport
+layer.
 
 ## Identity Key Requirements
 
@@ -576,10 +590,10 @@ ensure:
     the defined assurance values.
 
 5.  Hardware attestation: On platforms that support hardware key
-    attestation (e.g., Android Key Attestation, Apple App Attest),
-    implementations SHOULD obtain attestation evidence for the
-    Identity Key at generation time and include it in Contact
-    Objects (see {{hardware-attestation}}).
+    attestation (e.g., Android Key Attestation, Apple Secure Enclave
+    key attestation), implementations SHOULD obtain attestation
+    evidence for the Identity Key at generation time and include it
+    in Contact Objects (see {{hardware-attestation}}).
 
 This document does not require any specific hardware architecture.
 It intentionally abstracts over secure enclaves, secure elements,
@@ -768,10 +782,13 @@ The choice of proximity mechanism is an implementation decision.
 
 ## Size Considerations
 
-A typical Contact Object serializes to 300-500 bytes depending on
-the display name length and addressing information size.
-Implementations SHOULD ensure their chosen proximity mechanism
-supports payloads of at least 512 bytes.
+A Contact Object without attestation evidence typically serializes
+to 300-500 bytes; with attestation evidence (field 10) it may
+reach 1-2 KB.  Implementations SHOULD ensure their proximity
+mechanism supports at least 512 bytes, or at least 4,096 bytes
+when attestation is included.  Bandwidth-limited mechanisms (e.g.,
+QR codes) MAY omit attestation evidence from the initial exchange
+and deliver it over the transport connection after rendezvous.
 
 ## Clock Skew
 
@@ -1002,6 +1019,20 @@ is a software key.  An attacker who extracts the SSK from memory
 can forge messages for the remaining validity period of the Session
 Credential.  The short expiry limits this exposure.
 
+The Session Credential intentionally does not include a
+channel_binding field (unlike the Presence Response).  This is
+because Session Credentials must remain valid across delivery
+paths -- a message signed under an SC may be delivered over a live
+connection or deposited in a mailbox for later retrieval.  Binding
+the SC to a specific transport session would break offline
+delivery.  As a consequence, a stolen SSK and SC can be used from
+any network position for the remaining credential lifetime.  An
+attacker who achieves code execution sufficient to read the SSK
+from memory typically also has access to the Transport Key on
+the same device, meaning the device is fully compromised and
+no additional protocol-level binding would provide meaningful
+protection.
+
 This document treats Session Credentials as an optimization and
 not as an equivalent substitute for direct IK use.  Applications
 SHOULD require direct IK-based Presence Responses for high-risk
@@ -1027,10 +1058,11 @@ Mitigations for SSK compromise:
 
 ## Applicability {#applicability}
 
-Not all application data requires Signed Message wrapping.  When a
-transport connection has been authenticated via Key Binding Object
-verification ({{key-binding-object}}), the transport layer already
-provides authentication for data in transit.  Signed Messages add
+Not all application data requires Signed Message wrapping.  When
+peers have exchanged and verified Key Binding Objects
+({{key-binding-object}}), the transport peer's identity is bound
+to the stored IK from the ceremony, and data in transit is
+authenticated by the KBO-verified connection.  Signed Messages add
 value when content must be verifiable independent of the transport
 session -- for example, stored messages, forwarded content, or
 operations requiring non-repudiation.  Real-time streams (audio,
@@ -1040,6 +1072,13 @@ Presence Challenges provide sufficient assurance.
 
 Embedding applications define which data types require Signed
 Messages and which rely solely on transport authentication.
+
+When Signed Messages are stored for later verification,
+implementations MUST also persist the Session Credential that
+authorized the signing key.  The full verification chain -- stored
+IK (from the ceremony), Session Credential (IK signed SSK), and
+Signed Message (SSK signed the content) -- is required to verify
+a message after the transport session has ended.
 
 ## Format
 
@@ -1104,7 +1143,7 @@ video streams than for infrequent text messages):
     reject (replay).
 
 This approach follows the anti-replay mechanism defined in
-Section 4.1.2.6 of DTLS {{RFC6347}}.
+Section 4.5.1 of DTLS 1.3 {{RFC9147}}.
 
 ### Replay State Model
 
@@ -1270,6 +1309,7 @@ PR_payload is a CBOR map:
 |   2 | assurance       | uint      | Reported assurance value           |
 |   3 | channel_binding | bstr      | SHA-256 of connection context      |
 |   4 | timestamp       | uint      | Unix time in milliseconds          |
+|   5 | attestation_evidence | bstr | OPTIONAL. Hardware attestation evidence. Present when assurance is 3 (HARDWARE_VERIFIED). |
 
 The responder signs the response with their Identity Key.  This
 signing operation triggers a local user-verification event.
@@ -1674,6 +1714,35 @@ distribution method.  Applications MUST therefore define local policy
 for suspending trust in a stored key and for handling replacement or
 termination of the affected relationship.
 
+## Compromised Application During Ceremony
+
+The Contact Exchange ceremony assumes that both peers are running
+legitimate, unmodified applications.  A compromised application
+could substitute attacker-controlled keys during the ceremony while
+displaying correct-looking UI to the user, causing both peers to
+bind trust to keys the attacker controls.
+
+Hardware key attestation (assurance value 3) mitigates part of this
+threat by proving the Identity Key is hardware-bound, but does not
+prove that the application presenting the key is legitimate.  An
+attacker who repackages the application can generate a genuine
+hardware-backed key and present valid attestation evidence for it.
+
+Platform app integrity services (e.g., Android Play Integrity API,
+Apple App Attest) can verify that the application binary is
+legitimate and unmodified.  However, these services require online
+validation against vendor APIs, which is an architectural mismatch
+with this protocol's peer-to-peer design.  Guidance on app integrity
+attestation is provided in the Implementation Considerations
+({{app-integrity-impl}}).
+
+Without either form of attestation, assurance values 1 and 2 are
+application-reported claims that a compromised application can
+forge.  Peers exchanging contacts at these levels SHOULD use
+out-of-band Relationship Fingerprint comparison
+({{relationship-fingerprint}}) as an additional defense against
+key substitution.
+
 ## Terminology Caution
 
 Implementations and profiles built on this document SHOULD avoid
@@ -1842,6 +1911,7 @@ PR_payload = {
   2 => assurance_value,      ; assurance
   3 => bstr .size 32,        ; channel_binding: SHA-256
   4 => uint,                 ; timestamp: Unix ms
+  ? 5 => bstr,               ; attestation_evidence: OPTIONAL
 }
 ~~~
 
@@ -1859,6 +1929,48 @@ keys, TPM-backed Windows keys, or TPM- and PKCS#11-based Linux
 deployments.  Implementations MUST verify that their chosen mechanism
 meets the Identity Key requirements in Section 3.2 regardless of the
 platform name used in product documentation.
+
+## App Integrity Attestation {#app-integrity-impl}
+
+Hardware key attestation ({{hardware-attestation}}) proves that the
+Identity Key resides in genuine hardware, but does not prove that
+the application presenting the key is the legitimate, unmodified
+binary.  A repackaged application could generate a genuine
+hardware-backed key, present valid attestation evidence, and
+substitute attacker-controlled material during the ceremony.
+
+Platform app integrity services can mitigate this threat:
+
+-  Android Play Integrity API {{PlayIntegrity}} produces tokens
+   that verify the app is the genuine binary from Google Play,
+   running on a genuine device.
+-  Apple App Attest {{AppAttest}} produces attestation objects that
+   verify the app is the unmodified binary running on genuine
+   Apple hardware.
+
+These services require **online validation** against vendor APIs,
+which is an architectural difference from the locally-verifiable
+hardware attestation defined in this document.  Implementations
+that wish to include app integrity attestation SHOULD:
+
+1.  Obtain an app integrity token at ceremony time and include it
+    in a transport-level or application-level metadata field
+    alongside the Contact Object (not in the signed payload, since
+    validation requires network access to vendor services).
+2.  Validate received tokens against the vendor's API before
+    accepting the Contact Object.
+3.  Inform the user if app integrity could not be verified.
+
+App integrity attestation and hardware key attestation are
+complementary:
+
+-  Hardware key attestation answers: "Is this key in real,
+   tamper-resistant hardware?"
+-  App integrity attestation answers: "Is the application presenting
+   this key the legitimate, unmodified binary?"
+
+Neither is sufficient alone.  Deployments handling high-value
+authorizations SHOULD use both where platform support is available.
 
 ## Payload Size Limits
 
