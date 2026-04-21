@@ -6,7 +6,7 @@ docname: draft-rodriguez-h2h-presence-attestation-00
 ipr: trust200902
 submissiontype: independent
 number:
-date: 2026-04-09
+date: 2026-04-16
 v: 3
 keyword:
   - peer-to-peer authentication
@@ -43,10 +43,10 @@ normative:
     date: 2015-08
     seriesinfo:
       FIPS: PUB 180-4
+  RFC8610:
 
 informative:
   RFC6973:
-  RFC8610:
   RFC9345:
   RFC9420:
   RFC8446:
@@ -101,9 +101,9 @@ Existing protocols authenticate users to services, negotiate session
 keys, or protect message content from eavesdroppers.  None verify
 that a remote party is the same individual whose key was accepted
 during an earlier in-person exchange and has just now physically
-authorized a signature on the device holding that key.  Advances in
-synthetic media increase the value of mechanisms that do not rely on
-unauthenticated audio, video, or text for sensitive authorizations.
+authorized a signature on the device holding that key.  Advances in synthetic media make it increasingly difficult to
+trust unauthenticated audio, video, or text for sensitive
+authorizations.
 
 This document defines transport-independent CBOR- and COSE-based
 objects that chain every remote interaction back to a bilateral
@@ -136,9 +136,8 @@ handoffs, and other interactions where account-level authentication
 alone is insufficient.
 
 Recent advances in synthetic media and automated impersonation
-increase the value of mechanisms that reduce reliance on
-unauthenticated audio, video, or text interactions for sensitive
-approvals.  This document does not attempt to detect synthetic
+make unauthenticated audio, video, or text unreliable for
+sensitive approvals.  This document does not detect synthetic
 media or prove biological humanness.  Instead, it specifies
 interoperable signed objects and verification rules that bind
 sensitive authorizations to a prior relationship ceremony and to a
@@ -146,9 +145,8 @@ fresh, platform-mediated local user-verification event.
 
 ## Design Goal
 
-The goal of this protocol is not to prove a universally valid human
-identity.  The goal is to let a relying peer verify all of the
-following:
+This protocol does not prove a universally valid human identity.
+It lets a relying peer verify all of the following:
 
 1.  A public key was previously accepted during an in-person exchange.
 2.  The corresponding private key remains non-exportable and device-
@@ -162,18 +160,18 @@ following:
 The protocol operates in four logical phases:
 
 ~~~
-Phase 1           Phase 2            Phase 3           Phase 4
-CONTACT           KEY BINDING        SESSION           DATA
-EXCHANGE          PRESENTATION       DELEGATION        TRANSFER
+Phase 1         Phase 2         Phase 3         Phase 4
+CONTACT         KEY BINDING     SESSION         DATA
+EXCHANGE        PRESENTATION    DELEGATION      TRANSFER
 
-+----------+    +----------+       +----------+     +----------+
-| Meet in  |    | Connect  |       | IK signs |     | SSK signs|
-| person,  |--->| remotely,|------>| ephemeral|---->| app      |
-| exchange |    | present  |       | SSK via  |     | units    |
-| Contact  |    | Key      |       | Session  |     |          |
-| Objects  |    | Binding  |       |Credential|     |          |
-+----------+    +----------+       +----------+     +----------+
- [user-verify]   [verify chain]    [user-verify]    [automatic]
++----------+    +----------+    +----------+    +----------+
+| Meet in  |    | Connect  |    | IK signs |    | SSK signs|
+| person,  |--->| remotely,|--->| ephemeral|--->| app      |
+| exchange |    | present  |    | SSK via  |    | units    |
+| Contact  |    | Key      |    | Session  |    |          |
+| Objects  |    | Binding  |    |Credential|    |          |
++----------+    +----------+    +----------+    +----------+
+ [user-verify]   [verify chain]  [user-verify]   [automatic]
 
 At any point: Presence Challenge --> fresh IK signature
 ~~~
@@ -181,7 +179,7 @@ At any point: Presence Challenge --> fresh IK signature
 Phases 1 and 3 require platform-mediated user verification (e.g.,
 biometric or PIN) because they use the hardware-bound Identity Key.
 Phase 4 is automatic because the SSK is a software key delegated
-during Phase 3 — no user interaction is needed for signing.
+during Phase 3 -- no user interaction is needed for signing.
 
 1.  **Contact Exchange**: Two peers meet in person and exchange
     Contact Objects -- signed structures containing their Identity
@@ -239,31 +237,9 @@ for reuse across multiple peer-to-peer applications and transports
 that require relationship-bound authorization.  This document does not
 define a single application protocol or user experience.  Instead, it
 standardizes compact object formats and verification rules that can be
-embedded into messaging, approval, rendezvous, or comparable systems.
+embedded into messaging, approval, or rendezvous systems.
 
-## Object Relationship Overview
-
-The protocol objects have distinct roles and chain together as
-follows:
-
-~~~
-Contact Object
-  -> introduces IK + TK + rendezvous hints
-
-Key Binding Object
-  -> proves the current TK is bound to the stored IK
-
-Session Credential
-  -> allows the IK to delegate short-lived signing authority to an SSK
-
-Signed Message
-  -> carries application content signed by the delegated SSK
-
-Presence Response
-  -> re-asserts fresh, direct IK-based authorization on demand
-~~~
-
-## Trust Model Summary
+## Trust Model Summary {#trust-model}
 
 This protocol relies on two external trust assumptions.
 
@@ -289,9 +265,9 @@ reconnect remotely.
    |                                                   |
    |  ============ Phase 2: Key Binding ============   |
    |                                                   |
-   |  --- KBO(IK_A signs TK_A) ---------------------->|
+   |  --- KBO(IK_A signs TK_A) ----------------------->|
    |                                                   |
-   |<--------------------- KBO(IK_B signs TK_B) ---   |
+   |<---------------------- KBO(IK_B signs TK_B) ---   |
    |                                                   |
    |  Both sides verify:                               |
    |    - IK in KBO matches stored IK from ceremony    |
@@ -304,13 +280,13 @@ reconnect remotely.
    |  IK_A signs Session Credential(SSK_A)             |
    |    [user-verification: biometric/PIN]             |
    |                                                   |
-   |  --- SessionCredential(SSK_A_pub) -------------->|
+   |  --- SessionCredential(SSK_A_pub) --------------->|
    |                                                   |
    |          Bob generates ephemeral SSK_B            |
    |          IK_B signs Session Credential(SSK_B)     |
    |            [user-verification: biometric/PIN]     |
    |                                                   |
-   |<------------- SessionCredential(SSK_B_pub) ---   |
+   |<-------------- SessionCredential(SSK_B_pub) ---   |
    |                                                   |
    |  Both sides verify:                               |
    |    - SC signed by stored IK                       |
@@ -419,7 +395,8 @@ Presence Response:
 Assurance Value:
 : A protocol-visible value reported by the signer describing the type
   of local verification event used for a signing operation.  Assurance
-  values are platform-mediated claims, not universal truth statements.
+  values are claims reported by the platform, not independently
+  verifiable facts.
 
 ## Assurance Values
 
@@ -433,40 +410,17 @@ indicate stronger assurance:
 |     3 | HARDWARE_VERIFIED | The signing operation includes hardware attestation evidence from the platform's root of trust, proving the key is hardware-bound and the verification event is genuine.  See {{hardware-attestation}}. |
 
 A response with assurance value N satisfies a requirement for
-assurance value M if and only if N >= M.
+assurance value M if and only if N >= M.  Values 4 and above are
+reserved for future extensions; the N >= M rule ensures forward
+compatibility.
 
-Values 1 and 2 are application-reported claims: the application
-sets the assurance field based on what the platform reported.  A
-compromised application could misrepresent the verification type.
-Value 3 (HARDWARE_VERIFIED) includes cryptographic evidence from
-the platform's hardware root of trust (e.g., Android Key
-Attestation, Apple Secure Enclave key attestation) that the key
-properties and
-verification event are genuine.  This evidence is independently
-verifiable against the hardware vendor's certificate chain and
-cannot be forged by a compromised application.
-
-Values 4 and above are reserved for future extensions.  The
-N >= M comparison rule ensures forward compatibility: a verifier
-unaware of new levels will accept them when they satisfy its minimum
-requirement.
-
-A verifier MUST treat values 1 and 2 as claims produced by the
-signing application.  A verifier MUST NOT interpret them as
-independent proof of humanness, lack of coercion, or legal
-attribution.  A verifier MUST treat the assurance value as an input
-to local policy, not as a portable cross-platform security
-equivalence class.
-
-A verifier receiving value 3 (HARDWARE_VERIFIED) MAY place higher
-trust in the claim, subject to its trust in the hardware vendor's
-certificate chain.  The hardware attestation strengthens the claim
-about the signing event but does not alter the peer-to-peer trust
-model for identity -- the in-person ceremony remains the sole trust
-anchor for "who is this person."
-
-Relying parties (receiving peers) MUST be informed of the assurance
-value and SHOULD make it visible to the user.
+Values 1 and 2 are application-reported claims; a compromised
+application could misrepresent them.  Value 3 includes
+cryptographic evidence from the platform's hardware root of trust
+that cannot be forged by a compromised application (see
+{{hardware-attestation}}).  A verifier MUST treat assurance values as local policy inputs;
+they do not imply equivalent security across platforms.  Relying parties MUST be informed of the
+assurance value and SHOULD make it visible to the user.
 
 ## Hardware Attestation {#hardware-attestation}
 
@@ -675,7 +629,7 @@ Contact_payload is a CBOR map:
 |   2 | ik_public      | COSE_Key  | Sender Identity Key (P-256)       |
 |   3 | tk_public      | bstr      | Sender Transport Key public bytes |
 |   4 | tk_algorithm   | int       | Algorithm identifier for tk_public|
-|   5 | display_name   | tstr      | UTF-8, max 64 bytes of UTF-8 content |
+|   5 | display_name   | tstr      | UTF-8, max 64 bytes              |
 |   6 | timestamp      | uint      | Unix time in milliseconds         |
 |   7 | nonce          | bstr      | 16 bytes, cryptographically random|
 |   8 | addressing     | bstr      | Transport-specific, max 1024 bytes|
@@ -705,12 +659,12 @@ The sender MUST:
 4.  If the platform supports hardware key attestation,
     obtain attestation evidence for the Identity Key and include
     it in field 10 (attestation_evidence).  Set assurance (field 9)
-    to 3 (HARDWARE_VERIFIED).
+    to 3 (HARDWARE_VERIFIED).  Otherwise, set assurance (field 9)
+    to the value the platform will report for the signing event
+    (1 for CREDENTIAL, 2 for BIOMETRIC).
 5.  Serialize Contact_payload as deterministic CBOR.
 6.  Sign using COSE_Sign1 with the Identity Key.  This operation
     triggers a local user-verification event.
-7.  If attestation evidence was not included, record the assurance
-    value reported for that signing event in field 9.
 
 ## Verification {#contact-verification}
 
@@ -845,14 +799,13 @@ rules as in the Contact Object ({{contact-object}}).
 
 The signer MUST:
 
-1.  Populate all fields of KBO_payload.
+1.  Populate all fields of KBO_payload, including assurance
+    (field 7) based on the key's configured authentication policy.
 2.  Set expiry (field 6) to no more than 30 days (2,592,000,000
     milliseconds) after timestamp (field 5).
 3.  Serialize KBO_payload as deterministic CBOR.
 4.  Sign using COSE_Sign1 with the Identity Key.  This operation
     triggers a local user-verification event.
-5.  Record the assurance value of the verification event in
-    field 7.
 
 ## Verification
 
@@ -865,20 +818,26 @@ verification:
 2.  Verify that structure_type (field 0) is 0x01 (KEY_BINDING).
     If not, reject.
 
-3.  Verify that the current time is >= timestamp (field 5) and
+3.  Verify that version (field 1) is supported.  If unsupported,
+    reject.
+
+4.  Verify that the current time is >= timestamp (field 5) and
     < expiry (field 6).  If outside the window, reject.
 
-4.  Extract ik_public (field 2) from the payload.
+5.  Verify that expiry (field 6) minus timestamp (field 5) does not
+    exceed 30 days (2,592,000,000 milliseconds).  If it does, reject.
 
-5.  Verify that ik_public matches the expected Identity Key for this
+6.  Extract ik_public (field 2) from the payload.
+
+7.  Verify that ik_public matches the expected Identity Key for this
     contact (from a prior contact exchange, {{contact-object}}).
     If no match, reject.
 
-6.  Verify that tk_public (field 3) matches the Transport Key of
+8.  Verify that tk_public (field 3) matches the Transport Key of
     the transport peer as observed during the transport handshake.
     If no match, reject.
 
-7.  Verify the COSE_Sign1 signature using ik_public.  If signature
+9.  Verify the COSE_Sign1 signature using ik_public.  If signature
     verification fails, reject.
 
 If ANY check fails, the verifier MUST reject the KBO and terminate
@@ -904,9 +863,6 @@ Delegated Credentials
 {{?RFC9345}}: a long-term trust anchor (the IK) signs a short-lived
 operational credential (the Session Credential), which in turn
 authenticates individual operations (messages, file transfers).
-
-This creates a verifiable chain from any signed message back to the
-Identity Key established during the in-person contact exchange:
 
 ~~~
 Stored IK_public (from in-person ceremony)
@@ -960,11 +916,11 @@ The signer MUST:
     with different risk profiles MAY choose shorter durations
     (e.g., 5 minutes for financial transactions) or longer
     durations (e.g., 8 hours for a workday session).
-4.  Serialize SC_payload as deterministic CBOR.
-5.  Sign using COSE_Sign1 with the Identity Key.  This operation
+4.  Set assurance (field 7) based on the key's configured
+    authentication policy.
+5.  Serialize SC_payload as deterministic CBOR.
+6.  Sign using COSE_Sign1 with the Identity Key.  This operation
     triggers a local user-verification event.
-6.  Record the assurance value of the verification event in
-    field 7.
 
 The SSK private key MUST be held in memory only and MUST NOT be
 persisted to disk.  It MUST be discarded when the session expires
@@ -981,17 +937,20 @@ The verifier MUST:
 2.  Verify that structure_type (field 0) is 0x03
     (SESSION_CREDENTIAL).  If not, reject.
 
-3.  Verify that the current time is between timestamp (field 5)
+3.  Verify that version (field 1) is supported.  If unsupported,
+    reject.
+
+4.  Verify that the current time is between timestamp (field 5)
     and expiry (field 6).  If outside the window, reject.
 
-4.  Verify that ik_public (field 3) matches the stored Identity
+5.  Verify that ik_public (field 3) matches the stored Identity
     Key for the peer.  If no match, reject.
 
-5.  Verify that peer_ik_hash (field 4) matches SHA-256 of the
+6.  Verify that peer_ik_hash (field 4) matches SHA-256 of the
     verifier's own IK_public (confirms the credential is scoped
     to this relationship).  If no match, reject.
 
-6.  Verify the COSE_Sign1 signature using the stored IK_public.
+7.  Verify the COSE_Sign1 signature using the stored IK_public.
     If signature verification fails, reject.
 
 The Session Credential is typically verified once per session
@@ -1015,43 +974,10 @@ message verifications.
 ## Security Note
 
 Use of the SSK is weaker than direct use of the IK because the SSK
-is a software key.  An attacker who extracts the SSK from memory
-can forge messages for the remaining validity period of the Session
-Credential.  The short expiry limits this exposure.
-
-The Session Credential intentionally does not include a
-channel_binding field (unlike the Presence Response).  This is
-because Session Credentials must remain valid across delivery
-paths -- a message signed under an SC may be delivered over a live
-connection or deposited in a mailbox for later retrieval.  Binding
-the SC to a specific transport session would break offline
-delivery.  As a consequence, a stolen SSK and SC can be used from
-any network position for the remaining credential lifetime.  An
-attacker who achieves code execution sufficient to read the SSK
-from memory typically also has access to the Transport Key on
-the same device, meaning the device is fully compromised and
-no additional protocol-level binding would provide meaningful
-protection.
-
-This document treats Session Credentials as an optimization and
-not as an equivalent substitute for direct IK use.  Applications
-SHOULD require direct IK-based Presence Responses for high-risk
-actions such as key changes, privileged approvals, or other
-operations where fresh platform-mediated authorization is
-materially more valuable than signing throughput.
-
-Mitigations for SSK compromise:
-
--  The Session Credential MUST have a finite expiry, limiting the
-   forgery window.
--  The SSK MUST be discarded when the session ends.
--  The peer_ik_hash field prevents the stolen SSK from being used
-   with a different peer.
--  Implementations SHOULD store the SSK in a non-swappable memory
-   region.
--  For operations requiring the strongest assurance, implementations
-   SHOULD sign directly with the Identity Key rather than delegating
-   to the SSK.
+is a software key.  See {{ssk-compromise}} for a detailed analysis
+of SSK compromise risks and mitigations.  Applications SHOULD
+require direct IK-based Presence Responses for high-risk actions
+such as key changes or privileged approvals.
 
 
 # Signed Message {#signed-message}
@@ -1062,9 +988,8 @@ Not all application data requires Signed Message wrapping.  When
 peers have exchanged and verified Key Binding Objects
 ({{key-binding-object}}), the transport peer's identity is bound
 to the stored IK from the ceremony, and data in transit is
-authenticated by the KBO-verified connection.  Signed Messages add
-value when content must be verifiable independent of the transport
-session -- for example, stored messages, forwarded content, or
+authenticated by the KBO-verified connection.  Signed Messages are useful when content must be verifiable
+independent of the transport session -- for example, stored messages, forwarded content, or
 operations requiring non-repudiation.  Real-time streams (audio,
 video) over an authenticated direct connection typically do not
 require per-unit signatures; the KBO-verified transport and
@@ -1145,32 +1070,6 @@ video streams than for infrequent text messages):
 This approach follows the anti-replay mechanism defined in
 Section 4.5.1 of DTLS 1.3 {{RFC9147}}.
 
-### Replay State Model
-
-~~~
-Reliable transport (strict):
-
-  Session Credential SC1
-     highest_message_id = 41
-
-  Incoming message_id:
-    42 -> accept, store 42
-    42 -> reject (replay)
-    40 -> reject (stale)
-
-Unreliable transport (sliding window, size=64):
-
-  Session Credential SC1
-     highest_message_id = 100
-     window covers 37..100
-
-  Incoming message_id:
-    101 -> accept, update highest to 101
-     85 -> in window, not seen -> accept, mark seen
-     85 -> in window, already seen -> reject (replay)
-     30 -> below window -> reject (too old)
-~~~
-
 ## Replay State
 
 Verifiers MUST maintain replay state scoped to the validated Session
@@ -1218,12 +1117,16 @@ To verify a Signed Message, the verifier MUST:
     fails, reject.
 5.  Verify that structure_type (field 0) is 0x04 (SIGNED_MESSAGE).
     If not, reject.
-6.  Apply the replay check for message_id (field 1) according to
+6.  Verify that timestamp (field 2) is >= the Session Credential's
+    timestamp and <= the Session Credential's expiry (plus any
+    locally configured grace period; RECOMMENDED: no more than 60
+    seconds past expiry).  If outside the window, reject.
+7.  Apply the replay check for message_id (field 1) according to
     the transport type: strict monotonic for reliable transports,
     or sliding window for unreliable transports (see
     {{message-ordering-and-replay-protection}}).  If the check
     fails, reject.
-7.  Verify the COSE_Sign1 signature using ssk_public.  If signature
+8.  Verify the COSE_Sign1 signature using ssk_public.  If signature
     verification fails, reject.
 
 If any check fails, the verifier MUST reject the message.
@@ -1360,7 +1263,14 @@ The challenger MUST:
 6.  Verify that assurance (field 2) is >= required_assurance from
     the challenge.  If not, reject.
 
-7.  Verify the COSE_Sign1 signature using the stored Identity Key
+7.  If assurance is 3 (HARDWARE_VERIFIED), verify the
+    attestation_evidence (field 5) against the platform vendor's
+    certificate chain.  If attestation evidence is present but
+    verification fails, reject.  If the verifier cannot process
+    the attestation format, it MUST treat the assurance value as 2
+    (BIOMETRIC) rather than 3.
+
+8.  Verify the COSE_Sign1 signature using the stored Identity Key
     for the peer.  If signature verification fails, reject.
 
 ## Timing
@@ -1373,10 +1283,9 @@ The challenger MUST:
 -  Failure to respond MUST NOT automatically terminate the
    connection.
 
-A successful Presence Response demonstrates only that the peer was
-able to use the stored IK under the platform's configured policy on
-the current connection.  It does not prove voluntariness or lack of
-coercion.
+A successful Presence Response demonstrates only that the peer's
+platform authorized an IK operation on the current connection.
+See {{trust-model}} for scope limitations.
 
 
 # Relationship Fingerprint {#relationship-fingerprint}
@@ -1395,13 +1304,19 @@ contact exchange mechanism:
    man-in-the-middle substitution is not feasible and fingerprint
    verification MAY be skipped.
 
--  When Contact Objects are exchanged via a channel that does not
-   guarantee physical proximity (e.g., via a server, email, or
-   messaging application), both parties MUST verify fingerprints
-   through a separate trusted channel.
+-  When the exchange mechanism involves an intermediary (e.g., a code
+   displayed on one device and photographed by another, or a wireless
+   exchange without visual confirmation of the peer), fingerprint
+   verification SHOULD be performed even when both parties are
+   physically co-present.
 
--  When the exchange mechanism involves an intermediary, fingerprint
-   verification SHOULD be performed regardless of physical proximity.
+This specification does not support Contact Object exchange over
+channels that do not guarantee physical proximity (e.g., server
+relay, email, or messaging application).  Such usage violates the
+Ceremony Requirement ({{contact-object}}) and falls outside this
+document's trust model; any security claims in such deployments
+derive from the relay channel's own authentication, not from this
+protocol.
 
 ## Computation
 
@@ -1419,28 +1334,14 @@ SHA-256 is as defined in {{FIPS180-4}}.
 This document defines only the digest computation.  Any human-
 readable rendering is application-defined.
 
-RECOMMENDED encodings (implementations MUST support at least one):
-
-**Numeric (8 digits)**: Take the first 4 bytes of the digest,
-interpret as a big-endian unsigned integer, reduce modulo
-100,000,000, and zero-pad to 8 digits:
-
-~~~
-fingerprint = sprintf("%08d", BE_uint(digest[0..3]) mod 100000000)
-~~~
-
-Example: "48371205"
-
-**Numeric (6 digits)**: Same approach, modulo 1,000,000:
-
-~~~
-fingerprint = sprintf("%06d", BE_uint(digest[0..3]) mod 1000000)
-~~~
-
-Example: "371205"
-
-**Visual comparison**: Display the full digest as a visual pattern
-on both devices for side-by-side comparison.
+Implementations MAY encode the digest for human comparison (e.g.,
+as grouped numeric blocks, hexadecimal, base32, or an emoji
+sequence mapped from digest bits).  The security of any such
+encoding depends on the number of digest bits it exposes.
+Renderings that expose fewer than 30 bits of the digest offer only
+weak resistance against man-in-the-middle substitution and SHOULD
+NOT be used for security-critical comparisons.  See
+{{relationship-fingerprint-limitations}} for analysis.
 
 ## Properties
 
@@ -1460,15 +1361,7 @@ may indicate a new device (benign) or a man-in-the-middle attack.
 
 # Security Considerations
 
-## What This Protocol Does Provide
-
-This protocol provides relationship continuity, binding of a
-transport key to a previously accepted identity key, freshness
-through challenge-response, optional delegated message
-authentication, and per-unit replay protection via monotonic
-message identifiers.
-
-## What This Protocol Does Not Provide
+## Limitations
 
 This protocol does not provide:
 
@@ -1482,14 +1375,12 @@ This protocol does not provide:
 -  unlinkability across contacts that receive the same IK
 -  revocation or recovery
 
-## Platform Trust
+## Platform Trust, Compromised Applications, and Device State
 
 All meaningful security properties of this protocol depend on
 platform behavior when using the Identity Key.  If the platform
 allows the key operation without the expected local verification
 event, the protocol cannot detect that failure by itself.
-
-## Compromised Applications and Trusted UI
 
 A compromised or malicious application can alter what is being
 signed, misrepresent why a signing operation is requested, or
@@ -1498,26 +1389,15 @@ way.  Unless the deployment provides trusted display, platform
 attestation, or other out-of-band confirmation of signing intent,
 a verifier MUST NOT assume that a valid protocol object implies
 that the signer saw or understood the application semantics
-associated with that object.
-
-For the same reason, deployments SHOULD distinguish between
+associated with that object.  Deployments SHOULD distinguish between
 cryptographic authorization of a protocol object and user consent
-to higher-level application meaning.  This document standardizes
-only the former.
-
-## Stolen, Unlocked, or Coerced Device State
+to higher-level application meaning.
 
 If an attacker obtains control of an unlocked device, or if the
-platform permits repeated key use within a local user-verification
-window, this protocol may permit valid signatures that do not
-reflect a new conscious act by the device holder.  Likewise, if
-the device holder is coerced into satisfying local verification,
-the protocol cannot detect that condition.
-
-Accordingly, verifiers MUST treat successful verification as
-evidence only that the platform authorized key use under its
-current policy.  Verifiers MUST NOT infer voluntariness, freedom
-from duress, or the absence of local compromise.
+device holder is coerced into satisfying local verification, the
+protocol provides no defense against this scenario.  Verifiers MUST treat
+successful verification as evidence only that the platform
+authorized key use under its current policy (see {{trust-model}}).
 
 ## Contact Object Capture
 
@@ -1540,7 +1420,7 @@ A 30-day KBO expiry limits the window during which a compromised
 Transport Key can be used.  Frequent TK rotation ({{tk-rotation}})
 reduces this window further.
 
-## Assurance Semantics and Policy
+## Assurance Semantics, Policy, and Application Compromise
 
 The assurance values defined by this document are signer-reported,
 platform-mediated claims.  They are intentionally coarse and do not
@@ -1548,22 +1428,23 @@ capture the full variety of operating-system behavior, biometric
 modes, passcode fallback rules, trusted-path properties, or reuse
 windows.
 
-An attacker who compromises the application layer (but not the
-platform key store) may attempt to forge the assurance field in
-signed structures, claiming BIOMETRIC (2) when only CREDENTIAL (1)
-verification occurred.  The assurance field is included in the
-COSE_Sign1 payload and therefore covered by the signature; it
-cannot be modified without invalidating the signature.  However, a
-compromised application could request CREDENTIAL-level verification
-from the platform and then set the assurance field to BIOMETRIC in
-the payload before signing.
+A compromised application could request CREDENTIAL-level
+verification from the platform and then set the assurance field to
+BIOMETRIC in the payload before signing.  The HARDWARE_VERIFIED (3)
+assurance level mitigates this attack: when hardware attestation
+evidence is present, the verifier can confirm the key's properties
+directly against the hardware vendor's certificate chain.  A
+compromised application cannot forge hardware attestation evidence.
 
-The HARDWARE_VERIFIED (3) assurance level mitigates this attack.
-When hardware attestation evidence is present, the verifier can
-confirm the key's properties and authentication requirements
-directly against the hardware vendor's certificate chain,
-independent of the application layer.  A compromised application
-cannot forge hardware attestation evidence.
+During the Contact Exchange ceremony, a compromised application
+could substitute attacker-controlled keys while displaying
+correct-looking UI.  Hardware key attestation proves the Identity
+Key is hardware-bound but does not prove the application is
+legitimate.  Platform app integrity services ({{app-integrity-impl}})
+can mitigate this additional threat.  Without either form of
+attestation, peers SHOULD use out-of-band Relationship Fingerprint
+comparison ({{relationship-fingerprint}}) as a defense against key
+substitution.
 
 Deployments that require stronger semantics SHOULD require
 HARDWARE_VERIFIED assurance where platform support is available,
@@ -1589,16 +1470,29 @@ signed by the same Identity Key.  The structure_type field prevents
 this: verifiers MUST check that the structure_type matches the
 expected value before processing any other fields.
 
-## Relationship Fingerprint Limitations
+## Relationship Fingerprint Limitations {#relationship-fingerprint-limitations}
 
-The fingerprint is optional and its security depends on the encoding
-chosen by the application.  An 8-digit numeric encoding provides
-approximately 26 bits of collision resistance: an attacker would
-need to generate approximately 67 million key pairs to find a
-collision.  A 6-digit encoding provides approximately 20 bits.
+The fingerprint is optional and its security depends on the number
+of digest bits exposed by the encoding chosen by the application.
+A rendering that exposes N bits of the digest offers approximately
+N bits of second-preimage resistance against an attacker who
+generates candidate Identity Key pairs and searches for one whose
+fingerprint matches the target.
 
-For applications requiring stronger assurance, implementations
-SHOULD support machine-readable comparison which can compare the
+Indicative strengths:
+
+-  A 20-bit rendering (e.g., 6 decimal digits) requires on the
+   order of 10^6 trial key pairs.  Trivially brute-forceable on
+   commodity hardware.
+-  A 26-bit rendering (e.g., 8 decimal digits) requires on the
+   order of 10^8 trial key pairs.  Feasible on modern GPU
+   hardware within hours.
+-  A 60-bit rendering is practically infeasible to brute-force
+   for realistic attackers.
+
+For applications requiring strong assurance, implementations SHOULD
+support machine-readable comparison (for example, a QR code
+exchanged over a second authenticated channel) that conveys the
 full 256-bit digest without human error.
 
 ## Privacy Considerations
@@ -1647,9 +1541,9 @@ for rendezvous.
 ### Fingerprint Handling
 
 Relationship Fingerprints are intended for optional out-of-band
-comparison.  Applications SHOULD avoid displaying full high-entropy
-fingerprints in contexts where shoulder surfing, screenshots, or
-logging may create unnecessary privacy leakage.
+comparison.  Applications SHOULD avoid displaying full fingerprints where
+they could be captured by screenshots, shoulder surfing, or
+logging.
 
 See {{RFC6973}} for a general discussion of privacy considerations
 in Internet protocols.
@@ -1688,13 +1582,40 @@ confidentiality or forward secrecy.
 
 A Session Credential has a finite expiry.  Messages signed by the
 SSK before the credential expires but received after expiry present
-a time-of-check/time-of-use consideration.  Verifiers SHOULD accept
-a Signed Message if the message's own timestamp (field 2) falls
-within the Session Credential's validity window, even if the message
-arrives after the credential has expired, provided the arrival delay
-is within a locally configured grace period (RECOMMENDED: no more
-than 60 seconds past expiry).  After the grace period, verifiers
-MUST reject the message and require a new Session Credential.
+a time-of-check/time-of-use consideration.  The Signed Message
+verification procedure ({{signed-message}}) requires that the
+message timestamp falls within the Session Credential's validity
+window, with an optional grace period for in-flight messages.
+RECOMMENDED grace period: no more than 60 seconds past expiry.
+After the grace period, verifiers MUST reject the message and
+require a new Session Credential.
+
+## Session Signing Key Compromise {#ssk-compromise}
+
+The SSK is a software key held in memory.  An attacker who extracts
+it can forge Signed Messages for the remaining validity period of
+the Session Credential.  A read-only memory disclosure (e.g., a
+side-channel attack) that reveals the SSK but not the TK private
+key would allow message forgery without transport impersonation.
+
+The Session Credential intentionally omits a channel_binding field
+because Session Credentials must remain valid across delivery paths,
+including mailbox deposit.  As a consequence, a stolen SSK and SC
+can be used from any network position for the remaining credential
+lifetime.
+
+Mitigations:
+
+-  The Session Credential MUST have a finite expiry, limiting the
+   forgery window.
+-  The SSK MUST be discarded when the session ends.
+-  The peer_ik_hash field scopes the credential to a single
+   relationship.
+-  Implementations SHOULD store the SSK in a non-swappable memory
+   region.
+-  For operations requiring the strongest assurance, implementations
+   SHOULD sign directly with the Identity Key rather than delegating
+   to the SSK.
 
 ## Device Loss and Recovery
 
@@ -1714,52 +1635,28 @@ distribution method.  Applications MUST therefore define local policy
 for suspending trust in a stored key and for handling replacement or
 termination of the affected relationship.
 
-## Compromised Application During Ceremony
-
-The Contact Exchange ceremony assumes that both peers are running
-legitimate, unmodified applications.  A compromised application
-could substitute attacker-controlled keys during the ceremony while
-displaying correct-looking UI to the user, causing both peers to
-bind trust to keys the attacker controls.
-
-Hardware key attestation (assurance value 3) mitigates part of this
-threat by proving the Identity Key is hardware-bound, but does not
-prove that the application presenting the key is legitimate.  An
-attacker who repackages the application can generate a genuine
-hardware-backed key and present valid attestation evidence for it.
-
-Platform app integrity services (e.g., Android Play Integrity API,
-Apple App Attest) can verify that the application binary is
-legitimate and unmodified.  However, these services require online
-validation against vendor APIs, which is an architectural mismatch
-with this protocol's peer-to-peer design.  Guidance on app integrity
-attestation is provided in the Implementation Considerations
-({{app-integrity-impl}}).
-
-Without either form of attestation, assurance values 1 and 2 are
-application-reported claims that a compromised application can
-forge.  Peers exchanging contacts at these levels SHOULD use
-out-of-band Relationship Fingerprint comparison
-({{relationship-fingerprint}}) as an additional defense against
-key substitution.
-
 ## Terminology Caution
+
+The "h2h" identifier in this document's name refers to the
+intended use case -- communication between devices held by two
+specific humans who have met in person -- and is not a claim that
+the protocol cryptographically verifies biological humanness,
+legal personhood, or proof-of-personhood in any form.
 
 Implementations and profiles built on this document SHOULD avoid
 using terms such as "proves human" or "non-repudiation" without
 additional legal and deployment analysis.  The protocol produces
-cryptographic attribution artifacts within the protocol trust model;
-broader claims may not hold.
+signed objects that attribute actions to a key; it does not prove
+those actions were intentional or legally binding.
 
 
 # IANA Considerations {#iana}
 
-This document has no IANA actions.
-
 This document defines protocol constants for structure types,
-assurance values, and transport key algorithms.  These values are
-defined in the body of this document and in the CDDL schema
-({{cddl}}).  They are summarized here for convenience.
+assurance values, and transport key algorithms.  No IANA registries
+are requested.  These values are defined in the body of this
+document and in the CDDL schema ({{cddl}}).  They are summarized
+here for convenience.
 
 ## Structure Type Values
 
@@ -1798,7 +1695,7 @@ requires coordinated allocation.
 
 # CDDL Schema {#cddl}
 
-The following CDDL {{?RFC8610}} schema formally defines all protocol
+The following CDDL {{RFC8610}} schema formally defines all protocol
 structures.  This schema is normative.
 
 ~~~cddl
@@ -1826,18 +1723,40 @@ P256_COSE_Key = {
 ; The payload is a CBOR-encoded map defined below.
 ; ============================================================
 
-H2H_COSE_Sign1<PayloadType> = #6.18([
-  protected: bstr .cbor {1 => -7},  ; alg: ES256
-  unprotected: {},
-  payload: bstr .cbor PayloadType,
-  signature: bstr,
+KeyBindingObject = #6.18([
+  bstr .cbor {1 => -7},             ; protected: alg ES256
+  {},                                ; unprotected
+  bstr .cbor KBO_payload,           ; payload
+  bstr,                              ; signature
 ])
 
-KeyBindingObject    = H2H_COSE_Sign1<KBO_payload>
-ContactObject       = H2H_COSE_Sign1<Contact_payload>
-SessionCredential   = H2H_COSE_Sign1<SC_payload>
-SignedMessage        = H2H_COSE_Sign1<SM_payload>
-PresenceResponse    = H2H_COSE_Sign1<PR_payload>
+ContactObject = #6.18([
+  bstr .cbor {1 => -7},
+  {},
+  bstr .cbor Contact_payload,
+  bstr,
+])
+
+SessionCredential = #6.18([
+  bstr .cbor {1 => -7},
+  {},
+  bstr .cbor SC_payload,
+  bstr,
+])
+
+SignedMessage = #6.18([
+  bstr .cbor {1 => -7},
+  {},
+  bstr .cbor SM_payload,
+  bstr,
+])
+
+PresenceResponse = #6.18([
+  bstr .cbor {1 => -7},
+  {},
+  bstr .cbor PR_payload,
+  bstr,
+])
 
 ; ============================================================
 ; Payload definitions (no additional keys permitted)
@@ -1932,45 +1851,17 @@ platform name used in product documentation.
 
 ## App Integrity Attestation {#app-integrity-impl}
 
-Hardware key attestation ({{hardware-attestation}}) proves that the
-Identity Key resides in genuine hardware, but does not prove that
-the application presenting the key is the legitimate, unmodified
-binary.  A repackaged application could generate a genuine
-hardware-backed key, present valid attestation evidence, and
-substitute attacker-controlled material during the ceremony.
-
-Platform app integrity services can mitigate this threat:
-
--  Android Play Integrity API {{PlayIntegrity}} produces tokens
-   that verify the app is the genuine binary from Google Play,
-   running on a genuine device.
--  Apple App Attest {{AppAttest}} produces attestation objects that
-   verify the app is the unmodified binary running on genuine
-   Apple hardware.
-
-These services require **online validation** against vendor APIs,
-which is an architectural difference from the locally-verifiable
-hardware attestation defined in this document.  Implementations
-that wish to include app integrity attestation SHOULD:
-
-1.  Obtain an app integrity token at ceremony time and include it
-    in a transport-level or application-level metadata field
-    alongside the Contact Object (not in the signed payload, since
-    validation requires network access to vendor services).
-2.  Validate received tokens against the vendor's API before
-    accepting the Contact Object.
-3.  Inform the user if app integrity could not be verified.
-
-App integrity attestation and hardware key attestation are
-complementary:
-
--  Hardware key attestation answers: "Is this key in real,
-   tamper-resistant hardware?"
--  App integrity attestation answers: "Is the application presenting
-   this key the legitimate, unmodified binary?"
-
-Neither is sufficient alone.  Deployments handling high-value
-authorizations SHOULD use both where platform support is available.
+Hardware key attestation proves the Identity Key resides in genuine
+hardware but does not prove the application is legitimate.  Platform
+app integrity services -- such as Android Play Integrity API
+{{PlayIntegrity}} and Apple App Attest {{AppAttest}} -- can verify
+the application binary is unmodified.  These services require online
+validation against vendor APIs.  Implementations that wish to
+include app integrity attestation SHOULD obtain a token at ceremony
+time, include it alongside the Contact Object (not in the signed
+payload), and validate it against the vendor's API.  Deployments
+handling high-value authorizations SHOULD use both hardware key
+attestation and app integrity attestation where available.
 
 ## Payload Size Limits
 

@@ -11,9 +11,9 @@
 keys, or protect message content from eavesdroppers.  None verify
 that a remote party is the same individual whose key was accepted
 during an earlier in-person exchange and has just now physically
-authorized a signature on the device holding that key.  Advances in
-synthetic media increase the value of mechanisms that do not rely on
-unauthenticated audio, video, or text for sensitive authorizations. 
+authorized a signature on the device holding that key.  Advances in synthetic media make it increasingly difficult to
+trust unauthenticated audio, video, or text for sensitive
+authorizations. 
        This document defines transport-independent CBOR- and COSE-based
 objects that chain every remote interaction back to a bilateral
 in-person contact exchange -- not a certificate authority, identity
@@ -1238,7 +1238,7 @@ li > p:last-of-type:only-child {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Rodriguez</td>
-<td class="center">Expires 11 October 2026</td>
+<td class="center">Expires 18 October 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1251,12 +1251,12 @@ li > p:last-of-type:only-child {
 <dd class="internet-draft">draft-rodriguez-h2h-presence-attestation-00</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-04-09" class="published">9 April 2026</time>
+<time datetime="2026-04-16" class="published">16 April 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Experimental</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-10-11">11 October 2026</time></dd>
+<dd class="expires"><time datetime="2026-10-18">18 October 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1273,9 +1273,9 @@ li > p:last-of-type:only-child {
 keys, or protect message content from eavesdroppers.  None verify
 that a remote party is the same individual whose key was accepted
 during an earlier in-person exchange and has just now physically
-authorized a signature on the device holding that key.  Advances in
-synthetic media increase the value of mechanisms that do not rely on
-unauthenticated audio, video, or text for sensitive authorizations.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+authorized a signature on the device holding that key.  Advances in synthetic media make it increasingly difficult to
+trust unauthenticated audio, video, or text for sensitive
+authorizations.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
 <p id="section-abstract-2">This document defines transport-independent CBOR- and COSE-based
 objects that chain every remote interaction back to a bilateral
 in-person contact exchange -- not a certificate authority, identity
@@ -1316,7 +1316,7 @@ identity, or voluntary action.<a href="#section-abstract-2" class="pilcrow">¶</
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 11 October 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 18 October 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1361,13 +1361,10 @@ identity, or voluntary action.<a href="#section-abstract-2" class="pilcrow">¶</
                 <p id="section-toc.1-1.1.2.5.1"><a href="#section-1.5" class="auto internal xref">1.5</a>.  <a href="#name-reuse-and-interoperability-" class="internal xref">Reuse and Interoperability Scope</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.6">
-                <p id="section-toc.1-1.1.2.6.1"><a href="#section-1.6" class="auto internal xref">1.6</a>.  <a href="#name-object-relationship-overvie" class="internal xref">Object Relationship Overview</a></p>
+                <p id="section-toc.1-1.1.2.6.1"><a href="#section-1.6" class="auto internal xref">1.6</a>.  <a href="#name-trust-model-summary" class="internal xref">Trust Model Summary</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.7">
-                <p id="section-toc.1-1.1.2.7.1"><a href="#section-1.7" class="auto internal xref">1.7</a>.  <a href="#name-trust-model-summary" class="internal xref">Trust Model Summary</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.8">
-                <p id="section-toc.1-1.1.2.8.1"><a href="#section-1.8" class="auto internal xref">1.8</a>.  <a href="#name-end-to-end-message-flow" class="internal xref">End-to-End Message Flow</a></p>
+                <p id="section-toc.1-1.1.2.7.1"><a href="#section-1.7" class="auto internal xref">1.7</a>.  <a href="#name-end-to-end-message-flow" class="internal xref">End-to-End Message Flow</a></p>
 </li>
             </ul>
 </li>
@@ -1497,9 +1494,6 @@ identity, or voluntary action.<a href="#section-abstract-2" class="pilcrow">¶</
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3.2.2">
                     <p id="section-toc.1-1.7.2.3.2.2.1"><a href="#section-7.3.2" class="auto internal xref">7.3.2</a>.  <a href="#name-unreliable-transports" class="internal xref">Unreliable Transports</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.3.2.3">
-                    <p id="section-toc.1-1.7.2.3.2.3.1"><a href="#section-7.3.3" class="auto internal xref">7.3.3</a>.  <a href="#name-replay-state-model" class="internal xref">Replay State Model</a></p>
-</li>
                 </ul>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.4">
@@ -1551,75 +1545,66 @@ identity, or voluntary action.<a href="#section-abstract-2" class="pilcrow">¶</
             <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.1">
-                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-what-this-protocol-does-pro" class="internal xref">What This Protocol Does Provide</a></p>
+                <p id="section-toc.1-1.10.2.1.1"><a href="#section-10.1" class="auto internal xref">10.1</a>.  <a href="#name-limitations" class="internal xref">Limitations</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.2">
-                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-what-this-protocol-does-not" class="internal xref">What This Protocol Does Not Provide</a></p>
+                <p id="section-toc.1-1.10.2.2.1"><a href="#section-10.2" class="auto internal xref">10.2</a>.  <a href="#name-platform-trust-compromised-" class="internal xref">Platform Trust, Compromised Applications, and Device State</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.3">
-                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="auto internal xref">10.3</a>.  <a href="#name-platform-trust" class="internal xref">Platform Trust</a></p>
+                <p id="section-toc.1-1.10.2.3.1"><a href="#section-10.3" class="auto internal xref">10.3</a>.  <a href="#name-contact-object-capture" class="internal xref">Contact Object Capture</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.4">
-                <p id="section-toc.1-1.10.2.4.1"><a href="#section-10.4" class="auto internal xref">10.4</a>.  <a href="#name-compromised-applications-an" class="internal xref">Compromised Applications and Trusted UI</a></p>
+                <p id="section-toc.1-1.10.2.4.1"><a href="#section-10.4" class="auto internal xref">10.4</a>.  <a href="#name-key-binding-object-expiry" class="internal xref">Key Binding Object Expiry</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.5">
-                <p id="section-toc.1-1.10.2.5.1"><a href="#section-10.5" class="auto internal xref">10.5</a>.  <a href="#name-stolen-unlocked-or-coerced-" class="internal xref">Stolen, Unlocked, or Coerced Device State</a></p>
+                <p id="section-toc.1-1.10.2.5.1"><a href="#section-10.5" class="auto internal xref">10.5</a>.  <a href="#name-assurance-semantics-policy-" class="internal xref">Assurance Semantics, Policy, and Application Compromise</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.6">
-                <p id="section-toc.1-1.10.2.6.1"><a href="#section-10.6" class="auto internal xref">10.6</a>.  <a href="#name-contact-object-capture" class="internal xref">Contact Object Capture</a></p>
+                <p id="section-toc.1-1.10.2.6.1"><a href="#section-10.6" class="auto internal xref">10.6</a>.  <a href="#name-relay-attack-on-presence-re" class="internal xref">Relay Attack on Presence Response</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.7">
-                <p id="section-toc.1-1.10.2.7.1"><a href="#section-10.7" class="auto internal xref">10.7</a>.  <a href="#name-key-binding-object-expiry" class="internal xref">Key Binding Object Expiry</a></p>
+                <p id="section-toc.1-1.10.2.7.1"><a href="#section-10.7" class="auto internal xref">10.7</a>.  <a href="#name-type-confusion" class="internal xref">Type Confusion</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.8">
-                <p id="section-toc.1-1.10.2.8.1"><a href="#section-10.8" class="auto internal xref">10.8</a>.  <a href="#name-assurance-semantics-and-pol" class="internal xref">Assurance Semantics and Policy</a></p>
+                <p id="section-toc.1-1.10.2.8.1"><a href="#section-10.8" class="auto internal xref">10.8</a>.  <a href="#name-relationship-fingerprint-li" class="internal xref">Relationship Fingerprint Limitations</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.9">
-                <p id="section-toc.1-1.10.2.9.1"><a href="#section-10.9" class="auto internal xref">10.9</a>.  <a href="#name-relay-attack-on-presence-re" class="internal xref">Relay Attack on Presence Response</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.10">
-                <p id="section-toc.1-1.10.2.10.1"><a href="#section-10.10" class="auto internal xref">10.10</a>. <a href="#name-type-confusion" class="internal xref">Type Confusion</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.11">
-                <p id="section-toc.1-1.10.2.11.1"><a href="#section-10.11" class="auto internal xref">10.11</a>. <a href="#name-relationship-fingerprint-li" class="internal xref">Relationship Fingerprint Limitations</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.12">
-                <p id="section-toc.1-1.10.2.12.1"><a href="#section-10.12" class="auto internal xref">10.12</a>. <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
+                <p id="section-toc.1-1.10.2.9.1"><a href="#section-10.9" class="auto internal xref">10.9</a>.  <a href="#name-privacy-considerations" class="internal xref">Privacy Considerations</a></p>
 <ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.12.2.1">
-                    <p id="section-toc.1-1.10.2.12.2.1.1"><a href="#section-10.12.1" class="auto internal xref">10.12.1</a>.  <a href="#name-identity-key-as-a-stable-id" class="internal xref">Identity Key as a Stable Identifier</a></p>
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.9.2.1">
+                    <p id="section-toc.1-1.10.2.9.2.1.1"><a href="#section-10.9.1" class="auto internal xref">10.9.1</a>.  <a href="#name-identity-key-as-a-stable-id" class="internal xref">Identity Key as a Stable Identifier</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.12.2.2">
-                    <p id="section-toc.1-1.10.2.12.2.2.1"><a href="#section-10.12.2" class="auto internal xref">10.12.2</a>.  <a href="#name-relationship-correlation" class="internal xref">Relationship Correlation</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.9.2.2">
+                    <p id="section-toc.1-1.10.2.9.2.2.1"><a href="#section-10.9.2" class="auto internal xref">10.9.2</a>.  <a href="#name-relationship-correlation" class="internal xref">Relationship Correlation</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.12.2.3">
-                    <p id="section-toc.1-1.10.2.12.2.3.1"><a href="#section-10.12.3" class="auto internal xref">10.12.3</a>.  <a href="#name-metadata-exposure" class="internal xref">Metadata Exposure</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.9.2.3">
+                    <p id="section-toc.1-1.10.2.9.2.3.1"><a href="#section-10.9.3" class="auto internal xref">10.9.3</a>.  <a href="#name-metadata-exposure" class="internal xref">Metadata Exposure</a></p>
 </li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.12.2.4">
-                    <p id="section-toc.1-1.10.2.12.2.4.1"><a href="#section-10.12.4" class="auto internal xref">10.12.4</a>.  <a href="#name-fingerprint-handling" class="internal xref">Fingerprint Handling</a></p>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.9.2.4">
+                    <p id="section-toc.1-1.10.2.9.2.4.1"><a href="#section-10.9.4" class="auto internal xref">10.9.4</a>.  <a href="#name-fingerprint-handling" class="internal xref">Fingerprint Handling</a></p>
 </li>
                 </ul>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.10">
+                <p id="section-toc.1-1.10.2.10.1"><a href="#section-10.10" class="auto internal xref">10.10</a>. <a href="#name-denial-of-service-via-prese" class="internal xref">Denial of Service via Presence Challenges</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.11">
+                <p id="section-toc.1-1.10.2.11.1"><a href="#section-10.11" class="auto internal xref">10.11</a>. <a href="#name-post-quantum-considerations" class="internal xref">Post-Quantum Considerations</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.12">
+                <p id="section-toc.1-1.10.2.12.1"><a href="#section-10.12" class="auto internal xref">10.12</a>. <a href="#name-forward-secrecy-of-authenti" class="internal xref">Forward Secrecy of Authentication</a></p>
+</li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.13">
-                <p id="section-toc.1-1.10.2.13.1"><a href="#section-10.13" class="auto internal xref">10.13</a>. <a href="#name-denial-of-service-via-prese" class="internal xref">Denial of Service via Presence Challenges</a></p>
+                <p id="section-toc.1-1.10.2.13.1"><a href="#section-10.13" class="auto internal xref">10.13</a>. <a href="#name-session-credential-expiry-a" class="internal xref">Session Credential Expiry and In-Flight Messages</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.14">
-                <p id="section-toc.1-1.10.2.14.1"><a href="#section-10.14" class="auto internal xref">10.14</a>. <a href="#name-post-quantum-considerations" class="internal xref">Post-Quantum Considerations</a></p>
+                <p id="section-toc.1-1.10.2.14.1"><a href="#section-10.14" class="auto internal xref">10.14</a>. <a href="#name-session-signing-key-comprom" class="internal xref">Session Signing Key Compromise</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.15">
-                <p id="section-toc.1-1.10.2.15.1"><a href="#section-10.15" class="auto internal xref">10.15</a>. <a href="#name-forward-secrecy-of-authenti" class="internal xref">Forward Secrecy of Authentication</a></p>
+                <p id="section-toc.1-1.10.2.15.1"><a href="#section-10.15" class="auto internal xref">10.15</a>. <a href="#name-device-loss-and-recovery" class="internal xref">Device Loss and Recovery</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.16">
-                <p id="section-toc.1-1.10.2.16.1"><a href="#section-10.16" class="auto internal xref">10.16</a>. <a href="#name-session-credential-expiry-a" class="internal xref">Session Credential Expiry and In-Flight Messages</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.17">
-                <p id="section-toc.1-1.10.2.17.1"><a href="#section-10.17" class="auto internal xref">10.17</a>. <a href="#name-device-loss-and-recovery" class="internal xref">Device Loss and Recovery</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.18">
-                <p id="section-toc.1-1.10.2.18.1"><a href="#section-10.18" class="auto internal xref">10.18</a>. <a href="#name-compromised-application-dur" class="internal xref">Compromised Application During Ceremony</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10.2.19">
-                <p id="section-toc.1-1.10.2.19.1"><a href="#section-10.19" class="auto internal xref">10.19</a>. <a href="#name-terminology-caution" class="internal xref">Terminology Caution</a></p>
+                <p id="section-toc.1-1.10.2.16.1"><a href="#section-10.16" class="auto internal xref">10.16</a>. <a href="#name-terminology-caution" class="internal xref">Terminology Caution</a></p>
 </li>
             </ul>
 </li>
@@ -1698,9 +1683,8 @@ device bound to that relationship.<a href="#section-1.1-1" class="pilcrow">¶</a
 handoffs, and other interactions where account-level authentication
 alone is insufficient.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
 <p id="section-1.1-3">Recent advances in synthetic media and automated impersonation
-increase the value of mechanisms that reduce reliance on
-unauthenticated audio, video, or text interactions for sensitive
-approvals.  This document does not attempt to detect synthetic
+make unauthenticated audio, video, or text unreliable for
+sensitive approvals.  This document does not detect synthetic
 media or prove biological humanness.  Instead, it specifies
 interoperable signed objects and verification rules that bind
 sensitive authorizations to a prior relationship ceremony and to a
@@ -1712,9 +1696,8 @@ fresh, platform-mediated local user-verification event.<a href="#section-1.1-3" 
         <h3 id="name-design-goal">
 <a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-design-goal" class="section-name selfRef">Design Goal</a>
         </h3>
-<p id="section-1.2-1">The goal of this protocol is not to prove a universally valid human
-identity.  The goal is to let a relying peer verify all of the
-following:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<p id="section-1.2-1">This protocol does not prove a universally valid human identity.
+It lets a relying peer verify all of the following:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-1.2-2">
 <li id="section-1.2-2.1">
             <p id="section-1.2-2.1.1">A public key was previously accepted during an in-person exchange.<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
@@ -1739,18 +1722,18 @@ event reported by the platform.<a href="#section-1.2-2.3.1" class="pilcrow">¶</
 <p id="section-1.3-1">The protocol operates in four logical phases:<a href="#section-1.3-1" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-1.3-2">
 <pre>
-Phase 1           Phase 2            Phase 3           Phase 4
-CONTACT           KEY BINDING        SESSION           DATA
-EXCHANGE          PRESENTATION       DELEGATION        TRANSFER
+Phase 1         Phase 2         Phase 3         Phase 4
+CONTACT         KEY BINDING     SESSION         DATA
+EXCHANGE        PRESENTATION    DELEGATION      TRANSFER
 
-+----------+    +----------+       +----------+     +----------+
-| Meet in  |    | Connect  |       | IK signs |     | SSK signs|
-| person,  |---&gt;| remotely,|------&gt;| ephemeral|----&gt;| app      |
-| exchange |    | present  |       | SSK via  |     | units    |
-| Contact  |    | Key      |       | Session  |     |          |
-| Objects  |    | Binding  |       |Credential|     |          |
-+----------+    +----------+       +----------+     +----------+
- [user-verify]   [verify chain]    [user-verify]    [automatic]
++----------+    +----------+    +----------+    +----------+
+| Meet in  |    | Connect  |    | IK signs |    | SSK signs|
+| person,  |---&gt;| remotely,|---&gt;| ephemeral|---&gt;| app      |
+| exchange |    | present  |    | SSK via  |    | units    |
+| Contact  |    | Key      |    | Session  |    |          |
+| Objects  |    | Binding  |    |Credential|    |          |
++----------+    +----------+    +----------+    +----------+
+ [user-verify]   [verify chain]  [user-verify]   [automatic]
 
 At any point: Presence Challenge --&gt; fresh IK signature
 </pre><a href="#section-1.3-2" class="pilcrow">¶</a>
@@ -1758,7 +1741,7 @@ At any point: Presence Challenge --&gt; fresh IK signature
 <p id="section-1.3-3">Phases 1 and 3 require platform-mediated user verification (e.g.,
 biometric or PIN) because they use the hardware-bound Identity Key.
 Phase 4 is automatic because the SSK is a software key delegated
-during Phase 3 — no user interaction is needed for signing.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
+during Phase 3 -- no user interaction is needed for signing.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-1.3-4">
 <li id="section-1.3-4.1">
             <p id="section-1.3-4.1.1"><strong>Contact Exchange</strong>: Two peers meet in person and exchange
@@ -1862,70 +1845,43 @@ for reuse across multiple peer-to-peer applications and transports
 that require relationship-bound authorization.  This document does not
 define a single application protocol or user experience.  Instead, it
 standardizes compact object formats and verification rules that can be
-embedded into messaging, approval, rendezvous, or comparable systems.<a href="#section-1.5-1" class="pilcrow">¶</a></p>
+embedded into messaging, approval, or rendezvous systems.<a href="#section-1.5-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="object-relationship-overview">
+<div id="trust-model">
 <section id="section-1.6">
-        <h3 id="name-object-relationship-overvie">
-<a href="#section-1.6" class="section-number selfRef">1.6. </a><a href="#name-object-relationship-overvie" class="section-name selfRef">Object Relationship Overview</a>
-        </h3>
-<p id="section-1.6-1">The protocol objects have distinct roles and chain together as
-follows:<a href="#section-1.6-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.6-2">
-<pre>
-Contact Object
-  -&gt; introduces IK + TK + rendezvous hints
-
-Key Binding Object
-  -&gt; proves the current TK is bound to the stored IK
-
-Session Credential
-  -&gt; allows the IK to delegate short-lived signing authority to an SSK
-
-Signed Message
-  -&gt; carries application content signed by the delegated SSK
-
-Presence Response
-  -&gt; re-asserts fresh, direct IK-based authorization on demand
-</pre><a href="#section-1.6-2" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
-<div id="trust-model-summary">
-<section id="section-1.7">
         <h3 id="name-trust-model-summary">
-<a href="#section-1.7" class="section-number selfRef">1.7. </a><a href="#name-trust-model-summary" class="section-name selfRef">Trust Model Summary</a>
+<a href="#section-1.6" class="section-number selfRef">1.6. </a><a href="#name-trust-model-summary" class="section-name selfRef">Trust Model Summary</a>
         </h3>
-<p id="section-1.7-1">This protocol relies on two external trust assumptions.<a href="#section-1.7-1" class="pilcrow">¶</a></p>
-<p id="section-1.7-2">First, peers are assumed to have completed an earlier in-person
+<p id="section-1.6-1">This protocol relies on two external trust assumptions.<a href="#section-1.6-1" class="pilcrow">¶</a></p>
+<p id="section-1.6-2">First, peers are assumed to have completed an earlier in-person
 ceremony and to have accepted each other's Contact Objects during
-that ceremony.<a href="#section-1.7-2" class="pilcrow">¶</a></p>
-<p id="section-1.7-3">Second, relying parties trust the local platform's key store and
+that ceremony.<a href="#section-1.6-2" class="pilcrow">¶</a></p>
+<p id="section-1.6-3">Second, relying parties trust the local platform's key store and
 user-verification semantics.  A valid signature under the stored
 identity key indicates only that the platform permitted use of that
 key under its configured policy.  It does not, by itself, prove
-biological humanness, voluntary action, or legal identity.<a href="#section-1.7-3" class="pilcrow">¶</a></p>
+biological humanness, voluntary action, or legal identity.<a href="#section-1.6-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="e2e-flow">
-<section id="section-1.8">
+<section id="section-1.7">
         <h3 id="name-end-to-end-message-flow">
-<a href="#section-1.8" class="section-number selfRef">1.8. </a><a href="#name-end-to-end-message-flow" class="section-name selfRef">End-to-End Message Flow</a>
+<a href="#section-1.7" class="section-number selfRef">1.7. </a><a href="#name-end-to-end-message-flow" class="section-name selfRef">End-to-End Message Flow</a>
         </h3>
-<p id="section-1.8-1">The following ladder diagram shows a complete post-contact session
+<p id="section-1.7-1">The following ladder diagram shows a complete post-contact session
 between two peers, Alice and Bob, who have already exchanged Contact
 Objects in person.  Phases 2 through 4 occur each time the peers
-reconnect remotely.<a href="#section-1.8-1" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-1.8-2">
+reconnect remotely.<a href="#section-1.7-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-1.7-2">
 <pre>
  Alice                                               Bob
    |                                                   |
    |  ============ Phase 2: Key Binding ============   |
    |                                                   |
-   |  --- KBO(IK_A signs TK_A) ----------------------&gt;|
+   |  --- KBO(IK_A signs TK_A) -----------------------&gt;|
    |                                                   |
-   |&lt;--------------------- KBO(IK_B signs TK_B) ---   |
+   |&lt;---------------------- KBO(IK_B signs TK_B) ---   |
    |                                                   |
    |  Both sides verify:                               |
    |    - IK in KBO matches stored IK from ceremony    |
@@ -1938,13 +1894,13 @@ reconnect remotely.<a href="#section-1.8-1" class="pilcrow">¶</a></p>
    |  IK_A signs Session Credential(SSK_A)             |
    |    [user-verification: biometric/PIN]             |
    |                                                   |
-   |  --- SessionCredential(SSK_A_pub) --------------&gt;|
+   |  --- SessionCredential(SSK_A_pub) ---------------&gt;|
    |                                                   |
    |          Bob generates ephemeral SSK_B            |
    |          IK_B signs Session Credential(SSK_B)     |
    |            [user-verification: biometric/PIN]     |
    |                                                   |
-   |&lt;------------- SessionCredential(SSK_B_pub) ---   |
+   |&lt;-------------- SessionCredential(SSK_B_pub) ---   |
    |                                                   |
    |  Both sides verify:                               |
    |    - SC signed by stored IK                       |
@@ -1988,12 +1944,12 @@ reconnect remotely.<a href="#section-1.8-1" class="pilcrow">¶</a></p>
    |   requiring fresh user-verification; old SSK      |
    |   is discarded from memory)                       |
    |                                                   |
-</pre><a href="#section-1.8-2" class="pilcrow">¶</a>
+</pre><a href="#section-1.7-2" class="pilcrow">¶</a>
 </div>
-<p id="section-1.8-3">The diagram above is informative.  Normative requirements for each
+<p id="section-1.7-3">The diagram above is informative.  Normative requirements for each
 object are specified in their respective sections (<a href="#contact-object" class="auto internal xref">Section 4</a>,
 <a href="#key-binding-object" class="auto internal xref">Section 5</a>, <a href="#session-credential" class="auto internal xref">Section 6</a>, <a href="#signed-message" class="auto internal xref">Section 7</a>,
-<a href="#presence-challenge" class="auto internal xref">Section 8</a>).<a href="#section-1.8-3" class="pilcrow">¶</a></p>
+<a href="#presence-challenge" class="auto internal xref">Section 8</a>).<a href="#section-1.7-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -2083,7 +2039,8 @@ to a connection context.<a href="#section-2.1-1.18.1" class="pilcrow">¶</a></p>
           <dd style="margin-left: 1.5em" id="section-2.1-1.20">
             <p id="section-2.1-1.20.1">A protocol-visible value reported by the signer describing the type
 of local verification event used for a signing operation.  Assurance
-values are platform-mediated claims, not universal truth statements.<a href="#section-2.1-1.20.1" class="pilcrow">¶</a></p>
+values are claims reported by the platform, not independently
+verifiable facts.<a href="#section-2.1-1.20.1" class="pilcrow">¶</a></p>
 </dd>
         <dd class="break"></dd>
 </dl>
@@ -2124,35 +2081,16 @@ indicate stronger assurance:<a href="#section-2.2-1" class="pilcrow">¶</a></p>
           </tbody>
         </table>
 <p id="section-2.2-3">A response with assurance value N satisfies a requirement for
-assurance value M if and only if N &gt;= M.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
-<p id="section-2.2-4">Values 1 and 2 are application-reported claims: the application
-sets the assurance field based on what the platform reported.  A
-compromised application could misrepresent the verification type.
-Value 3 (HARDWARE_VERIFIED) includes cryptographic evidence from
-the platform's hardware root of trust (e.g., Android Key
-Attestation, Apple Secure Enclave key attestation) that the key
-properties and
-verification event are genuine.  This evidence is independently
-verifiable against the hardware vendor's certificate chain and
-cannot be forged by a compromised application.<a href="#section-2.2-4" class="pilcrow">¶</a></p>
-<p id="section-2.2-5">Values 4 and above are reserved for future extensions.  The
-N &gt;= M comparison rule ensures forward compatibility: a verifier
-unaware of new levels will accept them when they satisfy its minimum
-requirement.<a href="#section-2.2-5" class="pilcrow">¶</a></p>
-<p id="section-2.2-6">A verifier <span class="bcp14">MUST</span> treat values 1 and 2 as claims produced by the
-signing application.  A verifier <span class="bcp14">MUST NOT</span> interpret them as
-independent proof of humanness, lack of coercion, or legal
-attribution.  A verifier <span class="bcp14">MUST</span> treat the assurance value as an input
-to local policy, not as a portable cross-platform security
-equivalence class.<a href="#section-2.2-6" class="pilcrow">¶</a></p>
-<p id="section-2.2-7">A verifier receiving value 3 (HARDWARE_VERIFIED) <span class="bcp14">MAY</span> place higher
-trust in the claim, subject to its trust in the hardware vendor's
-certificate chain.  The hardware attestation strengthens the claim
-about the signing event but does not alter the peer-to-peer trust
-model for identity -- the in-person ceremony remains the sole trust
-anchor for "who is this person."<a href="#section-2.2-7" class="pilcrow">¶</a></p>
-<p id="section-2.2-8">Relying parties (receiving peers) <span class="bcp14">MUST</span> be informed of the assurance
-value and <span class="bcp14">SHOULD</span> make it visible to the user.<a href="#section-2.2-8" class="pilcrow">¶</a></p>
+assurance value M if and only if N &gt;= M.  Values 4 and above are
+reserved for future extensions; the N &gt;= M rule ensures forward
+compatibility.<a href="#section-2.2-3" class="pilcrow">¶</a></p>
+<p id="section-2.2-4">Values 1 and 2 are application-reported claims; a compromised
+application could misrepresent them.  Value 3 includes
+cryptographic evidence from the platform's hardware root of trust
+that cannot be forged by a compromised application (see
+<a href="#hardware-attestation" class="auto internal xref">Section 2.3</a>).  A verifier <span class="bcp14">MUST</span> treat assurance values as local policy inputs;
+they do not imply equivalent security across platforms.  Relying parties <span class="bcp14">MUST</span> be informed of the
+assurance value and <span class="bcp14">SHOULD</span> make it visible to the user.<a href="#section-2.2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="hardware-attestation">
@@ -2450,7 +2388,7 @@ ContactObject = COSE_Sign1(
               <td class="text-right" rowspan="1" colspan="1">5</td>
               <td class="text-left" rowspan="1" colspan="1">display_name</td>
               <td class="text-left" rowspan="1" colspan="1">tstr</td>
-              <td class="text-left" rowspan="1" colspan="1">UTF-8, max 64 bytes of UTF-8 content</td>
+              <td class="text-left" rowspan="1" colspan="1">UTF-8, max 64 bytes</td>
             </tr>
             <tr>
               <td class="text-right" rowspan="1" colspan="1">6</td>
@@ -2518,7 +2456,9 @@ secure random number generator (CSPRNG).<a href="#section-4.3-2.1.1" class="pilc
             <p id="section-4.3-2.4.1">If the platform supports hardware key attestation,
 obtain attestation evidence for the Identity Key and include
 it in field 10 (attestation_evidence).  Set assurance (field 9)
-to 3 (HARDWARE_VERIFIED).<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
+to 3 (HARDWARE_VERIFIED).  Otherwise, set assurance (field 9)
+to the value the platform will report for the signing event
+(1 for CREDENTIAL, 2 for BIOMETRIC).<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-4.3-2.5">
             <p id="section-4.3-2.5.1">Serialize Contact_payload as deterministic CBOR.<a href="#section-4.3-2.5.1" class="pilcrow">¶</a></p>
@@ -2526,10 +2466,6 @@ to 3 (HARDWARE_VERIFIED).<a href="#section-4.3-2.4.1" class="pilcrow">¶</a></p>
           <li id="section-4.3-2.6">
             <p id="section-4.3-2.6.1">Sign using COSE_Sign1 with the Identity Key.  This operation
 triggers a local user-verification event.<a href="#section-4.3-2.6.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-4.3-2.7">
-            <p id="section-4.3-2.7.1">If attestation evidence was not included, record the assurance
-value reported for that signing event in field 9.<a href="#section-4.3-2.7.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -2771,7 +2707,8 @@ rules as in the Contact Object (<a href="#contact-object" class="auto internal x
 <p id="section-5.3-1">The signer <span class="bcp14">MUST</span>:<a href="#section-5.3-1" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="section-5.3-2">
 <li id="section-5.3-2.1">
-            <p id="section-5.3-2.1.1">Populate all fields of KBO_payload.<a href="#section-5.3-2.1.1" class="pilcrow">¶</a></p>
+            <p id="section-5.3-2.1.1">Populate all fields of KBO_payload, including assurance
+(field 7) based on the key's configured authentication policy.<a href="#section-5.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.3-2.2">
             <p id="section-5.3-2.2.1">Set expiry (field 6) to no more than 30 days (2,592,000,000
@@ -2783,10 +2720,6 @@ milliseconds) after timestamp (field 5).<a href="#section-5.3-2.2.1" class="pilc
           <li id="section-5.3-2.4">
             <p id="section-5.3-2.4.1">Sign using COSE_Sign1 with the Identity Key.  This operation
 triggers a local user-verification event.<a href="#section-5.3-2.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="section-5.3-2.5">
-            <p id="section-5.3-2.5.1">Record the assurance value of the verification event in
-field 7.<a href="#section-5.3-2.5.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -2808,25 +2741,33 @@ verification:<a href="#section-5.4-1" class="pilcrow">¶</a></p>
 If not, reject.<a href="#section-5.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.4-2.3">
-            <p id="section-5.4-2.3.1">Verify that the current time is &gt;= timestamp (field 5) and
-&lt; expiry (field 6).  If outside the window, reject.<a href="#section-5.4-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-5.4-2.3.1">Verify that version (field 1) is supported.  If unsupported,
+reject.<a href="#section-5.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.4-2.4">
-            <p id="section-5.4-2.4.1">Extract ik_public (field 2) from the payload.<a href="#section-5.4-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-5.4-2.4.1">Verify that the current time is &gt;= timestamp (field 5) and
+&lt; expiry (field 6).  If outside the window, reject.<a href="#section-5.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.4-2.5">
-            <p id="section-5.4-2.5.1">Verify that ik_public matches the expected Identity Key for this
-contact (from a prior contact exchange, <a href="#contact-object" class="auto internal xref">Section 4</a>).
-If no match, reject.<a href="#section-5.4-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-5.4-2.5.1">Verify that expiry (field 6) minus timestamp (field 5) does not
+exceed 30 days (2,592,000,000 milliseconds).  If it does, reject.<a href="#section-5.4-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.4-2.6">
-            <p id="section-5.4-2.6.1">Verify that tk_public (field 3) matches the Transport Key of
-the transport peer as observed during the transport handshake.
-If no match, reject.<a href="#section-5.4-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-5.4-2.6.1">Extract ik_public (field 2) from the payload.<a href="#section-5.4-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-5.4-2.7">
-            <p id="section-5.4-2.7.1">Verify the COSE_Sign1 signature using ik_public.  If signature
-verification fails, reject.<a href="#section-5.4-2.7.1" class="pilcrow">¶</a></p>
+            <p id="section-5.4-2.7.1">Verify that ik_public matches the expected Identity Key for this
+contact (from a prior contact exchange, <a href="#contact-object" class="auto internal xref">Section 4</a>).
+If no match, reject.<a href="#section-5.4-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.4-2.8">
+            <p id="section-5.4-2.8.1">Verify that tk_public (field 3) matches the Transport Key of
+the transport peer as observed during the transport handshake.
+If no match, reject.<a href="#section-5.4-2.8.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-5.4-2.9">
+            <p id="section-5.4-2.9.1">Verify the COSE_Sign1 signature using ik_public.  If signature
+verification fails, reject.<a href="#section-5.4-2.9.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-5.4-3">If ANY check fails, the verifier <span class="bcp14">MUST</span> reject the KBO and terminate
@@ -2864,9 +2805,7 @@ Delegated Credentials
 <span>[<a href="#RFC9345" class="cite xref">RFC9345</a>]</span>: a long-term trust anchor (the IK) signs a short-lived
 operational credential (the Session Credential), which in turn
 authenticates individual operations (messages, file transfers).<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">This creates a verifiable chain from any signed message back to the
-Identity Key established during the in-person contact exchange:<a href="#section-6.1-2" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-6.1-3">
+<div class="alignLeft art-text artwork" id="section-6.1-2">
 <pre>
 Stored IK_public (from in-person ceremony)
   |
@@ -2875,7 +2814,7 @@ Session Credential (COSE_Sign1 signed by IK)
   |  contains SSK_public
   v  verifies
 Signed Message (COSE_Sign1 signed by SSK)
-</pre><a href="#section-6.1-3" class="pilcrow">¶</a>
+</pre><a href="#section-6.1-2" class="pilcrow">¶</a>
 </div>
 </section>
 </div>
@@ -2987,15 +2926,15 @@ with different risk profiles <span class="bcp14">MAY</span> choose shorter durat
 durations (e.g., 8 hours for a workday session).<a href="#section-6.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.3-2.4">
-            <p id="section-6.3-2.4.1">Serialize SC_payload as deterministic CBOR.<a href="#section-6.3-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-6.3-2.4.1">Set assurance (field 7) based on the key's configured
+authentication policy.<a href="#section-6.3-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.3-2.5">
-            <p id="section-6.3-2.5.1">Sign using COSE_Sign1 with the Identity Key.  This operation
-triggers a local user-verification event.<a href="#section-6.3-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-6.3-2.5.1">Serialize SC_payload as deterministic CBOR.<a href="#section-6.3-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.3-2.6">
-            <p id="section-6.3-2.6.1">Record the assurance value of the verification event in
-field 7.<a href="#section-6.3-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-6.3-2.6.1">Sign using COSE_Sign1 with the Identity Key.  This operation
+triggers a local user-verification event.<a href="#section-6.3-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-6.3-3">The SSK private key <span class="bcp14">MUST</span> be held in memory only and <span class="bcp14">MUST NOT</span> be
@@ -3020,21 +2959,25 @@ Linux).<a href="#section-6.3-3" class="pilcrow">¶</a></p>
 (SESSION_CREDENTIAL).  If not, reject.<a href="#section-6.4-2.2.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.4-2.3">
-            <p id="section-6.4-2.3.1">Verify that the current time is between timestamp (field 5)
-and expiry (field 6).  If outside the window, reject.<a href="#section-6.4-2.3.1" class="pilcrow">¶</a></p>
+            <p id="section-6.4-2.3.1">Verify that version (field 1) is supported.  If unsupported,
+reject.<a href="#section-6.4-2.3.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.4-2.4">
-            <p id="section-6.4-2.4.1">Verify that ik_public (field 3) matches the stored Identity
-Key for the peer.  If no match, reject.<a href="#section-6.4-2.4.1" class="pilcrow">¶</a></p>
+            <p id="section-6.4-2.4.1">Verify that the current time is between timestamp (field 5)
+and expiry (field 6).  If outside the window, reject.<a href="#section-6.4-2.4.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.4-2.5">
-            <p id="section-6.4-2.5.1">Verify that peer_ik_hash (field 4) matches SHA-256 of the
-verifier's own IK_public (confirms the credential is scoped
-to this relationship).  If no match, reject.<a href="#section-6.4-2.5.1" class="pilcrow">¶</a></p>
+            <p id="section-6.4-2.5.1">Verify that ik_public (field 3) matches the stored Identity
+Key for the peer.  If no match, reject.<a href="#section-6.4-2.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-6.4-2.6">
-            <p id="section-6.4-2.6.1">Verify the COSE_Sign1 signature using the stored IK_public.
-If signature verification fails, reject.<a href="#section-6.4-2.6.1" class="pilcrow">¶</a></p>
+            <p id="section-6.4-2.6.1">Verify that peer_ik_hash (field 4) matches SHA-256 of the
+verifier's own IK_public (confirms the credential is scoped
+to this relationship).  If no match, reject.<a href="#section-6.4-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-6.4-2.7">
+            <p id="section-6.4-2.7.1">Verify the COSE_Sign1 signature using the stored IK_public.
+If signature verification fails, reject.<a href="#section-6.4-2.7.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-6.4-3">The Session Credential is typically verified once per session
@@ -3078,51 +3021,10 @@ that the sender re-authenticate by issuing a Presence Challenge
 <a href="#section-6.6" class="section-number selfRef">6.6. </a><a href="#name-security-note" class="section-name selfRef">Security Note</a>
         </h3>
 <p id="section-6.6-1">Use of the SSK is weaker than direct use of the IK because the SSK
-is a software key.  An attacker who extracts the SSK from memory
-can forge messages for the remaining validity period of the Session
-Credential.  The short expiry limits this exposure.<a href="#section-6.6-1" class="pilcrow">¶</a></p>
-<p id="section-6.6-2">The Session Credential intentionally does not include a
-channel_binding field (unlike the Presence Response).  This is
-because Session Credentials must remain valid across delivery
-paths -- a message signed under an SC may be delivered over a live
-connection or deposited in a mailbox for later retrieval.  Binding
-the SC to a specific transport session would break offline
-delivery.  As a consequence, a stolen SSK and SC can be used from
-any network position for the remaining credential lifetime.  An
-attacker who achieves code execution sufficient to read the SSK
-from memory typically also has access to the Transport Key on
-the same device, meaning the device is fully compromised and
-no additional protocol-level binding would provide meaningful
-protection.<a href="#section-6.6-2" class="pilcrow">¶</a></p>
-<p id="section-6.6-3">This document treats Session Credentials as an optimization and
-not as an equivalent substitute for direct IK use.  Applications
-<span class="bcp14">SHOULD</span> require direct IK-based Presence Responses for high-risk
-actions such as key changes, privileged approvals, or other
-operations where fresh platform-mediated authorization is
-materially more valuable than signing throughput.<a href="#section-6.6-3" class="pilcrow">¶</a></p>
-<p id="section-6.6-4">Mitigations for SSK compromise:<a href="#section-6.6-4" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-6.6-5.1">
-            <p id="section-6.6-5.1.1">The Session Credential <span class="bcp14">MUST</span> have a finite expiry, limiting the
-forgery window.<a href="#section-6.6-5.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-6.6-5.2">
-            <p id="section-6.6-5.2.1">The SSK <span class="bcp14">MUST</span> be discarded when the session ends.<a href="#section-6.6-5.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-6.6-5.3">
-            <p id="section-6.6-5.3.1">The peer_ik_hash field prevents the stolen SSK from being used
-with a different peer.<a href="#section-6.6-5.3.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-6.6-5.4">
-            <p id="section-6.6-5.4.1">Implementations <span class="bcp14">SHOULD</span> store the SSK in a non-swappable memory
-region.<a href="#section-6.6-5.4.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-6.6-5.5">
-            <p id="section-6.6-5.5.1">For operations requiring the strongest assurance, implementations
-<span class="bcp14">SHOULD</span> sign directly with the Identity Key rather than delegating
-to the SSK.<a href="#section-6.6-5.5.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
+is a software key.  See <a href="#ssk-compromise" class="auto internal xref">Section 10.14</a> for a detailed analysis
+of SSK compromise risks and mitigations.  Applications <span class="bcp14">SHOULD</span>
+require direct IK-based Presence Responses for high-risk actions
+such as key changes or privileged approvals.<a href="#section-6.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -3141,9 +3043,8 @@ to the SSK.<a href="#section-6.6-5.5.1" class="pilcrow">¶</a></p>
 peers have exchanged and verified Key Binding Objects
 (<a href="#key-binding-object" class="auto internal xref">Section 5</a>), the transport peer's identity is bound
 to the stored IK from the ceremony, and data in transit is
-authenticated by the KBO-verified connection.  Signed Messages add
-value when content must be verifiable independent of the transport
-session -- for example, stored messages, forwarded content, or
+authenticated by the KBO-verified connection.  Signed Messages are useful when content must be verifiable
+independent of the transport session -- for example, stored messages, forwarded content, or
 operations requiring non-repudiation.  Real-time streams (audio,
 video) over an authenticated direct connection typically do not
 require per-unit signatures; the KBO-verified transport and
@@ -3280,38 +3181,6 @@ reject (replay).<a href="#section-7.3.2-2.4.1" class="pilcrow">¶</a></p>
 Section 4.5.1 of DTLS 1.3 <span>[<a href="#RFC9147" class="cite xref">RFC9147</a>]</span>.<a href="#section-7.3.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="replay-state-model">
-<section id="section-7.3.3">
-          <h4 id="name-replay-state-model">
-<a href="#section-7.3.3" class="section-number selfRef">7.3.3. </a><a href="#name-replay-state-model" class="section-name selfRef">Replay State Model</a>
-          </h4>
-<div class="alignLeft art-text artwork" id="section-7.3.3-1">
-<pre>
-Reliable transport (strict):
-
-  Session Credential SC1
-     highest_message_id = 41
-
-  Incoming message_id:
-    42 -&gt; accept, store 42
-    42 -&gt; reject (replay)
-    40 -&gt; reject (stale)
-
-Unreliable transport (sliding window, size=64):
-
-  Session Credential SC1
-     highest_message_id = 100
-     window covers 37..100
-
-  Incoming message_id:
-    101 -&gt; accept, update highest to 101
-     85 -&gt; in window, not seen -&gt; accept, mark seen
-     85 -&gt; in window, already seen -&gt; reject (replay)
-     30 -&gt; below window -&gt; reject (too old)
-</pre><a href="#section-7.3.3-1" class="pilcrow">¶</a>
-</div>
-</section>
-</div>
 </section>
 </div>
 <div id="replay-state">
@@ -3378,15 +3247,21 @@ fails, reject.<a href="#section-7.5-4.4.1" class="pilcrow">¶</a></p>
 If not, reject.<a href="#section-7.5-4.5.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-7.5-4.6">
-            <p id="section-7.5-4.6.1">Apply the replay check for message_id (field 1) according to
+            <p id="section-7.5-4.6.1">Verify that timestamp (field 2) is &gt;= the Session Credential's
+timestamp and &lt;= the Session Credential's expiry (plus any
+locally configured grace period; <span class="bcp14">RECOMMENDED</span>: no more than 60
+seconds past expiry).  If outside the window, reject.<a href="#section-7.5-4.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-7.5-4.7">
+            <p id="section-7.5-4.7.1">Apply the replay check for message_id (field 1) according to
 the transport type: strict monotonic for reliable transports,
 or sliding window for unreliable transports (see
 <a href="#message-ordering-and-replay-protection" class="auto internal xref">Section 7.3</a>).  If the check
-fails, reject.<a href="#section-7.5-4.6.1" class="pilcrow">¶</a></p>
+fails, reject.<a href="#section-7.5-4.7.1" class="pilcrow">¶</a></p>
 </li>
-          <li id="section-7.5-4.7">
-            <p id="section-7.5-4.7.1">Verify the COSE_Sign1 signature using ssk_public.  If signature
-verification fails, reject.<a href="#section-7.5-4.7.1" class="pilcrow">¶</a></p>
+          <li id="section-7.5-4.8">
+            <p id="section-7.5-4.8.1">Verify the COSE_Sign1 signature using ssk_public.  If signature
+verification fails, reject.<a href="#section-7.5-4.8.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 <p id="section-7.5-5">If any check fails, the verifier <span class="bcp14">MUST</span> reject the message.<a href="#section-7.5-5" class="pilcrow">¶</a></p>
@@ -3612,8 +3487,16 @@ reject.<a href="#section-8.4-2.5.1" class="pilcrow">¶</a></p>
 the challenge.  If not, reject.<a href="#section-8.4-2.6.1" class="pilcrow">¶</a></p>
 </li>
           <li id="section-8.4-2.7">
-            <p id="section-8.4-2.7.1">Verify the COSE_Sign1 signature using the stored Identity Key
-for the peer.  If signature verification fails, reject.<a href="#section-8.4-2.7.1" class="pilcrow">¶</a></p>
+            <p id="section-8.4-2.7.1">If assurance is 3 (HARDWARE_VERIFIED), verify the
+attestation_evidence (field 5) against the platform vendor's
+certificate chain.  If attestation evidence is present but
+verification fails, reject.  If the verifier cannot process
+the attestation format, it <span class="bcp14">MUST</span> treat the assurance value as 2
+(BIOMETRIC) rather than 3.<a href="#section-8.4-2.7.1" class="pilcrow">¶</a></p>
+</li>
+          <li id="section-8.4-2.8">
+            <p id="section-8.4-2.8.1">Verify the COSE_Sign1 signature using the stored Identity Key
+for the peer.  If signature verification fails, reject.<a href="#section-8.4-2.8.1" class="pilcrow">¶</a></p>
 </li>
         </ol>
 </section>
@@ -3640,10 +3523,9 @@ challenger <span class="bcp14">SHOULD</span> inform the user.<a href="#section-8
 connection.<a href="#section-8.5-1.4.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-8.5-2">A successful Presence Response demonstrates only that the peer was
-able to use the stored IK under the platform's configured policy on
-the current connection.  It does not prove voluntariness or lack of
-coercion.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
+<p id="section-8.5-2">A successful Presence Response demonstrates only that the peer's
+platform authorized an IK operation on the current connection.
+See <a href="#trust-model" class="auto internal xref">Section 1.6</a> for scope limitations.<a href="#section-8.5-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -3671,16 +3553,20 @@ man-in-the-middle substitution is not feasible and fingerprint
 verification <span class="bcp14">MAY</span> be skipped.<a href="#section-9.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-9.1-3.2">
-            <p id="section-9.1-3.2.1">When Contact Objects are exchanged via a channel that does not
-guarantee physical proximity (e.g., via a server, email, or
-messaging application), both parties <span class="bcp14">MUST</span> verify fingerprints
-through a separate trusted channel.<a href="#section-9.1-3.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-9.1-3.3">
-            <p id="section-9.1-3.3.1">When the exchange mechanism involves an intermediary, fingerprint
-verification <span class="bcp14">SHOULD</span> be performed regardless of physical proximity.<a href="#section-9.1-3.3.1" class="pilcrow">¶</a></p>
+            <p id="section-9.1-3.2.1">When the exchange mechanism involves an intermediary (e.g., a code
+displayed on one device and photographed by another, or a wireless
+exchange without visual confirmation of the peer), fingerprint
+verification <span class="bcp14">SHOULD</span> be performed even when both parties are
+physically co-present.<a href="#section-9.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
+<p id="section-9.1-4">This specification does not support Contact Object exchange over
+channels that do not guarantee physical proximity (e.g., server
+relay, email, or messaging application).  Such usage violates the
+Ceremony Requirement (<a href="#contact-object" class="auto internal xref">Section 4</a>) and falls outside this
+document's trust model; any security claims in such deployments
+derive from the relay channel's own authentication, not from this
+protocol.<a href="#section-9.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="computation">
@@ -3700,25 +3586,13 @@ digest = SHA-256(prefix || sorted[0] || sorted[1])
 <p id="section-9.2-3">SHA-256 is as defined in <span>[<a href="#FIPS180-4" class="cite xref">FIPS180-4</a>]</span>.<a href="#section-9.2-3" class="pilcrow">¶</a></p>
 <p id="section-9.2-4">This document defines only the digest computation.  Any human-
 readable rendering is application-defined.<a href="#section-9.2-4" class="pilcrow">¶</a></p>
-<p id="section-9.2-5"><span class="bcp14">RECOMMENDED</span> encodings (implementations <span class="bcp14">MUST</span> support at least one):<a href="#section-9.2-5" class="pilcrow">¶</a></p>
-<p id="section-9.2-6"><strong>Numeric (8 digits)</strong>: Take the first 4 bytes of the digest,
-interpret as a big-endian unsigned integer, reduce modulo
-100,000,000, and zero-pad to 8 digits:<a href="#section-9.2-6" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-9.2-7">
-<pre>
-fingerprint = sprintf("%08d", BE_uint(digest[0..3]) mod 100000000)
-</pre><a href="#section-9.2-7" class="pilcrow">¶</a>
-</div>
-<p id="section-9.2-8">Example: "48371205"<a href="#section-9.2-8" class="pilcrow">¶</a></p>
-<p id="section-9.2-9"><strong>Numeric (6 digits)</strong>: Same approach, modulo 1,000,000:<a href="#section-9.2-9" class="pilcrow">¶</a></p>
-<div class="alignLeft art-text artwork" id="section-9.2-10">
-<pre>
-fingerprint = sprintf("%06d", BE_uint(digest[0..3]) mod 1000000)
-</pre><a href="#section-9.2-10" class="pilcrow">¶</a>
-</div>
-<p id="section-9.2-11">Example: "371205"<a href="#section-9.2-11" class="pilcrow">¶</a></p>
-<p id="section-9.2-12"><strong>Visual comparison</strong>: Display the full digest as a visual pattern
-on both devices for side-by-side comparison.<a href="#section-9.2-12" class="pilcrow">¶</a></p>
+<p id="section-9.2-5">Implementations <span class="bcp14">MAY</span> encode the digest for human comparison (e.g.,
+as grouped numeric blocks, hexadecimal, base32, or an emoji
+sequence mapped from digest bits).  The security of any such
+encoding depends on the number of digest bits it exposes.
+Renderings that expose fewer than 30 bits of the digest offer only
+weak resistance against man-in-the-middle substitution and <span class="bcp14">SHOULD NOT</span> be used for security-critical comparisons.  See
+<a href="#relationship-fingerprint-limitations" class="auto internal xref">Section 10.8</a> for analysis.<a href="#section-9.2-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="properties">
@@ -3759,400 +3633,402 @@ may indicate a new device (benign) or a man-in-the-middle attack.<a href="#secti
       <h2 id="name-security-considerations">
 <a href="#section-10" class="section-number selfRef">10. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
       </h2>
-<div id="what-this-protocol-does-provide">
+<div id="limitations">
 <section id="section-10.1">
-        <h3 id="name-what-this-protocol-does-pro">
-<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-what-this-protocol-does-pro" class="section-name selfRef">What This Protocol Does Provide</a>
+        <h3 id="name-limitations">
+<a href="#section-10.1" class="section-number selfRef">10.1. </a><a href="#name-limitations" class="section-name selfRef">Limitations</a>
         </h3>
-<p id="section-10.1-1">This protocol provides relationship continuity, binding of a
-transport key to a previously accepted identity key, freshness
-through challenge-response, optional delegated message
-authentication, and per-unit replay protection via monotonic
-message identifiers.<a href="#section-10.1-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="what-this-protocol-does-not-provide">
-<section id="section-10.2">
-        <h3 id="name-what-this-protocol-does-not">
-<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-what-this-protocol-does-not" class="section-name selfRef">What This Protocol Does Not Provide</a>
-        </h3>
-<p id="section-10.2-1">This protocol does not provide:<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.1-1">This protocol does not provide:<a href="#section-10.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10.2-2.1">
-            <p id="section-10.2-2.1.1">proof-of-personhood<a href="#section-10.2-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10.1-2.1">
+            <p id="section-10.1-2.1.1">proof-of-personhood<a href="#section-10.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-2.2">
-            <p id="section-10.2-2.2.1">universal identity proof<a href="#section-10.2-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.1-2.2">
+            <p id="section-10.1-2.2.1">universal identity proof<a href="#section-10.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-2.3">
-            <p id="section-10.2-2.3.1">protection against coercion<a href="#section-10.2-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.1-2.3">
+            <p id="section-10.1-2.3.1">protection against coercion<a href="#section-10.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-2.4">
-            <p id="section-10.2-2.4.1">protection against a compromised platform key store<a href="#section-10.2-2.4.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.1-2.4">
+            <p id="section-10.1-2.4.1">protection against a compromised platform key store<a href="#section-10.1-2.4.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-2.5">
-            <p id="section-10.2-2.5.1">protection against a compromised application falsely describing
+          <li class="normal" id="section-10.1-2.5">
+            <p id="section-10.1-2.5.1">protection against a compromised application falsely describing
 the platform's assurance event unless the deployment adds
-attestation<a href="#section-10.2-2.5.1" class="pilcrow">¶</a></p>
+attestation<a href="#section-10.1-2.5.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-2.6">
-            <p id="section-10.2-2.6.1">unlinkability across contacts that receive the same IK<a href="#section-10.2-2.6.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.1-2.6">
+            <p id="section-10.1-2.6.1">unlinkability across contacts that receive the same IK<a href="#section-10.1-2.6.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.2-2.7">
-            <p id="section-10.2-2.7.1">revocation or recovery<a href="#section-10.2-2.7.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.1-2.7">
+            <p id="section-10.1-2.7.1">revocation or recovery<a href="#section-10.1-2.7.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
-<div id="platform-trust">
-<section id="section-10.3">
-        <h3 id="name-platform-trust">
-<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-platform-trust" class="section-name selfRef">Platform Trust</a>
+<div id="platform-trust-compromised-applications-and-device-state">
+<section id="section-10.2">
+        <h3 id="name-platform-trust-compromised-">
+<a href="#section-10.2" class="section-number selfRef">10.2. </a><a href="#name-platform-trust-compromised-" class="section-name selfRef">Platform Trust, Compromised Applications, and Device State</a>
         </h3>
-<p id="section-10.3-1">All meaningful security properties of this protocol depend on
+<p id="section-10.2-1">All meaningful security properties of this protocol depend on
 platform behavior when using the Identity Key.  If the platform
 allows the key operation without the expected local verification
-event, the protocol cannot detect that failure by itself.<a href="#section-10.3-1" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="compromised-applications-and-trusted-ui">
-<section id="section-10.4">
-        <h3 id="name-compromised-applications-an">
-<a href="#section-10.4" class="section-number selfRef">10.4. </a><a href="#name-compromised-applications-an" class="section-name selfRef">Compromised Applications and Trusted UI</a>
-        </h3>
-<p id="section-10.4-1">A compromised or malicious application can alter what is being
+event, the protocol cannot detect that failure by itself.<a href="#section-10.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.2-2">A compromised or malicious application can alter what is being
 signed, misrepresent why a signing operation is requested, or
 present application-specific content to the user in a misleading
 way.  Unless the deployment provides trusted display, platform
 attestation, or other out-of-band confirmation of signing intent,
 a verifier <span class="bcp14">MUST NOT</span> assume that a valid protocol object implies
 that the signer saw or understood the application semantics
-associated with that object.<a href="#section-10.4-1" class="pilcrow">¶</a></p>
-<p id="section-10.4-2">For the same reason, deployments <span class="bcp14">SHOULD</span> distinguish between
+associated with that object.  Deployments <span class="bcp14">SHOULD</span> distinguish between
 cryptographic authorization of a protocol object and user consent
-to higher-level application meaning.  This document standardizes
-only the former.<a href="#section-10.4-2" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="stolen-unlocked-or-coerced-device-state">
-<section id="section-10.5">
-        <h3 id="name-stolen-unlocked-or-coerced-">
-<a href="#section-10.5" class="section-number selfRef">10.5. </a><a href="#name-stolen-unlocked-or-coerced-" class="section-name selfRef">Stolen, Unlocked, or Coerced Device State</a>
-        </h3>
-<p id="section-10.5-1">If an attacker obtains control of an unlocked device, or if the
-platform permits repeated key use within a local user-verification
-window, this protocol may permit valid signatures that do not
-reflect a new conscious act by the device holder.  Likewise, if
-the device holder is coerced into satisfying local verification,
-the protocol cannot detect that condition.<a href="#section-10.5-1" class="pilcrow">¶</a></p>
-<p id="section-10.5-2">Accordingly, verifiers <span class="bcp14">MUST</span> treat successful verification as
-evidence only that the platform authorized key use under its
-current policy.  Verifiers <span class="bcp14">MUST NOT</span> infer voluntariness, freedom
-from duress, or the absence of local compromise.<a href="#section-10.5-2" class="pilcrow">¶</a></p>
+to higher-level application meaning.<a href="#section-10.2-2" class="pilcrow">¶</a></p>
+<p id="section-10.2-3">If an attacker obtains control of an unlocked device, or if the
+device holder is coerced into satisfying local verification, the
+protocol provides no defense against this scenario.  Verifiers <span class="bcp14">MUST</span> treat
+successful verification as evidence only that the platform
+authorized key use under its current policy (see <a href="#trust-model" class="auto internal xref">Section 1.6</a>).<a href="#section-10.2-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="contact-object-capture">
-<section id="section-10.6">
+<section id="section-10.3">
         <h3 id="name-contact-object-capture">
-<a href="#section-10.6" class="section-number selfRef">10.6. </a><a href="#name-contact-object-capture" class="section-name selfRef">Contact Object Capture</a>
+<a href="#section-10.3" class="section-number selfRef">10.3. </a><a href="#name-contact-object-capture" class="section-name selfRef">Contact Object Capture</a>
         </h3>
-<p id="section-10.6-1">A captured Contact Object (e.g., photographed visual encoding or
+<p id="section-10.3-1">A captured Contact Object (e.g., photographed visual encoding or
 intercepted wireless transmission) gives the attacker the victim's
 public Identity Key and addressing information but the attacker
-cannot:<a href="#section-10.6-1" class="pilcrow">¶</a></p>
+cannot:<a href="#section-10.3-1" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10.6-2.1">
-            <p id="section-10.6-2.1.1">Sign as the victim (lacks the device-bound private key).<a href="#section-10.6-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10.3-2.1">
+            <p id="section-10.3-2.1.1">Sign as the victim (lacks the device-bound private key).<a href="#section-10.3-2.1.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.6-2.2">
-            <p id="section-10.6-2.2.1">Replay the payload after 5 minutes (timestamp check).<a href="#section-10.6-2.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.3-2.2">
+            <p id="section-10.3-2.2.1">Replay the payload after 5 minutes (timestamp check).<a href="#section-10.3-2.2.1" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-10.6-2.3">
-            <p id="section-10.6-2.3.1">Replay within 5 minutes if the nonce was already seen.<a href="#section-10.6-2.3.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-10.3-2.3">
+            <p id="section-10.3-2.3.1">Replay within 5 minutes if the nonce was already seen.<a href="#section-10.3-2.3.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
-<p id="section-10.6-3">The attacker CAN attempt to connect to the victim's transport
+<p id="section-10.3-3">The attacker CAN attempt to connect to the victim's transport
 address but cannot complete authentication (they lack a KBO for
-an Identity Key the victim trusts).<a href="#section-10.6-3" class="pilcrow">¶</a></p>
+an Identity Key the victim trusts).<a href="#section-10.3-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="key-binding-object-expiry">
-<section id="section-10.7">
+<section id="section-10.4">
         <h3 id="name-key-binding-object-expiry">
-<a href="#section-10.7" class="section-number selfRef">10.7. </a><a href="#name-key-binding-object-expiry" class="section-name selfRef">Key Binding Object Expiry</a>
+<a href="#section-10.4" class="section-number selfRef">10.4. </a><a href="#name-key-binding-object-expiry" class="section-name selfRef">Key Binding Object Expiry</a>
         </h3>
-<p id="section-10.7-1">A 30-day KBO expiry limits the window during which a compromised
+<p id="section-10.4-1">A 30-day KBO expiry limits the window during which a compromised
 Transport Key can be used.  Frequent TK rotation (<a href="#tk-rotation" class="auto internal xref">Section 3.3</a>)
-reduces this window further.<a href="#section-10.7-1" class="pilcrow">¶</a></p>
+reduces this window further.<a href="#section-10.4-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="assurance-semantics-and-policy">
-<section id="section-10.8">
-        <h3 id="name-assurance-semantics-and-pol">
-<a href="#section-10.8" class="section-number selfRef">10.8. </a><a href="#name-assurance-semantics-and-pol" class="section-name selfRef">Assurance Semantics and Policy</a>
+<div id="assurance-semantics-policy-and-application-compromise">
+<section id="section-10.5">
+        <h3 id="name-assurance-semantics-policy-">
+<a href="#section-10.5" class="section-number selfRef">10.5. </a><a href="#name-assurance-semantics-policy-" class="section-name selfRef">Assurance Semantics, Policy, and Application Compromise</a>
         </h3>
-<p id="section-10.8-1">The assurance values defined by this document are signer-reported,
+<p id="section-10.5-1">The assurance values defined by this document are signer-reported,
 platform-mediated claims.  They are intentionally coarse and do not
 capture the full variety of operating-system behavior, biometric
 modes, passcode fallback rules, trusted-path properties, or reuse
-windows.<a href="#section-10.8-1" class="pilcrow">¶</a></p>
-<p id="section-10.8-2">An attacker who compromises the application layer (but not the
-platform key store) may attempt to forge the assurance field in
-signed structures, claiming BIOMETRIC (2) when only CREDENTIAL (1)
-verification occurred.  The assurance field is included in the
-COSE_Sign1 payload and therefore covered by the signature; it
-cannot be modified without invalidating the signature.  However, a
-compromised application could request CREDENTIAL-level verification
-from the platform and then set the assurance field to BIOMETRIC in
-the payload before signing.<a href="#section-10.8-2" class="pilcrow">¶</a></p>
-<p id="section-10.8-3">The HARDWARE_VERIFIED (3) assurance level mitigates this attack.
-When hardware attestation evidence is present, the verifier can
-confirm the key's properties and authentication requirements
-directly against the hardware vendor's certificate chain,
-independent of the application layer.  A compromised application
-cannot forge hardware attestation evidence.<a href="#section-10.8-3" class="pilcrow">¶</a></p>
-<p id="section-10.8-4">Deployments that require stronger semantics <span class="bcp14">SHOULD</span> require
+windows.<a href="#section-10.5-1" class="pilcrow">¶</a></p>
+<p id="section-10.5-2">A compromised application could request CREDENTIAL-level
+verification from the platform and then set the assurance field to
+BIOMETRIC in the payload before signing.  The HARDWARE_VERIFIED (3)
+assurance level mitigates this attack: when hardware attestation
+evidence is present, the verifier can confirm the key's properties
+directly against the hardware vendor's certificate chain.  A
+compromised application cannot forge hardware attestation evidence.<a href="#section-10.5-2" class="pilcrow">¶</a></p>
+<p id="section-10.5-3">During the Contact Exchange ceremony, a compromised application
+could substitute attacker-controlled keys while displaying
+correct-looking UI.  Hardware key attestation proves the Identity
+Key is hardware-bound but does not prove the application is
+legitimate.  Platform app integrity services (<a href="#app-integrity-impl" class="auto internal xref">Appendix B.2</a>)
+can mitigate this additional threat.  Without either form of
+attestation, peers <span class="bcp14">SHOULD</span> use out-of-band Relationship Fingerprint
+comparison (<a href="#relationship-fingerprint" class="auto internal xref">Section 9</a>) as a defense against key
+substitution.<a href="#section-10.5-3" class="pilcrow">¶</a></p>
+<p id="section-10.5-4">Deployments that require stronger semantics <span class="bcp14">SHOULD</span> require
 HARDWARE_VERIFIED assurance where platform support is available,
 and <span class="bcp14">SHOULD</span> define local policy for acceptable platforms, maximum
 verification age, session credential lifetimes, and when direct
-IK use is required instead of delegated signing.<a href="#section-10.8-4" class="pilcrow">¶</a></p>
+IK use is required instead of delegated signing.<a href="#section-10.5-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="relay-attack-on-presence-response">
-<section id="section-10.9">
+<section id="section-10.6">
         <h3 id="name-relay-attack-on-presence-re">
-<a href="#section-10.9" class="section-number selfRef">10.9. </a><a href="#name-relay-attack-on-presence-re" class="section-name selfRef">Relay Attack on Presence Response</a>
+<a href="#section-10.6" class="section-number selfRef">10.6. </a><a href="#name-relay-attack-on-presence-re" class="section-name selfRef">Relay Attack on Presence Response</a>
         </h3>
-<p id="section-10.9-1">Without channel binding, an attacker positioned between two peers
+<p id="section-10.6-1">Without channel binding, an attacker positioned between two peers
 could relay a Presence Challenge from Peer A to the victim's device,
 collect the signed response, and forward it to Peer A.  The
 channel_binding field in the Presence Response (<a href="#presence-challenge" class="auto internal xref">Section 8</a>)
 prevents this by binding the response to the specific connection
-context.<a href="#section-10.9-1" class="pilcrow">¶</a></p>
+context.<a href="#section-10.6-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="type-confusion">
-<section id="section-10.10">
+<section id="section-10.7">
         <h3 id="name-type-confusion">
-<a href="#section-10.10" class="section-number selfRef">10.10. </a><a href="#name-type-confusion" class="section-name selfRef">Type Confusion</a>
+<a href="#section-10.7" class="section-number selfRef">10.7. </a><a href="#name-type-confusion" class="section-name selfRef">Type Confusion</a>
         </h3>
-<p id="section-10.10-1">Without the structure_type discriminator (field 0), an attacker
+<p id="section-10.7-1">Without the structure_type discriminator (field 0), an attacker
 could potentially substitute a signed Contact Object for a Key
 Binding Object or vice versa, since both are COSE_Sign1 structures
 signed by the same Identity Key.  The structure_type field prevents
 this: verifiers <span class="bcp14">MUST</span> check that the structure_type matches the
-expected value before processing any other fields.<a href="#section-10.10-1" class="pilcrow">¶</a></p>
+expected value before processing any other fields.<a href="#section-10.7-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="relationship-fingerprint-limitations">
-<section id="section-10.11">
+<section id="section-10.8">
         <h3 id="name-relationship-fingerprint-li">
-<a href="#section-10.11" class="section-number selfRef">10.11. </a><a href="#name-relationship-fingerprint-li" class="section-name selfRef">Relationship Fingerprint Limitations</a>
+<a href="#section-10.8" class="section-number selfRef">10.8. </a><a href="#name-relationship-fingerprint-li" class="section-name selfRef">Relationship Fingerprint Limitations</a>
         </h3>
-<p id="section-10.11-1">The fingerprint is optional and its security depends on the encoding
-chosen by the application.  An 8-digit numeric encoding provides
-approximately 26 bits of collision resistance: an attacker would
-need to generate approximately 67 million key pairs to find a
-collision.  A 6-digit encoding provides approximately 20 bits.<a href="#section-10.11-1" class="pilcrow">¶</a></p>
-<p id="section-10.11-2">For applications requiring stronger assurance, implementations
-<span class="bcp14">SHOULD</span> support machine-readable comparison which can compare the
-full 256-bit digest without human error.<a href="#section-10.11-2" class="pilcrow">¶</a></p>
+<p id="section-10.8-1">The fingerprint is optional and its security depends on the number
+of digest bits exposed by the encoding chosen by the application.
+A rendering that exposes N bits of the digest offers approximately
+N bits of second-preimage resistance against an attacker who
+generates candidate Identity Key pairs and searches for one whose
+fingerprint matches the target.<a href="#section-10.8-1" class="pilcrow">¶</a></p>
+<p id="section-10.8-2">Indicative strengths:<a href="#section-10.8-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.8-3.1">
+            <p id="section-10.8-3.1.1">A 20-bit rendering (e.g., 6 decimal digits) requires on the
+order of 10^6 trial key pairs.  Trivially brute-forceable on
+commodity hardware.<a href="#section-10.8-3.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.8-3.2">
+            <p id="section-10.8-3.2.1">A 26-bit rendering (e.g., 8 decimal digits) requires on the
+order of 10^8 trial key pairs.  Feasible on modern GPU
+hardware within hours.<a href="#section-10.8-3.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.8-3.3">
+            <p id="section-10.8-3.3.1">A 60-bit rendering is practically infeasible to brute-force
+for realistic attackers.<a href="#section-10.8-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-10.8-4">For applications requiring strong assurance, implementations <span class="bcp14">SHOULD</span>
+support machine-readable comparison (for example, a QR code
+exchanged over a second authenticated channel) that conveys the
+full 256-bit digest without human error.<a href="#section-10.8-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="privacy-considerations">
-<section id="section-10.12">
+<section id="section-10.9">
         <h3 id="name-privacy-considerations">
-<a href="#section-10.12" class="section-number selfRef">10.12. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
+<a href="#section-10.9" class="section-number selfRef">10.9. </a><a href="#name-privacy-considerations" class="section-name selfRef">Privacy Considerations</a>
         </h3>
 <div id="identity-key-as-a-stable-identifier">
-<section id="section-10.12.1">
+<section id="section-10.9.1">
           <h4 id="name-identity-key-as-a-stable-id">
-<a href="#section-10.12.1" class="section-number selfRef">10.12.1. </a><a href="#name-identity-key-as-a-stable-id" class="section-name selfRef">Identity Key as a Stable Identifier</a>
+<a href="#section-10.9.1" class="section-number selfRef">10.9.1. </a><a href="#name-identity-key-as-a-stable-id" class="section-name selfRef">Identity Key as a Stable Identifier</a>
           </h4>
-<p id="section-10.12.1-1">The Contact Object transmits the Identity Key public component in
+<p id="section-10.9.1-1">The Contact Object transmits the Identity Key public component in
 cleartext.  Any party that observes or captures a Contact Object
-obtains a persistent, unique identifier for the user.<a href="#section-10.12.1-1" class="pilcrow">¶</a></p>
-<p id="section-10.12.1-2">Mitigations:<a href="#section-10.12.1-2" class="pilcrow">¶</a></p>
+obtains a persistent, unique identifier for the user.<a href="#section-10.9.1-1" class="pilcrow">¶</a></p>
+<p id="section-10.9.1-2">Mitigations:<a href="#section-10.9.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-10.12.1-3.1">
-              <p id="section-10.12.1-3.1.1">Contact Objects are exchanged only during deliberate, in-person
-ceremonies, limiting the exposure surface.<a href="#section-10.12.1-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-10.9.1-3.1">
+              <p id="section-10.9.1-3.1.1">Contact Objects are exchanged only during deliberate, in-person
+ceremonies, limiting the exposure surface.<a href="#section-10.9.1-3.1.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-10.12.1-3.2">
-              <p id="section-10.12.1-3.2.1">The 5-minute validity window limits the useful lifetime of a
-captured object.<a href="#section-10.12.1-3.2.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-10.9.1-3.2">
+              <p id="section-10.9.1-3.2.1">The 5-minute validity window limits the useful lifetime of a
+captured object.<a href="#section-10.9.1-3.2.1" class="pilcrow">¶</a></p>
 </li>
-            <li class="normal" id="section-10.12.1-3.3">
-              <p id="section-10.12.1-3.3.1">The Transport Key (used for networking) is a separate key that
-does not reveal the Identity Key to network observers.<a href="#section-10.12.1-3.3.1" class="pilcrow">¶</a></p>
+            <li class="normal" id="section-10.9.1-3.3">
+              <p id="section-10.9.1-3.3.1">The Transport Key (used for networking) is a separate key that
+does not reveal the Identity Key to network observers.<a href="#section-10.9.1-3.3.1" class="pilcrow">¶</a></p>
 </li>
           </ul>
 </section>
 </div>
 <div id="relationship-correlation">
-<section id="section-10.12.2">
+<section id="section-10.9.2">
           <h4 id="name-relationship-correlation">
-<a href="#section-10.12.2" class="section-number selfRef">10.12.2. </a><a href="#name-relationship-correlation" class="section-name selfRef">Relationship Correlation</a>
+<a href="#section-10.9.2" class="section-number selfRef">10.9.2. </a><a href="#name-relationship-correlation" class="section-name selfRef">Relationship Correlation</a>
           </h4>
-<p id="section-10.12.2-1">If the same Identity Key is reused across multiple relationships or
+<p id="section-10.9.2-1">If the same Identity Key is reused across multiple relationships or
 applications, receivers that exchange identifiers or protocol
 transcripts can determine that the same long-term key participated
 in multiple relationships.  This may reveal social-graph structure
-or cross-context linkage.<a href="#section-10.12.2-1" class="pilcrow">¶</a></p>
-<p id="section-10.12.2-2">Deployments that treat such correlation as sensitive <span class="bcp14">SHOULD</span> consider
+or cross-context linkage.<a href="#section-10.9.2-1" class="pilcrow">¶</a></p>
+<p id="section-10.9.2-2">Deployments that treat such correlation as sensitive <span class="bcp14">SHOULD</span> consider
 future profiles that use pairwise-derived relationship identifiers
 or per-relationship keys.  Those mechanisms are not defined by this
-document.<a href="#section-10.12.2-2" class="pilcrow">¶</a></p>
+document.<a href="#section-10.9.2-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="metadata-exposure">
-<section id="section-10.12.3">
+<section id="section-10.9.3">
           <h4 id="name-metadata-exposure">
-<a href="#section-10.12.3" class="section-number selfRef">10.12.3. </a><a href="#name-metadata-exposure" class="section-name selfRef">Metadata Exposure</a>
+<a href="#section-10.9.3" class="section-number selfRef">10.9.3. </a><a href="#name-metadata-exposure" class="section-name selfRef">Metadata Exposure</a>
           </h4>
-<p id="section-10.12.3-1">The Contact Object can also reveal metadata through fields such as
+<p id="section-10.9.3-1">The Contact Object can also reveal metadata through fields such as
 display_name, addressing, timestamps, and transport key continuity.
 Even when application payloads are encrypted elsewhere, these fields
 may reveal account aliases, transport reachability hints, device
-migration timing, or relationship existence.<a href="#section-10.12.3-1" class="pilcrow">¶</a></p>
-<p id="section-10.12.3-2">Applications using this protocol <span class="bcp14">SHOULD</span> minimize metadata
+migration timing, or relationship existence.<a href="#section-10.9.3-1" class="pilcrow">¶</a></p>
+<p id="section-10.9.3-2">Applications using this protocol <span class="bcp14">SHOULD</span> minimize metadata
 disclosure, avoid unnecessary stable identifiers, and avoid
 embedding data in the addressing field that is broader than required
-for rendezvous.<a href="#section-10.12.3-2" class="pilcrow">¶</a></p>
+for rendezvous.<a href="#section-10.9.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="fingerprint-handling">
-<section id="section-10.12.4">
+<section id="section-10.9.4">
           <h4 id="name-fingerprint-handling">
-<a href="#section-10.12.4" class="section-number selfRef">10.12.4. </a><a href="#name-fingerprint-handling" class="section-name selfRef">Fingerprint Handling</a>
+<a href="#section-10.9.4" class="section-number selfRef">10.9.4. </a><a href="#name-fingerprint-handling" class="section-name selfRef">Fingerprint Handling</a>
           </h4>
-<p id="section-10.12.4-1">Relationship Fingerprints are intended for optional out-of-band
-comparison.  Applications <span class="bcp14">SHOULD</span> avoid displaying full high-entropy
-fingerprints in contexts where shoulder surfing, screenshots, or
-logging may create unnecessary privacy leakage.<a href="#section-10.12.4-1" class="pilcrow">¶</a></p>
-<p id="section-10.12.4-2">See <span>[<a href="#RFC6973" class="cite xref">RFC6973</a>]</span> for a general discussion of privacy considerations
-in Internet protocols.<a href="#section-10.12.4-2" class="pilcrow">¶</a></p>
+<p id="section-10.9.4-1">Relationship Fingerprints are intended for optional out-of-band
+comparison.  Applications <span class="bcp14">SHOULD</span> avoid displaying full fingerprints where
+they could be captured by screenshots, shoulder surfing, or
+logging.<a href="#section-10.9.4-1" class="pilcrow">¶</a></p>
+<p id="section-10.9.4-2">See <span>[<a href="#RFC6973" class="cite xref">RFC6973</a>]</span> for a general discussion of privacy considerations
+in Internet protocols.<a href="#section-10.9.4-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
 </div>
 <div id="denial-of-service-via-presence-challenges">
-<section id="section-10.13">
+<section id="section-10.10">
         <h3 id="name-denial-of-service-via-prese">
-<a href="#section-10.13" class="section-number selfRef">10.13. </a><a href="#name-denial-of-service-via-prese" class="section-name selfRef">Denial of Service via Presence Challenges</a>
+<a href="#section-10.10" class="section-number selfRef">10.10. </a><a href="#name-denial-of-service-via-prese" class="section-name selfRef">Denial of Service via Presence Challenges</a>
         </h3>
-<p id="section-10.13-1">An authenticated peer could issue excessive Presence Challenges,
+<p id="section-10.10-1">An authenticated peer could issue excessive Presence Challenges,
 forcing repeated user-verification prompts.  The 300-second rate
 limit (<a href="#presence-challenge" class="auto internal xref">Section 8</a>) mitigates this but does not eliminate
 it.  Implementations <span class="bcp14">SHOULD</span> allow users to disable Presence Challenge
-responses from specific contacts.<a href="#section-10.13-1" class="pilcrow">¶</a></p>
+responses from specific contacts.<a href="#section-10.10-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="post-quantum-considerations">
-<section id="section-10.14">
+<section id="section-10.11">
         <h3 id="name-post-quantum-considerations">
-<a href="#section-10.14" class="section-number selfRef">10.14. </a><a href="#name-post-quantum-considerations" class="section-name selfRef">Post-Quantum Considerations</a>
+<a href="#section-10.11" class="section-number selfRef">10.11. </a><a href="#name-post-quantum-considerations" class="section-name selfRef">Post-Quantum Considerations</a>
         </h3>
-<p id="section-10.14-1">P-256 ECDSA is vulnerable to quantum computers implementing Shor's
+<p id="section-10.11-1">P-256 ECDSA is vulnerable to quantum computers implementing Shor's
 algorithm.  When post-quantum signature algorithms are available in
 platform key stores, the protocol <span class="bcp14">SHOULD</span> migrate.  The version field
-in all structures enables this transition.<a href="#section-10.14-1" class="pilcrow">¶</a></p>
+in all structures enables this transition.<a href="#section-10.11-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="forward-secrecy-of-authentication">
-<section id="section-10.15">
+<section id="section-10.12">
         <h3 id="name-forward-secrecy-of-authenti">
-<a href="#section-10.15" class="section-number selfRef">10.15. </a><a href="#name-forward-secrecy-of-authenti" class="section-name selfRef">Forward Secrecy of Authentication</a>
+<a href="#section-10.12" class="section-number selfRef">10.12. </a><a href="#name-forward-secrecy-of-authenti" class="section-name selfRef">Forward Secrecy of Authentication</a>
         </h3>
-<p id="section-10.15-1">This protocol does not provide forward secrecy of authentication.
+<p id="section-10.12-1">This protocol does not provide forward secrecy of authentication.
 If the Identity Key private key is ever extracted from the platform
 key store (despite hardware protections), all Key Binding Objects,
 Session Credentials, and Presence Responses previously signed by
 that key can be verified by the attacker.  Past signed objects
-remain verifiable indefinitely.<a href="#section-10.15-1" class="pilcrow">¶</a></p>
-<p id="section-10.15-2">Deployments that require forward secrecy of authentication evidence
+remain verifiable indefinitely.<a href="#section-10.12-1" class="pilcrow">¶</a></p>
+<p id="section-10.12-2">Deployments that require forward secrecy of authentication evidence
 <span class="bcp14">SHOULD</span> layer an ephemeral key agreement protocol (e.g., TLS 1.3
 <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span> or a Diffie-Hellman-based transport) beneath this
 protocol.  This document's objects provide authentication, not
-confidentiality or forward secrecy.<a href="#section-10.15-2" class="pilcrow">¶</a></p>
+confidentiality or forward secrecy.<a href="#section-10.12-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="session-credential-expiry-and-in-flight-messages">
-<section id="section-10.16">
+<section id="section-10.13">
         <h3 id="name-session-credential-expiry-a">
-<a href="#section-10.16" class="section-number selfRef">10.16. </a><a href="#name-session-credential-expiry-a" class="section-name selfRef">Session Credential Expiry and In-Flight Messages</a>
+<a href="#section-10.13" class="section-number selfRef">10.13. </a><a href="#name-session-credential-expiry-a" class="section-name selfRef">Session Credential Expiry and In-Flight Messages</a>
         </h3>
-<p id="section-10.16-1">A Session Credential has a finite expiry.  Messages signed by the
+<p id="section-10.13-1">A Session Credential has a finite expiry.  Messages signed by the
 SSK before the credential expires but received after expiry present
-a time-of-check/time-of-use consideration.  Verifiers <span class="bcp14">SHOULD</span> accept
-a Signed Message if the message's own timestamp (field 2) falls
-within the Session Credential's validity window, even if the message
-arrives after the credential has expired, provided the arrival delay
-is within a locally configured grace period (<span class="bcp14">RECOMMENDED</span>: no more
-than 60 seconds past expiry).  After the grace period, verifiers
-<span class="bcp14">MUST</span> reject the message and require a new Session Credential.<a href="#section-10.16-1" class="pilcrow">¶</a></p>
+a time-of-check/time-of-use consideration.  The Signed Message
+verification procedure (<a href="#signed-message" class="auto internal xref">Section 7</a>) requires that the
+message timestamp falls within the Session Credential's validity
+window, with an optional grace period for in-flight messages.
+<span class="bcp14">RECOMMENDED</span> grace period: no more than 60 seconds past expiry.
+After the grace period, verifiers <span class="bcp14">MUST</span> reject the message and
+require a new Session Credential.<a href="#section-10.13-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ssk-compromise">
+<section id="section-10.14">
+        <h3 id="name-session-signing-key-comprom">
+<a href="#section-10.14" class="section-number selfRef">10.14. </a><a href="#name-session-signing-key-comprom" class="section-name selfRef">Session Signing Key Compromise</a>
+        </h3>
+<p id="section-10.14-1">The SSK is a software key held in memory.  An attacker who extracts
+it can forge Signed Messages for the remaining validity period of
+the Session Credential.  A read-only memory disclosure (e.g., a
+side-channel attack) that reveals the SSK but not the TK private
+key would allow message forgery without transport impersonation.<a href="#section-10.14-1" class="pilcrow">¶</a></p>
+<p id="section-10.14-2">The Session Credential intentionally omits a channel_binding field
+because Session Credentials must remain valid across delivery paths,
+including mailbox deposit.  As a consequence, a stolen SSK and SC
+can be used from any network position for the remaining credential
+lifetime.<a href="#section-10.14-2" class="pilcrow">¶</a></p>
+<p id="section-10.14-3">Mitigations:<a href="#section-10.14-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-10.14-4.1">
+            <p id="section-10.14-4.1.1">The Session Credential <span class="bcp14">MUST</span> have a finite expiry, limiting the
+forgery window.<a href="#section-10.14-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.14-4.2">
+            <p id="section-10.14-4.2.1">The SSK <span class="bcp14">MUST</span> be discarded when the session ends.<a href="#section-10.14-4.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.14-4.3">
+            <p id="section-10.14-4.3.1">The peer_ik_hash field scopes the credential to a single
+relationship.<a href="#section-10.14-4.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.14-4.4">
+            <p id="section-10.14-4.4.1">Implementations <span class="bcp14">SHOULD</span> store the SSK in a non-swappable memory
+region.<a href="#section-10.14-4.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-10.14-4.5">
+            <p id="section-10.14-4.5.1">For operations requiring the strongest assurance, implementations
+<span class="bcp14">SHOULD</span> sign directly with the Identity Key rather than delegating
+to the SSK.<a href="#section-10.14-4.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
 <div id="device-loss-and-recovery">
-<section id="section-10.17">
+<section id="section-10.15">
         <h3 id="name-device-loss-and-recovery">
-<a href="#section-10.17" class="section-number selfRef">10.17. </a><a href="#name-device-loss-and-recovery" class="section-name selfRef">Device Loss and Recovery</a>
+<a href="#section-10.15" class="section-number selfRef">10.15. </a><a href="#name-device-loss-and-recovery" class="section-name selfRef">Device Loss and Recovery</a>
         </h3>
-<p id="section-10.17-1">When a device is lost or destroyed, the Identity Key is permanently
+<p id="section-10.15-1">When a device is lost or destroyed, the Identity Key is permanently
 unrecoverable (non-exportable from the platform key store).  All
-contacts verified against that Identity Key become orphaned.<a href="#section-10.17-1" class="pilcrow">¶</a></p>
-<p id="section-10.17-2">Revocation and recovery are out of scope for this document, but that
+contacts verified against that Identity Key become orphaned.<a href="#section-10.15-1" class="pilcrow">¶</a></p>
+<p id="section-10.15-2">Revocation and recovery are out of scope for this document, but that
 omission has concrete deployment consequences.  In such cases,
 deployments will typically require an out-of-band re-verification
 ceremony, explicit peer approval of a new Identity Key, or an
-application-defined recovery mechanism.<a href="#section-10.17-2" class="pilcrow">¶</a></p>
-<p id="section-10.17-3">Similarly, if an Identity Key is believed to be compromised, this
+application-defined recovery mechanism.<a href="#section-10.15-2" class="pilcrow">¶</a></p>
+<p id="section-10.15-3">Similarly, if an Identity Key is believed to be compromised, this
 document does not define a protocol-native revocation object or
 distribution method.  Applications <span class="bcp14">MUST</span> therefore define local policy
 for suspending trust in a stored key and for handling replacement or
-termination of the affected relationship.<a href="#section-10.17-3" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="compromised-application-during-ceremony">
-<section id="section-10.18">
-        <h3 id="name-compromised-application-dur">
-<a href="#section-10.18" class="section-number selfRef">10.18. </a><a href="#name-compromised-application-dur" class="section-name selfRef">Compromised Application During Ceremony</a>
-        </h3>
-<p id="section-10.18-1">The Contact Exchange ceremony assumes that both peers are running
-legitimate, unmodified applications.  A compromised application
-could substitute attacker-controlled keys during the ceremony while
-displaying correct-looking UI to the user, causing both peers to
-bind trust to keys the attacker controls.<a href="#section-10.18-1" class="pilcrow">¶</a></p>
-<p id="section-10.18-2">Hardware key attestation (assurance value 3) mitigates part of this
-threat by proving the Identity Key is hardware-bound, but does not
-prove that the application presenting the key is legitimate.  An
-attacker who repackages the application can generate a genuine
-hardware-backed key and present valid attestation evidence for it.<a href="#section-10.18-2" class="pilcrow">¶</a></p>
-<p id="section-10.18-3">Platform app integrity services (e.g., Android Play Integrity API,
-Apple App Attest) can verify that the application binary is
-legitimate and unmodified.  However, these services require online
-validation against vendor APIs, which is an architectural mismatch
-with this protocol's peer-to-peer design.  Guidance on app integrity
-attestation is provided in the Implementation Considerations
-(<a href="#app-integrity-impl" class="auto internal xref">Appendix B.2</a>).<a href="#section-10.18-3" class="pilcrow">¶</a></p>
-<p id="section-10.18-4">Without either form of attestation, assurance values 1 and 2 are
-application-reported claims that a compromised application can
-forge.  Peers exchanging contacts at these levels <span class="bcp14">SHOULD</span> use
-out-of-band Relationship Fingerprint comparison
-(<a href="#relationship-fingerprint" class="auto internal xref">Section 9</a>) as an additional defense against
-key substitution.<a href="#section-10.18-4" class="pilcrow">¶</a></p>
+termination of the affected relationship.<a href="#section-10.15-3" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="terminology-caution">
-<section id="section-10.19">
+<section id="section-10.16">
         <h3 id="name-terminology-caution">
-<a href="#section-10.19" class="section-number selfRef">10.19. </a><a href="#name-terminology-caution" class="section-name selfRef">Terminology Caution</a>
+<a href="#section-10.16" class="section-number selfRef">10.16. </a><a href="#name-terminology-caution" class="section-name selfRef">Terminology Caution</a>
         </h3>
-<p id="section-10.19-1">Implementations and profiles built on this document <span class="bcp14">SHOULD</span> avoid
+<p id="section-10.16-1">The "h2h" identifier in this document's name refers to the
+intended use case -- communication between devices held by two
+specific humans who have met in person -- and is not a claim that
+the protocol cryptographically verifies biological humanness,
+legal personhood, or proof-of-personhood in any form.<a href="#section-10.16-1" class="pilcrow">¶</a></p>
+<p id="section-10.16-2">Implementations and profiles built on this document <span class="bcp14">SHOULD</span> avoid
 using terms such as "proves human" or "non-repudiation" without
 additional legal and deployment analysis.  The protocol produces
-cryptographic attribution artifacts within the protocol trust model;
-broader claims may not hold.<a href="#section-10.19-1" class="pilcrow">¶</a></p>
+signed objects that attribute actions to a key; it does not prove
+those actions were intentional or legally binding.<a href="#section-10.16-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>
@@ -4162,11 +4038,11 @@ broader claims may not hold.<a href="#section-10.19-1" class="pilcrow">¶</a></p
       <h2 id="name-iana-considerations">
 <a href="#section-11" class="section-number selfRef">11. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-11-1">This document has no IANA actions.<a href="#section-11-1" class="pilcrow">¶</a></p>
-<p id="section-11-2">This document defines protocol constants for structure types,
-assurance values, and transport key algorithms.  These values are
-defined in the body of this document and in the CDDL schema
-(<a href="#cddl" class="auto internal xref">Appendix A</a>).  They are summarized here for convenience.<a href="#section-11-2" class="pilcrow">¶</a></p>
+<p id="section-11-1">This document defines protocol constants for structure types,
+assurance values, and transport key algorithms.  No IANA registries
+are requested.  These values are defined in the body of this
+document and in the CDDL schema (<a href="#cddl" class="auto internal xref">Appendix A</a>).  They are summarized
+here for convenience.<a href="#section-11-1" class="pilcrow">¶</a></p>
 <div id="structure-type-values">
 <section id="section-11.1">
         <h3 id="name-structure-type-values">
@@ -4302,6 +4178,10 @@ requires coordinated allocation.<a href="#section-11.3-3" class="pilcrow">¶</a>
         <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC8610">[RFC8610]</dt>
+        <dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Vigano, C.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures"</span>, <span class="seriesInfo">RFC 8610</span>, <span class="seriesInfo">DOI 10.17487/RFC8610</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8610">https://www.rfc-editor.org/rfc/rfc8610</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC8949">[RFC8949]</dt>
         <dd>
 <span class="refAuthor">Bormann, C.</span> and <span class="refAuthor">P. Hoffman</span>, <span class="refTitle">"Concise Binary Object Representation (CBOR)"</span>, <span class="seriesInfo">STD 94</span>, <span class="seriesInfo">RFC 8949</span>, <span class="seriesInfo">DOI 10.17487/RFC8949</span>, <time datetime="2020-12" class="refDate">December 2020</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8949">https://www.rfc-editor.org/rfc/rfc8949</a>&gt;</span>. </dd>
@@ -4342,10 +4222,6 @@ requires coordinated allocation.<a href="#section-11.3-3" class="pilcrow">¶</a>
 <dt id="RFC8446">[RFC8446]</dt>
         <dd>
 <span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="RFC8610">[RFC8610]</dt>
-        <dd>
-<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Vigano, C.</span>, and <span class="refAuthor">C. Bormann</span>, <span class="refTitle">"Concise Data Definition Language (CDDL): A Notational Convention to Express Concise Binary Object Representation (CBOR) and JSON Data Structures"</span>, <span class="seriesInfo">RFC 8610</span>, <span class="seriesInfo">DOI 10.17487/RFC8610</span>, <time datetime="2019-06" class="refDate">June 2019</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8610">https://www.rfc-editor.org/rfc/rfc8610</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9147">[RFC9147]</dt>
         <dd>
@@ -4405,18 +4281,40 @@ P256_COSE_Key = {
 ; The payload is a CBOR-encoded map defined below.
 ; ============================================================
 
-H2H_COSE_Sign1&lt;PayloadType&gt; = #6.18([
-  protected: bstr .cbor {1 =&gt; -7},  ; alg: ES256
-  unprotected: {},
-  payload: bstr .cbor PayloadType,
-  signature: bstr,
+KeyBindingObject = #6.18([
+  bstr .cbor {1 =&gt; -7},             ; protected: alg ES256
+  {},                                ; unprotected
+  bstr .cbor KBO_payload,           ; payload
+  bstr,                              ; signature
 ])
 
-KeyBindingObject    = H2H_COSE_Sign1&lt;KBO_payload&gt;
-ContactObject       = H2H_COSE_Sign1&lt;Contact_payload&gt;
-SessionCredential   = H2H_COSE_Sign1&lt;SC_payload&gt;
-SignedMessage        = H2H_COSE_Sign1&lt;SM_payload&gt;
-PresenceResponse    = H2H_COSE_Sign1&lt;PR_payload&gt;
+ContactObject = #6.18([
+  bstr .cbor {1 =&gt; -7},
+  {},
+  bstr .cbor Contact_payload,
+  bstr,
+])
+
+SessionCredential = #6.18([
+  bstr .cbor {1 =&gt; -7},
+  {},
+  bstr .cbor SC_payload,
+  bstr,
+])
+
+SignedMessage = #6.18([
+  bstr .cbor {1 =&gt; -7},
+  {},
+  bstr .cbor SM_payload,
+  bstr,
+])
+
+PresenceResponse = #6.18([
+  bstr .cbor {1 =&gt; -7},
+  {},
+  bstr .cbor PR_payload,
+  bstr,
+])
 
 ; ============================================================
 ; Payload definitions (no additional keys permitted)
@@ -4521,58 +4419,17 @@ platform name used in product documentation.<a href="#appendix-B.1-1" class="pil
         <h3 id="name-app-integrity-attestation">
 <a href="#appendix-B.2" class="section-number selfRef">B.2. </a><a href="#name-app-integrity-attestation" class="section-name selfRef">App Integrity Attestation</a>
         </h3>
-<p id="appendix-B.2-1">Hardware key attestation (<a href="#hardware-attestation" class="auto internal xref">Section 2.3</a>) proves that the
-Identity Key resides in genuine hardware, but does not prove that
-the application presenting the key is the legitimate, unmodified
-binary.  A repackaged application could generate a genuine
-hardware-backed key, present valid attestation evidence, and
-substitute attacker-controlled material during the ceremony.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
-<p id="appendix-B.2-2">Platform app integrity services can mitigate this threat:<a href="#appendix-B.2-2" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-B.2-3.1">
-            <p id="appendix-B.2-3.1.1">Android Play Integrity API <span>[<a href="#PlayIntegrity" class="cite xref">PlayIntegrity</a>]</span> produces tokens
-that verify the app is the genuine binary from Google Play,
-running on a genuine device.<a href="#appendix-B.2-3.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="appendix-B.2-3.2">
-            <p id="appendix-B.2-3.2.1">Apple App Attest <span>[<a href="#AppAttest" class="cite xref">AppAttest</a>]</span> produces attestation objects that
-verify the app is the unmodified binary running on genuine
-Apple hardware.<a href="#appendix-B.2-3.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="appendix-B.2-4">These services require <strong>online validation</strong> against vendor APIs,
-which is an architectural difference from the locally-verifiable
-hardware attestation defined in this document.  Implementations
-that wish to include app integrity attestation <span class="bcp14">SHOULD</span>:<a href="#appendix-B.2-4" class="pilcrow">¶</a></p>
-<ol start="1" type="1" class="normal type-1" id="appendix-B.2-5">
-<li id="appendix-B.2-5.1">
-            <p id="appendix-B.2-5.1.1">Obtain an app integrity token at ceremony time and include it
-in a transport-level or application-level metadata field
-alongside the Contact Object (not in the signed payload, since
-validation requires network access to vendor services).<a href="#appendix-B.2-5.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="appendix-B.2-5.2">
-            <p id="appendix-B.2-5.2.1">Validate received tokens against the vendor's API before
-accepting the Contact Object.<a href="#appendix-B.2-5.2.1" class="pilcrow">¶</a></p>
-</li>
-          <li id="appendix-B.2-5.3">
-            <p id="appendix-B.2-5.3.1">Inform the user if app integrity could not be verified.<a href="#appendix-B.2-5.3.1" class="pilcrow">¶</a></p>
-</li>
-        </ol>
-<p id="appendix-B.2-6">App integrity attestation and hardware key attestation are
-complementary:<a href="#appendix-B.2-6" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="appendix-B.2-7.1">
-            <p id="appendix-B.2-7.1.1">Hardware key attestation answers: "Is this key in real,
-tamper-resistant hardware?"<a href="#appendix-B.2-7.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="appendix-B.2-7.2">
-            <p id="appendix-B.2-7.2.1">App integrity attestation answers: "Is the application presenting
-this key the legitimate, unmodified binary?"<a href="#appendix-B.2-7.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-<p id="appendix-B.2-8">Neither is sufficient alone.  Deployments handling high-value
-authorizations <span class="bcp14">SHOULD</span> use both where platform support is available.<a href="#appendix-B.2-8" class="pilcrow">¶</a></p>
+<p id="appendix-B.2-1">Hardware key attestation proves the Identity Key resides in genuine
+hardware but does not prove the application is legitimate.  Platform
+app integrity services -- such as Android Play Integrity API
+<span>[<a href="#PlayIntegrity" class="cite xref">PlayIntegrity</a>]</span> and Apple App Attest <span>[<a href="#AppAttest" class="cite xref">AppAttest</a>]</span> -- can verify
+the application binary is unmodified.  These services require online
+validation against vendor APIs.  Implementations that wish to
+include app integrity attestation <span class="bcp14">SHOULD</span> obtain a token at ceremony
+time, include it alongside the Contact Object (not in the signed
+payload), and validate it against the vendor's API.  Deployments
+handling high-value authorizations <span class="bcp14">SHOULD</span> use both hardware key
+attestation and app integrity attestation where available.<a href="#appendix-B.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="payload-size-limits">
